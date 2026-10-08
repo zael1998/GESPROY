@@ -1,0 +1,28 @@
+.icono-opcion {
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+.icono-editar {
+    color: blue;
+}
+
+.icono-negociacion {
+    color: purple;
+}
+
+.icono-proceso {
+    color: green;
+}
+
+.icono-denegado {
+    color: red;
+}
+
+.icono-borrar {
+    color: red;
+}
+
+.icono-anterior {
+    color: gray;
+}

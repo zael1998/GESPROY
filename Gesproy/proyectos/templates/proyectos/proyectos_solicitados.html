@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Proyectos solicitados
+{% endblock %}
+
+{% block content %}
+
+<h1>Listado de los proyectos SOLICITADOS</h1>
+
+<table>
+
+    <thead>
+        <tr>
+            <th>Acrónimo del proyecto</th>
+            <th>Organismo</th>
+            <th>Solicitud de resolución</th>
+            <th>Opciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for proyecto in proyectos %}
+
+            <tr>
+
+                <td title="{{ proyecto.nombre }}">
+                    {{ proyecto.acronimo }}
+                </td>
+
+                <td>
+                    {{ proyecto.organismo.nombre }}
+                </td>
+
+                <td>
+                    {{ proyecto.fecha_solicitud|date:"d M Y" }}
+                    <br>
+                    {{ proyecto.fecha_resolucion|date:"d M Y" }}
+                </td>
+
+                
+                <td class="opciones">
+
+                    <a href="#" title="Editar">
+                        <i class="bi bi-pencil icono-opcion icono-editar"></i>
+                    </a>
+
+                    <a href="#" title="Cambiar a negociación">
+                        <i class="bi bi-chat-dots icono-opcion icono-negociacion"></i>
+                    </a>
+
+                    <a href="#" title="Cambiar a proceso">
+                        <i class="bi bi-play icono-opcion icono-proceso"></i>
+                    </a>
+
+                    <a href="#" title="Cambiar a denegado">
+                        <i class="bi bi-x-circle icono-opcion icono-denegado"></i>
+                    </a>
+
+                    <a href="#" title="Borrar proyecto">
+                        <i class="bi bi-trash icono-opcion icono-borrar"></i>
+                    </a>
+
+                    <a href="#" title="Cambiar a estado anterior">
+                        <i class="bi bi-arrow-left icono-opcion icono-anterior"></i>
+                    </a>
+
+                </td>
+
+
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="4">
+                    No hay proyectos solicitados.
+                </td>
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<p>Total: {{ proyectos|length }}</p>
+
+{% endblock %}

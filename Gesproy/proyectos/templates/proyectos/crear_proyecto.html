@@ -1,0 +1,9 @@
+<h1>Crear proyecto</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {# Con formulario.as_p genera los campos del formulario que se definieron en ProyectoForm #}
+    {{ formulario.as_p }}
+
+    <button type="submit">Crear proyecto</button>
+</form>

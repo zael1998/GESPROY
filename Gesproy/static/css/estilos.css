@@ -1,3 +1,437 @@
+
+/* ==========================================
+   GESPROY - ESTILOS GENERALES
+   ========================================== */
+
+body {
+    margin: 0;
+    background-color: #f5f7fb;
+    font-family: Arial, sans-serif;
+    color: #333;
+}
+
+
+/* ==========================================
+   CONTENEDORES DE PROYECTOS
+   ========================================== */
+
+.proceso-contenedor,
+.negociacion-contenedor,
+.contenedor-proyectos {
+    max-width: 1250px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+
+/* ==========================================
+   CABECERAS
+   ========================================== */
+
+.proceso-cabecera,
+.negociacion-cabecera,
+.cabecera-proyectos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #d9dfe5;
+}
+
+.proceso-cabecera h1,
+.negociacion-cabecera h1,
+.cabecera-proyectos h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 7px;
+    color: #263747;
+}
+
+.proceso-cabecera p,
+.negociacion-cabecera p,
+.cabecera-proyectos p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+
+/* ==========================================
+   CONTADORES
+   ========================================== */
+
+.proceso-total,
+.negociacion-total,
+.contador-proyectos {
+    font-size: 13px;
+    color: #555;
+    font-weight: normal;
+    white-space: nowrap;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
+
+/* ==========================================
+   CONTENEDORES DE TABLAS
+   ========================================== */
+
+.proceso-tabla-contenedor,
+.negociacion-tabla-contenedor,
+.tarjeta-tabla {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #dce1e6;
+    border-radius: 5px;
+    box-shadow: none;
+}
+
+
+/* ==========================================
+   TABLAS
+   ========================================== */
+
+.proceso-tabla,
+.negociacion-tabla,
+.tabla-proyectos {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+
+/* ENCABEZADOS */
+
+.proceso-tabla th,
+.negociacion-tabla th,
+.tabla-proyectos th {
+    padding: 13px 16px;
+    text-align: left;
+    background: #f1f3f5;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid #dce1e6;
+}
+
+
+/* CELDAS */
+
+.proceso-tabla td,
+.negociacion-tabla td,
+.tabla-proyectos td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+
+/* ELIMINAR BORDE DE ULTIMA FILA */
+
+.proceso-tabla tbody tr:last-child td,
+.negociacion-tabla tbody tr:last-child td,
+.tabla-proyectos tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* EFECTO AL PASAR EL RATON */
+
+.proceso-tabla tbody tr:hover,
+.negociacion-tabla tbody tr:hover,
+.tabla-proyectos tbody tr:hover {
+    background-color: #f7f9fa;
+}
+
+
+/* ==========================================
+   ACRONIMOS DE PROYECTOS
+   ========================================== */
+
+.proceso-acronimo,
+.acronimo,
+.negociacion-tabla strong {
+    font-weight: 600;
+    color: #2c5273;
+}
+
+
+/* ==========================================
+   FECHAS
+   ========================================== */
+
+.proceso-fechas,
+.negociacion-fechas {
+    color: #555;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.proceso-fecha-etiqueta {
+    color: #888;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.negociacion-separador {
+    color: #aaa;
+    margin: 0 7px;
+}
+
+
+/* ==========================================
+   OPCIONES DE LAS TABLAS
+   ========================================== */
+
+.proceso-opciones,
+.negociacion-opciones,
+.tabla-proyectos .opciones {
+    white-space: nowrap;
+}
+
+
+/* ==========================================
+   BOTONES DE ACCIONES
+   ========================================== */
+
+.boton-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+    margin-right: 5px;
+
+    border-radius: 8px;
+    border: none;
+
+    font-size: 17px;
+    text-decoration: none;
+
+    box-sizing: border-box;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+.boton-icono:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ==========================================
+   COLORES DE BOTONES
+   ========================================== */
+
+/* EDITAR - AZUL */
+
+.boton-icono.editar {
+    color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.boton-icono.editar:hover {
+    background-color: #dbeafe;
+}
+
+
+/* CAMBIAR A SOLICITADO - MORADO */
+
+.boton-icono.solicitado {
+    color: #7c3aed;
+    background-color: #f5f3ff;
+}
+
+.boton-icono.solicitado:hover {
+    background-color: #ede9fe;
+}
+
+
+/* CAMBIAR A NEGOCIACION - MORADO */
+
+.boton-icono.negociacion {
+    color: #7c3aed;
+    background-color: #f5f3ff;
+}
+
+.boton-icono.negociacion:hover {
+    background-color: #ede9fe;
+}
+
+
+/* CAMBIAR A PROCESO - VERDE */
+
+.boton-icono.proceso {
+    color: #16a34a;
+    background-color: #f0fdf4;
+}
+
+.boton-icono.proceso:hover {
+    background-color: #dcfce7;
+}
+
+
+/* CAMBIAR A FINALIZADO - VERDE */
+
+.boton-icono.finalizado {
+    color: #16a34a;
+    background-color: #f0fdf4;
+}
+
+.boton-icono.finalizado:hover {
+    background-color: #dcfce7;
+}
+
+
+/* CAMBIAR A DENEGADO - NARANJA */
+
+.boton-icono.denegado {
+    color: #c2410c;
+    background-color: #fff7ed;
+}
+
+.boton-icono.denegado:hover {
+    background-color: #ffedd5;
+}
+
+
+/* BORRAR - ROJO */
+
+.boton-icono.borrar {
+    color: #dc2626;
+    background-color: #fef2f2;
+}
+
+.boton-icono.borrar:hover {
+    background-color: #fee2e2;
+}
+
+
+/* DUPLICAR - AMARILLO */
+
+.boton-icono.duplicar {
+    color: #d97706;
+    background-color: #fffbeb;
+}
+
+.boton-icono.duplicar:hover {
+    background-color: #fef3c7;
+}
+
+
+/* VOLVER AL ESTADO ANTERIOR - GRIS */
+
+.boton-icono.anterior {
+    color: #64748b;
+    background-color: #f1f5f9;
+}
+
+.boton-icono.anterior:hover {
+    background-color: #e2e8f0;
+}
+
+
+/* ==========================================
+   DOS BARRAS DE PROGRESO
+   ========================================== */
+
+.proceso-barras {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.proceso-indicador,
+.proceso-progreso {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* ETIQUETAS: TIEMPO / HORAS */
+
+.proceso-etiqueta {
+    width: 55px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #666;
+}
+
+
+/* BARRA GENERAL */
+
+.proceso-barra {
+    width: 160px;
+    height: 8px;
+
+    background-color: #e5e7eb;
+    border-radius: 4px;
+
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+
+/* RELLENO DE BARRA DE TIEMPO */
+
+.proceso-barra-relleno {
+    height: 100%;
+    background-color: #4c7896;
+    border-radius: 4px;
+}
+
+
+/* RELLENO DE BARRA DE HORAS */
+
+.proceso-barra-trabajo {
+    background-color: #4c9d70;
+}
+
+
+/* VALOR PORCENTUAL */
+
+.proceso-valor {
+    min-width: 45px;
+    font-size: 12px;
+    color: #444;
+    text-align: right;
+}
+
+.proceso-pendiente {
+    color: #888;
+    font-size: 12px;
+}
+
+
+/* ==========================================
+   TABLAS VACIAS
+   ========================================== */
+
+.proceso-vacio,
+.negociacion-vacio,
+.sin-proyectos {
+    text-align: center;
+    padding: 30px !important;
+    color: #777;
+}
+
+
+/* ==========================================
+   ICONOS ANTIGUOS
+   COMPATIBILIDAD CON OTRAS PAGINAS
+   ========================================== */
+
 .icono-opcion {
     font-size: 24px;
     margin-right: 8px;
@@ -15,14 +449,156 @@
     color: green;
 }
 
-.icono-denegado {
-    color: red;
-}
-
+.icono-denegado,
 .icono-borrar {
     color: red;
 }
 
 .icono-anterior {
     color: gray;
+}
+
+
+/* ==========================================
+   DISEÑO RESPONSIVE
+   ========================================== */
+
+@media (max-width: 650px) {
+
+    .proceso-cabecera,
+    .negociacion-cabecera,
+    .cabecera-proyectos {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .proceso-contenedor,
+    .negociacion-contenedor,
+    .contenedor-proyectos {
+        padding: 0 14px;
+        margin: 25px auto;
+    }
+
+    .proceso-tabla,
+    .negociacion-tabla,
+    .tabla-proyectos {
+        min-width: 650px;
+    }
+
+    
+/* ==========================================
+   BOTON REACTIVAR PROYECTO
+   ========================================== */
+
+.boton-icono.reactivar {
+    color: #0f766e;
+    background-color: #f0fdfa;
+}
+
+.boton-icono.reactivar:hover {
+    background-color: #ccfbf1;
+}
+
+
+/* ==========================================
+   TOOLTIP MODERNO PARA ACRONIMOS
+   ========================================== */
+
+.acronimo-con-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    color: #2c5273;
+    font-weight: 600;
+}
+
+/* Recuadro con el nombre completo */
+
+.acronimo-con-tooltip::after {
+    content: attr(data-nombre);
+
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 0;
+
+    width: max-content;
+    max-width: 300px;
+    box-sizing: border-box;
+
+    padding: 11px 15px;
+
+    background-color: #263747;
+    color: #ffffff;
+
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+
+    z-index: 100;
+}
+
+/* Pequeña flecha superior */
+
+.acronimo-con-tooltip::before {
+    content: "";
+
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 12px;
+
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #263747;
+
+    opacity: 0;
+    visibility: hidden;
+
+    z-index: 100;
+}
+
+/* Mostrar al pasar el ratón o recibir el foco */
+
+.acronimo-con-tooltip:hover::after,
+.acronimo-con-tooltip:hover::before,
+.acronimo-con-tooltip:focus-visible::after,
+.acronimo-con-tooltip:focus-visible::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+.acronimo-con-tooltip:hover {
+    color: #2563eb;
+}
+
+/* Permitir que sobresalga de la tabla */
+
+.proceso-tabla-contenedor,
+.negociacion-tabla-contenedor,
+.tarjeta-tabla {
+    overflow: visible;
+}
+
+/* Mantener desplazamiento horizontal en móviles */
+
+@media (max-width: 650px) {
+    .proceso-tabla-contenedor,
+    .negociacion-tabla-contenedor,
+    .tarjeta-tabla {
+        overflow-x: auto;
+    }
+}
+
 }

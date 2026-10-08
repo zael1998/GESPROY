@@ -1,0 +1,113 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Proyectos en negociación
+{% endblock %}
+
+{% block content %}
+
+<div class="negociacion-contenedor">
+
+    <div class="negociacion-cabecera">
+        <div>
+            <h1>Proyectos en negociación</h1>
+            <p>Listado de proyectos pendientes de resolución definitiva.</p>
+        </div>
+
+        <span class="negociacion-total">
+            Total: {{ proyectos|length }}
+        </span>
+    </div>
+
+    <div class="negociacion-tabla-contenedor">
+        <table class="negociacion-tabla">
+
+            <thead>
+                <tr>
+                    <th>Acrónimo del proyecto</th>
+                    <th>Organismo</th>
+                    <th>Solicitud / Resolución</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+
+                    <td>
+                        <strong title="{{ proyecto.nombre }}">
+                            {{ proyecto.acronimo }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ proyecto.organismo.nombre }}
+                    </td>
+
+                    <td class="negociacion-fechas">
+
+                        <span>
+                            {{ proyecto.fecha_solicitud|date:"d/m/Y"|default:"—" }}
+                        </span>
+
+                        <span class="negociacion-separador">/</span>
+
+                        <span>
+                            {{ proyecto.fecha_resolucion|date:"d/m/Y"|default:"—" }}
+                        </span>
+
+                    </td>
+
+                    <td class="negociacion-opciones">
+
+                        <a href="#"
+                           class="boton-icono editar"
+                           title="Editar proyecto">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono proceso"
+                           title="Cambiar a proceso">
+                            <i class="bi bi-play-circle"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono denegado"
+                           title="Cambiar a denegado">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono borrar"
+                           title="Borrar proyecto">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono anterior"
+                           title="Volver al estado anterior">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="negociacion-vacio">
+                        No hay proyectos en negociación.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

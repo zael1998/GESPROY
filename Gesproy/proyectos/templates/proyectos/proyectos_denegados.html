@@ -1,0 +1,108 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Proyectos denegados
+{% endblock %}
+
+{% block content %}
+
+<div class="proceso-contenedor">
+
+    <div class="proceso-cabecera">
+        <div>
+            <h1>Proyectos denegados</h1>
+            <p>Consulta y gestiona los proyectos cuya solicitud ha sido denegada.</p>
+        </div>
+
+        <span class="proceso-total">
+            Total: {{ proyectos|length }}
+        </span>
+    </div>
+
+    <div class="proceso-tabla-contenedor">
+        <table class="proceso-tabla">
+
+            <thead>
+                <tr>
+                    <th>Acrónimo del proyecto</th>
+                    <th>Organismo</th>
+                    <th>Solicitud / Resolución</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+
+                    <!-- ACRÓNIMO -->
+                    <td class="proceso-acronimo"
+                        title="{{ proyecto.nombre }}">
+                        {{ proyecto.acronimo }}
+                    </td>
+
+                    <!-- ORGANISMO -->
+                    <td>
+                        {{ proyecto.organismo.nombre }}
+                    </td>
+
+                    <!-- FECHAS -->
+                    <td class="proceso-fechas">
+
+                        <div>
+                            <span class="proceso-fecha-etiqueta">
+                                Solicitud:
+                            </span>
+                            {{ proyecto.fecha_solicitud|date:"d/m/Y"|default:"—" }}
+                        </div>
+
+                        <div>
+                            <span class="proceso-fecha-etiqueta">
+                                Resolución:
+                            </span>
+                            {{ proyecto.fecha_resolucion|date:"d/m/Y"|default:"—" }}
+                        </div>
+
+                    </td>
+
+                    <!-- OPCIONES -->
+                    <td class="proceso-opciones">
+
+                        <a href="#"
+                           class="boton-icono duplicar"
+                           title="Duplicar proyecto">
+                            <i class="bi bi-files"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono borrar"
+                           title="Borrar proyecto">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono anterior"
+                           title="Volver al estado anterior">
+                            <i class="bi bi-arrow-left-circle"></i>
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="proceso-vacio">
+                        No hay proyectos denegados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

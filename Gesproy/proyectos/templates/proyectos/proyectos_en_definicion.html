@@ -1,0 +1,94 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Proyectos en definición
+{% endblock %}
+
+{% block content %}
+
+<div class="proceso-contenedor">
+
+    <div class="proceso-cabecera">
+        <div>
+            <h1>Proyectos en definición</h1>
+            <p>Consulta y gestiona los proyectos pendientes de solicitud.</p>
+        </div>
+
+        <span class="proceso-total">
+            Total: {{ proyectos|length }}
+        </span>
+    </div>
+
+    <div class="proceso-tabla-contenedor">
+        <table class="proceso-tabla">
+
+            <thead>
+                <tr>
+                    <th>Acrónimo del proyecto</th>
+                    <th>Nombre del proyecto</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+
+                    <!-- ACRÓNIMO -->
+                    <td class="proceso-acronimo"
+                        title="{{ proyecto.nombre }}">
+                        {{ proyecto.acronimo }}
+                    </td>
+
+                    <!-- NOMBRE DEL PROYECTO -->
+                    <td>
+                        {{ proyecto.nombre }}
+                    </td>
+
+                    <!-- OPCIONES -->
+                    <td class="proceso-opciones">
+
+                        <a href="#"
+                           class="boton-icono editar"
+                           title="Editar proyecto">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono solicitado"
+                           title="Cambiar a solicitado">
+                            <i class="bi bi-send"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono finalizado"
+                           title="Cambiar a finalizado">
+                            <i class="bi bi-check-circle"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono borrar"
+                           title="Borrar proyecto">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="proceso-vacio">
+                        No hay proyectos en definición.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

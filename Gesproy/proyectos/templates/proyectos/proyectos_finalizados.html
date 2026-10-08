@@ -1,0 +1,108 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Proyectos finalizados
+{% endblock %}
+
+{% block content %}
+
+<div class="proceso-contenedor">
+
+    <div class="proceso-cabecera">
+        <div>
+            <h1>Proyectos finalizados</h1>
+            <p>Consulta los proyectos que han concluido.</p>
+        </div>
+
+        <span class="proceso-total">
+            Total: {{ proyectos|length }}
+        </span>
+    </div>
+
+    <div class="proceso-tabla-contenedor">
+        <table class="proceso-tabla">
+
+            <thead>
+                <tr>
+                    <th>Acrónimo del proyecto</th>
+                    <th>Organismo</th>
+                    <th>Inicio / Fin</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for proyecto in proyectos %}
+                <tr>
+
+                    <!-- ACRÓNIMO CON TOOLTIP -->
+                    <td class="proceso-acronimo">
+
+                        <span class="acronimo-con-tooltip"
+                              tabindex="0"
+                              data-nombre="{{ proyecto.nombre }}"
+                              aria-label="{{ proyecto.acronimo }}: {{ proyecto.nombre }}">
+                            {{ proyecto.acronimo }}
+                        </span>
+
+                    </td>
+
+                    <!-- ORGANISMO -->
+                    <td>
+                        {{ proyecto.organismo.nombre }}
+                    </td>
+
+                    <!-- FECHAS -->
+                    <td class="proceso-fechas">
+
+                        <div>
+                            <span class="proceso-fecha-etiqueta">
+                                Inicio:
+                            </span>
+                            {{ proyecto.fecha_inicio|date:"d/m/Y"|default:"—" }}
+                        </div>
+
+                        <div>
+                            <span class="proceso-fecha-etiqueta">
+                                Fin:
+                            </span>
+                            {{ proyecto.fecha_fin|date:"d/m/Y"|default:"—" }}
+                        </div>
+
+                    </td>
+
+                    <!-- OPCIONES -->
+                    <td class="proceso-opciones">
+
+                        <a href="#"
+                           class="boton-icono reactivar"
+                           title="Reactivar proyecto">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </a>
+
+                        <a href="#"
+                           class="boton-icono borrar"
+                           title="Borrar proyecto">
+                            <i class="bi bi-trash"></i>
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="proceso-vacio">
+                        No hay proyectos finalizados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

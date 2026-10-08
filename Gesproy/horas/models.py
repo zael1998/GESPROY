@@ -36,12 +36,7 @@ class Tarea(models.Model):
         blank=True
     )
 
-    responsable_socio = models.ForeignKey(
-        'proyectos.Socio',
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True
-    )
+    
      
     finalizada = models.BooleanField(default=False)
     #los comentarios aparecen en las tareas?

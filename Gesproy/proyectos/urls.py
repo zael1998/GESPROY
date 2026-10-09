@@ -10,5 +10,9 @@ urlpatterns = [
     path("proyecto/denegados/", views.proyectos_denegados, name="proyectos_denegados"),
     path("proyecto/en_negociacion/", views.proyectos_en_negociacion, name="proyectos_en_negociacion"),
     path("proyecto/en_proceso/", views.proyectos_en_proceso, name="proyectos_en_proceso"),
-    path("proyecto/finalizados/", views.proyectos_finalizados, name="proyectos_finalizados")
+    path("proyecto/finalizados/", views.proyectos_finalizados, name="proyectos_finalizados"),
+    path("proyecto/<int:id>/editar/", views.editar_proyecto_definicion, name="editar_proyecto_definicion"),
+    path("proyecto/<int:id>/solicitar/", views.solicitar_proyecto, name= "solicitar_proyecto"),
+    path("proyecto/<int:id>/finalizar/", views.finalizar_proyecto_definicion, name = "finalizar_proyecto_definicion"),
+    path("proyecto/<int:id>/borrar/", views.borrar_proyecto_definicion, name="borrar_proyecto_definicion")
 ]

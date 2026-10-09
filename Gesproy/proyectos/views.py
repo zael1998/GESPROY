@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Proyecto
-from .forms import ProyectoForm
+from .forms import ProyectoForm, EditarProyectoDefinicionForm, SolicitarProyectoForm,FinalizarProyectoDefinicionForm
 from django.utils import timezone
 from django.db.models import Sum
 from horas.models import Tarea, RegistroHoras
@@ -125,4 +125,131 @@ def crear_proyecto(request):
         "proyectos/crear_proyecto.html",
         {"formulario": formulario }
     )
+
+
+def editar_proyecto_definicion(request, id):
+
+    proyecto = get_object_or_404(
+        Proyecto,
+        id=id,
+        estado="DEFINICION"
+    )
+
+
+    formulario = EditarProyectoDefinicionForm(
+        request.POST or None,
+        instance=proyecto
+    )
+
+
+    if request.method == "POST":
+
+        if formulario.is_valid():
+            formulario.save()
+
+            
+            return redirect(proyectos_en_definicion)
+
+    return render(
+        request,
+        "proyectos/editar_proyecto_definicion.html",
+        {
+            "formulario": formulario,
+            "proyecto": proyecto
+        }
+    )
+
+
+def solicitar_proyecto(request, id):
+
+    
+    proyecto = get_object_or_404(
+        Proyecto,
+        id=id,
+        estado="DEFINICION"
+    )
+
+    
+    formulario = SolicitarProyectoForm(
+        request.POST or None,
+        instance=proyecto
+    )
+
+    
+    if request.method == "POST":
+
+        if formulario.is_valid():
+
+         
+            proyecto = formulario.save(commit=False)
+
+            proyecto.estado = "SOLICITADO"
+
+            proyecto.save()
+
+            return redirect("proyectos_solicitados")
+
+    return render(
+        request,
+        "proyectos/solicitar_proyecto.html",
+        {
+            "formulario": formulario,
+            "proyecto": proyecto
+        }
+    )
+def finalizar_proyecto_definicion(request,id):
+    proyecto = get_object_or_404(
+        Proyecto,
+        id = id,
+        estado = "DEFINICION"
+    )
+    formulario = FinalizarProyectoDefinicionForm(
+        request.POST or None,
+        instance= proyecto
+    )
+    
+    if request.method == "POST":
+        if formulario.is_valid():
+            proyecto = formulario.save(commit=False)
+            proyecto.estado = "FINALIZADO"
+            proyecto.save()
+            return redirect("proyectos_finalizados")
+    
+    return render(
+        request,
+        "proyectos/finalizar_proyecto_definicion.html",
+        
+        {
+            "formulario" : formulario,
+            "proyecto" : proyecto,
+        }
+    )
+    
+
+def borrar_proyecto_definicion(request, id):
+
+    proyecto = get_object_or_404(
+        Proyecto,
+        id=id,
+        estado="DEFINICION"
+    )
+
+    if request.method == "POST":
+
+        proyecto.delete()
+
+        return redirect("proyectos_en_definicion")
+
+    return render(
+        request,
+        "proyectos/borrar_proyecto_definicion.html",
+        {
+            "proyecto": proyecto,
+        }
+    )
+
+    
+
+
+
         

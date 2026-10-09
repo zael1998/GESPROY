@@ -1,0 +1,138 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Finalizar proyecto - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion finalizacion-contenedor">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion solicitud-cabecera">
+
+        <h1>
+            <i class="bi bi-check-circle"></i>
+            Cambio de estado de un proyecto
+        </h1>
+
+        <p>
+            De <strong>EN DEFINICIÓN</strong>
+            a <strong>FINALIZADO</strong>
+        </p>
+
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <!-- TÍTULO -->
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- ACRÓNIMO: SOLO LECTURA -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label>Acrónimo:</label>
+
+                    <div class="solicitud-control">
+                        <span class="finalizacion-valor">
+                            {{ proyecto.acronimo }}
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- NOMBRE: SOLO LECTURA -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label>Nombre:</label>
+
+                    <div class="solicitud-control">
+                        <span class="finalizacion-valor">
+                            {{ proyecto.nombre }}
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- FECHA DE FINALIZACIÓN -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.fecha_fin.id_for_label }}">
+                        {{ formulario.fecha_fin.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.fecha_fin }}
+                        {{ formulario.fecha_fin.errors }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- COMENTARIO -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.comentario.id_for_label }}">
+                        {{ formulario.comentario.label }}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.comentario }}
+                        {{ formulario.comentario.errors }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-check-circle"></i>
+                    Actualizar
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'proyectos_en_definicion' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

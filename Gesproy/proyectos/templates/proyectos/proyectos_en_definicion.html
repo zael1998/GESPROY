@@ -9,7 +9,9 @@ Proyectos en definición
 
 <div class="proceso-contenedor">
 
+    <!-- CABECERA -->
     <div class="proceso-cabecera">
+
         <div>
             <h1>Proyectos en definición</h1>
             <p>Consulta y gestiona los proyectos pendientes de solicitud.</p>
@@ -18,9 +20,12 @@ Proyectos en definición
         <span class="proceso-total">
             Total: {{ proyectos|length }}
         </span>
+
     </div>
 
+    <!-- TABLA DE PROYECTOS -->
     <div class="proceso-tabla-contenedor">
+
         <table class="proceso-tabla">
 
             <thead>
@@ -32,7 +37,9 @@ Proyectos en definición
             </thead>
 
             <tbody>
+
                 {% for proyecto in proyectos %}
+
                 <tr>
 
                     <!-- ACRÓNIMO -->
@@ -41,7 +48,7 @@ Proyectos en definición
                         {{ proyecto.acronimo }}
                     </td>
 
-                    <!-- NOMBRE DEL PROYECTO -->
+                    <!-- NOMBRE -->
                     <td>
                         {{ proyecto.nombre }}
                     </td>
@@ -49,28 +56,40 @@ Proyectos en definición
                     <!-- OPCIONES -->
                     <td class="proceso-opciones">
 
-                        <a href="#"
+                        <!-- EDITAR PROYECTO -->
+                        <a href="{% url 'editar_proyecto_definicion' proyecto.id %}"
                            class="boton-icono editar"
                            title="Editar proyecto">
+
                             <i class="bi bi-pencil-square"></i>
+
                         </a>
 
-                        <a href="#"
+                        <!-- CAMBIAR A SOLICITADO -->
+                        <a href="{% url 'solicitar_proyecto' proyecto.id %}"
                            class="boton-icono solicitado"
                            title="Cambiar a solicitado">
+
                             <i class="bi bi-send"></i>
+
                         </a>
 
-                        <a href="#"
+                        <!-- CAMBIAR A FINALIZADO -->
+                        <a href="{% url 'finalizar_proyecto_definicion' proyecto.id %}"
                            class="boton-icono finalizado"
                            title="Cambiar a finalizado">
+
                             <i class="bi bi-check-circle"></i>
+
                         </a>
 
-                        <a href="#"
+                        <!-- BORRAR PROYECTO -->
+                        <a href="{% url 'borrar_proyecto_definicion' proyecto.id %}"
                            class="boton-icono borrar"
                            title="Borrar proyecto">
+
                             <i class="bi bi-trash"></i>
+
                         </a>
 
                     </td>
@@ -78,15 +97,19 @@ Proyectos en definición
                 </tr>
 
                 {% empty %}
+
                 <tr>
                     <td colspan="3" class="proceso-vacio">
                         No hay proyectos en definición.
                     </td>
                 </tr>
+
                 {% endfor %}
+
             </tbody>
 
         </table>
+
     </div>
 
 </div>

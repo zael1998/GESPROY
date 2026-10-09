@@ -1,0 +1,280 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Solicitar proyecto - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+
+    <div class="cabecera-edicion solicitud-cabecera">
+        <h1>
+            <i class="bi bi-arrow-left-right"></i>
+            Cambio de estado de un proyecto
+        </h1>
+
+        <p>
+            De <strong>EN DEFINICIÓN</strong>
+            a <strong>SOLICITADO</strong>
+        </p>
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="solicitud-fila">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.acronimo.id_for_label }}">
+                        {{ formulario.acronimo.label }}
+                        {% if formulario.acronimo.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.acronimo }}
+                        {{ formulario.acronimo.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="solicitud-fila">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.nombre.id_for_label }}">
+                        {{ formulario.nombre.label }}
+                        {% if formulario.nombre.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.nombre }}
+                        {{ formulario.nombre.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="solicitud-fila">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.organismo.id_for_label }}">
+                        {{ formulario.organismo.label }}
+                        {% if formulario.organismo.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.organismo }}
+                        {{ formulario.organismo.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.tipo_proyecto.id_for_label }}">
+                        {{ formulario.tipo_proyecto.label }}
+                        {% if formulario.tipo_proyecto.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.tipo_proyecto }}
+                        {{ formulario.tipo_proyecto.errors }}
+                    </div>
+                </div>
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.porcentaje_subvencion.id_for_label }}">
+                        {{ formulario.porcentaje_subvencion.label }}
+                        {% if formulario.porcentaje_subvencion.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.porcentaje_subvencion }}
+                            <span>%</span>
+                        </div>
+                        {{ formulario.porcentaje_subvencion.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.importe_solicitado.id_for_label }}">
+                        {{ formulario.importe_solicitado.label }}
+                        {% if formulario.importe_solicitado.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.importe_solicitado }}
+                            <span>€</span>
+                        </div>
+                        {{ formulario.importe_solicitado.errors }}
+                    </div>
+                </div>
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.importe_solicitado_cesga.id_for_label }}">
+                        {{ formulario.importe_solicitado_cesga.label }}
+                        {% if formulario.importe_solicitado_cesga.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.importe_solicitado_cesga }}
+                            <span>€</span>
+                        </div>
+                        {{ formulario.importe_solicitado_cesga.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.fecha_solicitud.id_for_label }}">
+                        {{ formulario.fecha_solicitud.label }}
+                        {% if formulario.fecha_solicitud.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.fecha_solicitud }}
+                        {{ formulario.fecha_solicitud.errors }}
+                    </div>
+                </div>
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.fecha_prevista_resolucion.id_for_label }}">
+                        {{ formulario.fecha_prevista_resolucion.label }}
+                        {% if formulario.fecha_prevista_resolucion.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.fecha_prevista_resolucion }}
+                        {{ formulario.fecha_prevista_resolucion.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.tipo_participacion.id_for_label }}">
+                        {{ formulario.tipo_participacion.label }}
+                        {% if formulario.tipo_participacion.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.tipo_participacion }}
+                        {{ formulario.tipo_participacion.errors }}
+                    </div>
+                </div>
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.duracion.id_for_label }}">
+                        {{ formulario.duracion.label }}
+                        {% if formulario.duracion.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.duracion }}
+                            <span>meses</span>
+                        </div>
+                        {{ formulario.duracion.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="solicitud-fila">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.porcentaje_exito.id_for_label }}">
+                        {{ formulario.porcentaje_exito.label }}
+                        {% if formulario.porcentaje_exito.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad solicitud-porcentaje-exito">
+                            {{ formulario.porcentaje_exito }}
+                            <span>%</span>
+                        </div>
+                        {{ formulario.porcentaje_exito.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="solicitud-fila">
+
+                <div class="solicitud-campo">
+                    <label for="{{ formulario.comentario.id_for_label }}">
+                        {{ formulario.comentario.label }}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.comentario }}
+                        {{ formulario.comentario.errors }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-check-circle"></i>
+                    Actualizar
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'proyectos_en_definicion' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,141 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Editar proyecto - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <div class="cabecera-edicion">
+        <h1>Editar proyecto</h1>
+        <p>Modifica los datos básicos del proyecto en definición.</p>
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- ACRÓNIMO -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.acronimo.id_for_label }}">
+                    {{ formulario.acronimo.label }}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.acronimo }}
+                    {{ formulario.acronimo.errors }}
+                </div>
+            </div>
+
+            <!-- NOMBRE -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.nombre.id_for_label }}">
+                    {{ formulario.nombre.label }}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.nombre }}
+                    {{ formulario.nombre.errors }}
+                </div>
+            </div>
+
+            <!-- ENLACE AL PROYECTO -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.enlace_proyecto.id_for_label }}">
+                    {{ formulario.enlace_proyecto.label }}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.enlace_proyecto }}
+                    {{ formulario.enlace_proyecto.errors }}
+                </div>
+            </div>
+
+            <!-- FECHA FINAL PREVISTA -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.fecha_final_prevista.id_for_label }}">
+                    {{ formulario.fecha_final_prevista.label }}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.fecha_final_prevista }}
+                    {{ formulario.fecha_final_prevista.errors }}
+                </div>
+            </div>
+
+            <!-- ÁREAS DE INVESTIGACIÓN -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.areas.id_for_label }}">
+                    {{ formulario.areas.label }}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.areas }}
+
+                    <small class="texto-ayuda">
+                        Mantén pulsado Ctrl para seleccionar varias áreas.
+                    </small>
+
+                    {{ formulario.areas.errors }}
+                </div>
+            </div>
+
+            <!-- COMENTARIO -->
+            <div class="fila-formulario fila-textarea">
+                <label for="{{ formulario.comentario.id_for_label }}">
+                    {{ formulario.comentario.label }}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.comentario }}
+                    {{ formulario.comentario.errors }}
+                </div>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-check-circle"></i>
+                    Guardar cambios
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'proyectos_en_definicion' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

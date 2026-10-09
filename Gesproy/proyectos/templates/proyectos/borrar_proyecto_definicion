@@ -1,0 +1,149 @@
+
+{% extends 'base.html' %}
+
+{% block title %}
+Borrado de un Proyecto
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .borrado-contenedor {
+        max-width: 620px;
+        margin: 35px auto;
+    }
+
+    .borrado-titulo {
+        text-align: center;
+        color: #d12c00;
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
+
+    .borrado-tabla {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        border: 1px solid #d1d5db;
+    }
+
+    .borrado-tabla th {
+        background-color: #f0f1f3;
+        text-align: left;
+        color: #475569;
+        font-weight: normal;
+        padding: 7px 10px;
+        border: 1px solid #d1d5db;
+    }
+
+    .borrado-tabla td {
+        border: 1px solid #e5e7eb;
+        padding: 9px 12px;
+    }
+
+    .borrado-etiqueta {
+        width: 35%;
+        background-color: #f8f8ef;
+        text-align: right;
+        font-weight: bold;
+        color: #7d9c54;
+    }
+
+    .borrado-valor {
+        color: #334155;
+        overflow-wrap: anywhere;
+    }
+
+    .borrado-acciones {
+        text-align: center;
+        padding: 10px !important;
+    }
+
+    .borrado-boton {
+        background-color: #dc2626;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 7px 22px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .borrado-boton:hover {
+        background-color: #b91c1c;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="borrado-contenedor">
+
+    <h1 class="borrado-titulo">
+        Borrado de un Proyecto
+    </h1>
+
+    <form method="post"
+          onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto? Esta acción es permanente y no se puede deshacer.');">
+
+        {% csrf_token %}
+
+        <table class="borrado-tabla">
+
+            <thead>
+                <tr>
+                    <th colspan="2">
+                        Datos del proyecto
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td class="borrado-etiqueta">
+                        Acrónimo:
+                    </td>
+                    <td class="borrado-valor">
+                        {{ proyecto.acronimo }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="borrado-etiqueta">
+                        Nombre:
+                    </td>
+                    <td class="borrado-valor">
+                        {{ proyecto.nombre }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="borrado-etiqueta">
+                        Comentario:
+                    </td>
+                    <td class="borrado-valor">
+                        {{ proyecto.comentario|default:"" }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="borrado-acciones">
+
+                        <button type="submit"
+                                class="borrado-boton">
+                            Borrar
+                        </button>
+
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </form>
+
+</div>
+
+{% endblock %}

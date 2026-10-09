@@ -110,6 +110,13 @@ class Proyecto(models.Model):
         null=True,
         blank=True
     )
+    
+    importe_solicitado_cesga = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null = True,
+        blank = True
+    )
 
     importe_concedido = models.DecimalField(
         max_digits=10,
@@ -130,6 +137,13 @@ class Proyecto(models.Model):
         null=True,
         blank=True
     )
+    
+    porcentaje_exito = models.DecimalField(
+    max_digits=5,
+    decimal_places=2,
+    null=True,
+    blank=True
+)
 
     duracion = models.PositiveIntegerField(
         null=True,

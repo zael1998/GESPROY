@@ -1,9 +1,141 @@
-<h1>Crear proyecto</h1>
 
-<form method="post">
-    {% csrf_token %}git remote -v
-    {# Con formulario.as_p genera los campos del formulario que se definieron en ProyectoForm #}
-    {{ formulario.as_p }}
+{% extends 'base.html' %}
+{% load static %}
 
-    <button type="submit">Crear proyecto</button>
-</form>
+{% block title %}
+Añadir proyecto - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion">
+        <h1>
+            <i class="bi bi-plus-circle"></i>
+            Añadir proyecto
+        </h1>
+        <p>Introduce los datos básicos para crear un nuevo proyecto.</p>
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <!-- TÍTULO DEL FORMULARIO -->
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- ACRÓNIMO -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.acronimo.id_for_label }}">
+                    Acrónimo
+                    {% if formulario.acronimo.field.required %}*{% endif %}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.acronimo }}
+                    {{ formulario.acronimo.errors }}
+                </div>
+            </div>
+
+            <!-- NOMBRE -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.nombre.id_for_label }}">
+                    Nombre del proyecto
+                    {% if formulario.nombre.field.required %}*{% endif %}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.nombre }}
+                    {{ formulario.nombre.errors }}
+                </div>
+            </div>
+
+            <!-- ÁREAS DE INVESTIGACIÓN -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.areas.id_for_label }}">
+                    Áreas de investigación
+                    {% if formulario.areas.field.required %}*{% endif %}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.areas }}
+
+                    <small class="texto-ayuda">
+                        Mantén pulsado Ctrl para seleccionar varias áreas.
+                    </small>
+
+                    {{ formulario.areas.errors }}
+                </div>
+            </div>
+
+            <!-- INVESTIGADOR PRINCIPAL -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.investigador_principal.id_for_label }}">
+                    Investigador principal
+                    {% if not formulario.investigador_principal.field.required %}
+                        <span class="etiqueta-opcional">(Opcional)</span>
+                    {% endif %}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.investigador_principal }}
+                    {{ formulario.investigador_principal.errors }}
+                </div>
+            </div>
+
+            <!-- COMENTARIO -->
+            <div class="fila-formulario fila-textarea">
+                <label for="{{ formulario.comentario.id_for_label }}">
+                    Comentario
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.comentario }}
+                    {{ formulario.comentario.errors }}
+                </div>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-plus-circle"></i>
+                    Añadir proyecto
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'lista_proyectos' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

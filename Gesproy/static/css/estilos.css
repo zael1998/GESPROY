@@ -1,7 +1,13 @@
 
-/* ==========================================
+/* ============================================================
    GESPROY - ESTILOS GENERALES
-   ========================================== */
+   Tablas, formularios, botones y navegación
+============================================================ */
+
+
+/* ============================================================
+   1. ESTILOS GENERALES
+============================================================ */
 
 body {
     margin: 0;
@@ -11,9 +17,9 @@ body {
 }
 
 
-/* ==========================================
-   CONTENEDORES DE PROYECTOS
-   ========================================== */
+/* ============================================================
+   2. CONTENEDORES DE PROYECTOS
+============================================================ */
 
 .proceso-contenedor,
 .negociacion-contenedor,
@@ -22,11 +28,6 @@ body {
     margin: 40px auto;
     padding: 0 24px;
 }
-
-
-/* ==========================================
-   CABECERAS
-   ========================================== */
 
 .proceso-cabecera,
 .negociacion-cabecera,
@@ -43,56 +44,46 @@ body {
 .proceso-cabecera h1,
 .negociacion-cabecera h1,
 .cabecera-proyectos h1 {
-    font-size: 24px;
-    font-weight: 600;
     margin: 0 0 7px;
     color: #263747;
+    font-size: 24px;
+    font-weight: 600;
 }
 
 .proceso-cabecera p,
 .negociacion-cabecera p,
 .cabecera-proyectos p {
-    font-size: 14px;
-    color: #666;
     margin: 0;
+    color: #666;
+    font-size: 14px;
 }
-
-
-/* ==========================================
-   CONTADORES
-   ========================================== */
 
 .proceso-total,
 .negociacion-total,
 .contador-proyectos {
-    font-size: 13px;
-    color: #555;
-    font-weight: normal;
-    white-space: nowrap;
-    background: transparent;
     padding: 0;
     border-radius: 0;
+    background: transparent;
+    color: #555;
+    font-size: 13px;
+    font-weight: normal;
+    white-space: nowrap;
 }
 
 
-/* ==========================================
-   CONTENEDORES DE TABLAS
-   ========================================== */
+/* ============================================================
+   3. TABLAS DE PROYECTOS
+============================================================ */
 
 .proceso-tabla-contenedor,
 .negociacion-tabla-contenedor,
 .tarjeta-tabla {
-    overflow-x: auto;
+    overflow: visible;
     background: #fff;
     border: 1px solid #dce1e6;
     border-radius: 5px;
     box-shadow: none;
 }
-
-
-/* ==========================================
-   TABLAS
-   ========================================== */
 
 .proceso-tabla,
 .negociacion-tabla,
@@ -102,23 +93,17 @@ body {
     font-size: 14px;
 }
 
-
-/* ENCABEZADOS */
-
 .proceso-tabla th,
 .negociacion-tabla th,
 .tabla-proyectos th {
     padding: 13px 16px;
-    text-align: left;
+    border-bottom: 1px solid #dce1e6;
     background: #f1f3f5;
     color: #444;
+    text-align: left;
     font-size: 14px;
     font-weight: 600;
-    border-bottom: 1px solid #dce1e6;
 }
-
-
-/* CELDAS */
 
 .proceso-tabla td,
 .negociacion-tabla td,
@@ -129,17 +114,11 @@ body {
     vertical-align: middle;
 }
 
-
-/* ELIMINAR BORDE DE ULTIMA FILA */
-
 .proceso-tabla tbody tr:last-child td,
 .negociacion-tabla tbody tr:last-child td,
 .tabla-proyectos tbody tr:last-child td {
     border-bottom: none;
 }
-
-
-/* EFECTO AL PASAR EL RATON */
 
 .proceso-tabla tbody tr:hover,
 .negociacion-tabla tbody tr:hover,
@@ -147,22 +126,12 @@ body {
     background-color: #f7f9fa;
 }
 
-
-/* ==========================================
-   ACRONIMOS DE PROYECTOS
-   ========================================== */
-
 .proceso-acronimo,
 .acronimo,
 .negociacion-tabla strong {
-    font-weight: 600;
     color: #2c5273;
+    font-weight: 600;
 }
-
-
-/* ==========================================
-   FECHAS
-   ========================================== */
 
 .proceso-fechas,
 .negociacion-fechas {
@@ -172,20 +141,15 @@ body {
 }
 
 .proceso-fecha-etiqueta {
+    margin-right: 5px;
     color: #888;
     font-size: 12px;
-    margin-right: 5px;
 }
 
 .negociacion-separador {
-    color: #aaa;
     margin: 0 7px;
+    color: #aaa;
 }
-
-
-/* ==========================================
-   OPCIONES DE LAS TABLAS
-   ========================================== */
 
 .proceso-opciones,
 .negociacion-opciones,
@@ -193,10 +157,18 @@ body {
     white-space: nowrap;
 }
 
+.proceso-vacio,
+.negociacion-vacio,
+.sin-proyectos {
+    padding: 30px !important;
+    color: #777;
+    text-align: center;
+}
 
-/* ==========================================
-   BOTONES DE ACCIONES
-   ========================================== */
+
+/* ============================================================
+   4. BOTONES DE ACCIÓN DE LOS PROYECTOS
+============================================================ */
 
 .boton-icono {
     display: inline-flex;
@@ -209,13 +181,14 @@ body {
     padding: 0;
     margin-right: 5px;
 
-    border-radius: 8px;
     border: none;
+    border-radius: 8px;
 
+    box-sizing: border-box;
     font-size: 17px;
     text-decoration: none;
 
-    box-sizing: border-box;
+    cursor: pointer;
 
     transition:
         background-color 0.2s,
@@ -228,11 +201,6 @@ body {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
 }
 
-
-/* ==========================================
-   COLORES DE BOTONES
-   ========================================== */
-
 /* EDITAR - AZUL */
 
 .boton-icono.editar {
@@ -244,56 +212,33 @@ body {
     background-color: #dbeafe;
 }
 
+/* SOLICITADO Y NEGOCIACIÓN - MORADO */
 
-/* CAMBIAR A SOLICITADO - MORADO */
-
-.boton-icono.solicitado {
-    color: #7c3aed;
-    background-color: #f5f3ff;
-}
-
-.boton-icono.solicitado:hover {
-    background-color: #ede9fe;
-}
-
-
-/* CAMBIAR A NEGOCIACION - MORADO */
-
+.boton-icono.solicitado,
 .boton-icono.negociacion {
     color: #7c3aed;
     background-color: #f5f3ff;
 }
 
+.boton-icono.solicitado:hover,
 .boton-icono.negociacion:hover {
     background-color: #ede9fe;
 }
 
+/* PROCESO Y FINALIZADO - VERDE */
 
-/* CAMBIAR A PROCESO - VERDE */
-
-.boton-icono.proceso {
-    color: #16a34a;
-    background-color: #f0fdf4;
-}
-
-.boton-icono.proceso:hover {
-    background-color: #dcfce7;
-}
-
-
-/* CAMBIAR A FINALIZADO - VERDE */
-
+.boton-icono.proceso,
 .boton-icono.finalizado {
     color: #16a34a;
     background-color: #f0fdf4;
 }
 
+.boton-icono.proceso:hover,
 .boton-icono.finalizado:hover {
     background-color: #dcfce7;
 }
 
-
-/* CAMBIAR A DENEGADO - NARANJA */
+/* DENEGADO - NARANJA */
 
 .boton-icono.denegado {
     color: #c2410c;
@@ -303,7 +248,6 @@ body {
 .boton-icono.denegado:hover {
     background-color: #ffedd5;
 }
-
 
 /* BORRAR - ROJO */
 
@@ -316,7 +260,6 @@ body {
     background-color: #fee2e2;
 }
 
-
 /* DUPLICAR - AMARILLO */
 
 .boton-icono.duplicar {
@@ -327,7 +270,6 @@ body {
 .boton-icono.duplicar:hover {
     background-color: #fef3c7;
 }
-
 
 /* VOLVER AL ESTADO ANTERIOR - GRIS */
 
@@ -340,10 +282,32 @@ body {
     background-color: #e2e8f0;
 }
 
+/* REACTIVAR - TURQUESA */
 
-/* ==========================================
-   DOS BARRAS DE PROGRESO
-   ========================================== */
+.boton-icono.reactivar {
+    color: #0f766e;
+    background-color: #f0fdfa;
+}
+
+.boton-icono.reactivar:hover {
+    background-color: #ccfbf1;
+}
+
+/* FINANCIACIÓN - AZUL TURQUESA */
+
+.boton-icono.financiacion {
+    color: #0891b2;
+    background-color: #ecfeff;
+}
+
+.boton-icono.financiacion:hover {
+    background-color: #cffafe;
+}
+
+
+/* ============================================================
+   5. BARRAS DE PROGRESO
+============================================================ */
 
 .proceso-barras {
     display: flex;
@@ -358,53 +322,37 @@ body {
     gap: 10px;
 }
 
-
-/* ETIQUETAS: TIEMPO / HORAS */
-
 .proceso-etiqueta {
     width: 55px;
     flex-shrink: 0;
-    font-size: 12px;
     color: #666;
+    font-size: 12px;
 }
-
-
-/* BARRA GENERAL */
 
 .proceso-barra {
     width: 160px;
     height: 8px;
-
-    background-color: #e5e7eb;
-    border-radius: 4px;
+    flex-shrink: 0;
 
     overflow: hidden;
-    flex-shrink: 0;
+    border-radius: 4px;
+    background-color: #e5e7eb;
 }
-
-
-/* RELLENO DE BARRA DE TIEMPO */
 
 .proceso-barra-relleno {
     height: 100%;
-    background-color: #4c7896;
     border-radius: 4px;
+    background-color: #4c7896;
 }
-
-
-/* RELLENO DE BARRA DE HORAS */
 
 .proceso-barra-trabajo {
     background-color: #4c9d70;
 }
 
-
-/* VALOR PORCENTUAL */
-
 .proceso-valor {
     min-width: 45px;
-    font-size: 12px;
     color: #444;
+    font-size: 12px;
     text-align: right;
 }
 
@@ -414,27 +362,13 @@ body {
 }
 
 
-/* ==========================================
-   TABLAS VACIAS
-   ========================================== */
-
-.proceso-vacio,
-.negociacion-vacio,
-.sin-proyectos {
-    text-align: center;
-    padding: 30px !important;
-    color: #777;
-}
-
-
-/* ==========================================
-   ICONOS ANTIGUOS
-   COMPATIBILIDAD CON OTRAS PAGINAS
-   ========================================== */
+/* ============================================================
+   6. ICONOS AUXILIARES
+============================================================ */
 
 .icono-opcion {
-    font-size: 24px;
     margin-right: 8px;
+    font-size: 24px;
 }
 
 .icono-editar {
@@ -459,61 +393,17 @@ body {
 }
 
 
-/* ==========================================
-   DISEÑO RESPONSIVE
-   ========================================== */
-
-@media (max-width: 650px) {
-
-    .proceso-cabecera,
-    .negociacion-cabecera,
-    .cabecera-proyectos {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .proceso-contenedor,
-    .negociacion-contenedor,
-    .contenedor-proyectos {
-        padding: 0 14px;
-        margin: 25px auto;
-    }
-
-    .proceso-tabla,
-    .negociacion-tabla,
-    .tabla-proyectos {
-        min-width: 650px;
-    }
-
-    
-/* ==========================================
-   BOTON REACTIVAR PROYECTO
-   ========================================== */
-
-.boton-icono.reactivar {
-    color: #0f766e;
-    background-color: #f0fdfa;
-}
-
-.boton-icono.reactivar:hover {
-    background-color: #ccfbf1;
-}
-
-
-/* ==========================================
-   TOOLTIP MODERNO PARA ACRONIMOS
-   ========================================== */
+/* ============================================================
+   7. ACRÓNIMOS Y TOOLTIP
+============================================================ */
 
 .acronimo-con-tooltip {
     position: relative;
     display: inline-block;
-    cursor: help;
     color: #2c5273;
     font-weight: 600;
+    cursor: help;
 }
-
-/* Recuadro con el nombre completo */
 
 .acronimo-con-tooltip::after {
     content: attr(data-nombre);
@@ -521,36 +411,34 @@ body {
     position: absolute;
     top: calc(100% + 12px);
     left: 0;
+    z-index: 100;
 
     width: max-content;
     max-width: 300px;
-    box-sizing: border-box;
-
     padding: 11px 15px;
 
+    box-sizing: border-box;
+    border-radius: 8px;
+
     background-color: #263747;
-    color: #ffffff;
+    color: #fff;
 
     font-size: 12px;
     font-weight: normal;
     line-height: 1.5;
-
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-
     white-space: normal;
     overflow-wrap: anywhere;
 
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+
     opacity: 0;
     visibility: hidden;
-
-    transition: opacity 0.2s ease;
     pointer-events: none;
 
-    z-index: 100;
+    transition:
+        opacity 0.2s,
+        visibility 0.2s;
 }
-
-/* Pequeña flecha superior */
 
 .acronimo-con-tooltip::before {
     content: "";
@@ -558,6 +446,7 @@ body {
     position: absolute;
     top: calc(100% + 5px);
     left: 12px;
+    z-index: 100;
 
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
@@ -565,11 +454,7 @@ body {
 
     opacity: 0;
     visibility: hidden;
-
-    z-index: 100;
 }
-
-/* Mostrar al pasar el ratón o recibir el foco */
 
 .acronimo-con-tooltip:hover::after,
 .acronimo-con-tooltip:hover::before,
@@ -583,27 +468,41 @@ body {
     color: #2563eb;
 }
 
-/* Permitir que sobresalga de la tabla */
+/* ENLACES DE ACRÓNIMOS */
 
-.proceso-tabla-contenedor,
-.negociacion-tabla-contenedor,
-.tarjeta-tabla {
-    overflow: visible;
+a.acronimo-proyecto-enlace,
+a.acronimo-proyecto-enlace:link,
+a.acronimo-proyecto-enlace:visited {
+    display: inline-block;
+
+    color: #2c5273 !important;
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none !important;
+    cursor: pointer;
+
+    transition: color 0.2s ease;
 }
 
-/* Mantener desplazamiento horizontal en móviles */
-
-@media (max-width: 650px) {
-    .proceso-tabla-contenedor,
-    .negociacion-tabla-contenedor,
-    .tarjeta-tabla {
-        overflow-x: auto;
-    }
+a.acronimo-proyecto-enlace:hover,
+a.acronimo-proyecto-enlace:visited:hover,
+a.acronimo-proyecto-enlace:focus-visible {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
 }
 
-/* ==========================================
-   EDITAR PROYECTO EN DEFINICIÓN
-   ========================================== */
+a.acronimo-proyecto-enlace:focus-visible {
+    outline: 2px solid #93c5fd;
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+
+/* ============================================================
+   8. FORMULARIOS DE EDICIÓN
+============================================================ */
 
 .contenedor-edicion {
     max-width: 900px;
@@ -617,8 +516,8 @@ body {
 
 .cabecera-edicion h1 {
     margin: 0 0 8px;
-    font-size: 30px;
     color: #cc4b00;
+    font-size: 30px;
     font-weight: 700;
 }
 
@@ -629,23 +528,23 @@ body {
 }
 
 .tarjeta-edicion {
-    background: #ffffff;
+    overflow: hidden;
     border: 1px solid #d9dee7;
     border-radius: 10px;
-    overflow: hidden;
+    background: #fff;
     box-shadow: 0 3px 14px rgba(0, 0, 0, 0.05);
 }
 
 .seccion-edicion {
-    background: #eef2f7;
-    border-bottom: 1px solid #d9dee7;
     padding: 12px 18px;
+    border-bottom: 1px solid #d9dee7;
+    background: #eef2f7;
 }
 
 .seccion-edicion h2 {
     margin: 0;
-    font-size: 15px;
     color: #4b5563;
+    font-size: 15px;
     font-weight: 600;
 }
 
@@ -655,11 +554,12 @@ body {
 
 .fila-formulario {
     display: grid;
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: 220px minmax(0, 1fr);
     gap: 18px;
+    align-items: center;
+
     padding: 16px 18px;
     border-bottom: 1px solid #eceff4;
-    align-items: center;
     background: #fdfdf8;
 }
 
@@ -668,16 +568,17 @@ body {
 }
 
 .fila-formulario label {
-    font-weight: 600;
     color: #7a9a55;
-    text-align: right;
     font-size: 15px;
+    font-weight: 600;
+    text-align: right;
 }
 
 .campo-formulario {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .campo-formulario input,
@@ -686,12 +587,14 @@ body {
     width: 100%;
     max-width: 100%;
     padding: 10px 12px;
+
+    box-sizing: border-box;
     border: 1px solid #cfd6df;
     border-radius: 6px;
-    background: #ffffff;
-    font-size: 14px;
+
+    background: #fff;
     color: #243047;
-    box-sizing: border-box;
+    font-size: 14px;
 }
 
 .campo-formulario input:focus,
@@ -713,17 +616,19 @@ body {
 }
 
 .texto-ayuda {
-    font-size: 12px;
     color: #6b7280;
+    font-size: 12px;
 }
 
 .errores-formulario {
     margin: 18px;
     padding: 12px 14px;
+
+    border: 1px solid #fecaca;
     border-radius: 8px;
+
     background: #fef2f2;
     color: #b91c1c;
-    border: 1px solid #fecaca;
     font-size: 14px;
 }
 
@@ -738,6 +643,7 @@ body {
     display: flex;
     justify-content: center;
     gap: 12px;
+
     padding: 18px;
     background: #eef2f7;
 }
@@ -745,18 +651,20 @@ body {
 .boton-principal,
 .boton-secundario,
 .boton-enlace {
+    padding: 10px 16px;
     border: none;
     border-radius: 6px;
-    padding: 10px 16px;
+
     font-size: 14px;
     text-decoration: none;
     cursor: pointer;
-    transition: 0.2s ease;
+
+    transition: background-color 0.2s;
 }
 
 .boton-principal {
     background: #2563eb;
-    color: white;
+    color: #fff;
 }
 
 .boton-principal:hover {
@@ -773,17 +681,553 @@ body {
 }
 
 .boton-enlace {
-    background: #f3f4f6;
-    color: #4b5563;
     display: inline-flex;
     align-items: center;
+    background: #f3f4f6;
+    color: #4b5563;
 }
 
 .boton-enlace:hover {
     background: #e5e7eb;
 }
 
+
+/* ============================================================
+   9. CABECERA DE GESPROY
+============================================================ */
+
+.gesproy-ancho {
+    width: calc(100% - 40px);
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+.gesproy-cabecera {
+    padding: 20px 0;
+    border-bottom: 1px solid #d6e0eb;
+    background: #e8eef5;
+}
+
+.gesproy-marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #365f88;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.gesproy-marca i {
+    color: #4e83ba;
+    font-size: 24px;
+}
+
+.gesproy-marca:hover {
+    color: #24547f;
+    text-decoration: none;
+}
+
+
+/* ============================================================
+   10. NAVEGACIÓN PRINCIPAL
+============================================================ */
+
+.gesproy-navegacion {
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #dce3ed;
+    background: #fff;
+}
+
+/*
+   Dos columnas:
+   - Enlaces de navegación.
+   - Botón de cerrar sesión.
+*/
+
+.gesproy-navegacion .gesproy-nav-contenido {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    align-items: center;
+    column-gap: 14px;
+
+    width: 100%;
+    padding: 12px 20px;
+    box-sizing: border-box;
+}
+
+/* ENLACES PRINCIPALES */
+
+.gesproy-navegacion .gesproy-nav-contenido > .gesproy-enlaces {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+
+    min-width: 0;
+    width: auto;
+    max-width: none;
+
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+}
+
+.gesproy-navegacion .gesproy-enlaces > .gesproy-enlace {
+    --nav-color: #475569;
+    --nav-bg: #f1f5f9;
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 12px;
+    box-sizing: border-box;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: #f8fafc;
+    color: #475569;
+
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s,
+        color 0.2s,
+        transform 0.2s;
+}
+
+.gesproy-navegacion .gesproy-enlace i {
+    font-size: 18px;
+}
+
+.gesproy-navegacion .gesproy-enlaces > .gesproy-enlace i {
+    color: var(--nav-color);
+}
+
+/* ==========================================
+   COLORES DE LA NAVEGACIÓN PRINCIPAL
+========================================== */
+
+/* MIS PROYECTOS - AZUL GRISÁCEO */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-person-workspace) {
+    --nav-color: #365f88;
+    --nav-bg: #edf3fa;
+}
+
+/* LISTADO - AZUL GRISÁCEO */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-list-ul) {
+    --nav-color: #365f88;
+    --nav-bg: #edf3fa;
+}
+
+/* PROYECTOS - AZUL */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-folder2-open) {
+    --nav-color: #2563eb;
+    --nav-bg: #eff6ff;
+}
+
+/* BUSCAR - AZUL */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-search) {
+    --nav-color: #2563eb;
+    --nav-bg: #eff6ff;
+}
+
+/* CALENDARIO - TURQUESA */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-calendar3) {
+    --nav-color: #0891b2;
+    --nav-bg: #ecfeff;
+}
+
+/* ADMINISTRACIÓN - GRIS */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-gear) {
+    --nav-color: #64748b;
+    --nav-bg: #f1f5f9;
+}
+
+/* MANTENER COMPATIBILIDAD CON ENLACES ANTIGUOS */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-pencil-square) {
+    --nav-color: #2563eb;
+    --nav-bg: #eff6ff;
+}
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-send),
+.gesproy-navegacion .gesproy-enlace:has(> .bi-chat-dots) {
+    --nav-color: #7c3aed;
+    --nav-bg: #f5f3ff;
+}
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-play-circle),
+.gesproy-navegacion .gesproy-enlace:has(> .bi-check-circle) {
+    --nav-color: #16a34a;
+    --nav-bg: #f0fdf4;
+}
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-x-circle) {
+    --nav-color: #c2410c;
+    --nav-bg: #fff7ed;
+}
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-plus-circle) {
+    --nav-color: #16a34a;
+    --nav-bg: #f0fdf4;
+}
+
+/* EFECTOS DE NAVEGACIÓN */
+
+.gesproy-navegacion .gesproy-enlaces > .gesproy-enlace:hover,
+.gesproy-navegacion .gesproy-enlaces > .gesproy-enlace.activo {
+    background: var(--nav-bg);
+    color: var(--nav-color);
+}
+
+.gesproy-navegacion .gesproy-enlaces > .gesproy-enlace:hover {
+    transform: translateY(-1px);
+}
+
+.gesproy-navegacion .gesproy-enlaces > .gesproy-enlace.activo {
+    font-weight: 600;
+    box-shadow: inset 0 -2px 0 currentColor;
+}
+
+
+/* ============================================================
+   11. BOTÓN CERRAR SESIÓN
+============================================================ */
+
+.gesproy-navegacion .gesproy-nav-contenido > .gesproy-form-salir {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+
+    min-width: max-content;
+    margin: 0;
+    padding: 0;
+}
+
+.gesproy-navegacion .gesproy-enlace-salir {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 10px 13px;
+
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+
+    background: #fef2f2;
+    color: #dc2626;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        border-color 0.2s;
+}
+
+.gesproy-navegacion .gesproy-enlace-salir i {
+    color: #dc2626;
+}
+
+.gesproy-navegacion .gesproy-enlace-salir:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fca5a5;
+}
+
+
+/* ============================================================
+   12. NAVEGACIÓN SECUNDARIA
+   ESTADOS DE LOS PROYECTOS
+============================================================ */
+
+.gesproy-subnav {
+    width: 100%;
+    box-sizing: border-box;
+
+    background: #f4f7fa;
+    border-bottom: 1px solid #dbe4ed;
+
+    box-shadow: 0 2px 5px rgba(35, 58, 84, 0.03);
+}
+
+.gesproy-subnav-contenido {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+
+    max-width: 1300px;
+    min-height: 45px;
+
+    margin: 0 auto;
+    padding: 0 24px;
+
+    box-sizing: border-box;
+}
+
+/* TÍTULO ESTADOS */
+
+.gesproy-subnav-titulo {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    margin-right: 14px;
+    padding-right: 18px;
+
+    border-right: 1px solid #d5dfe9;
+
+    color: #8192a5;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ENLACES SECUNDARIOS */
+
+.gesproy-subnav .gesproy-subnav-enlace {
+    --estado-color: #64778b;
+    --estado-fondo: #e8f1f7;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    gap: 7px;
+
+    min-height: 45px;
+    padding: 0 14px;
+
+    box-sizing: border-box;
+
+    border-bottom: 2px solid transparent;
+
+    background: transparent;
+    color: #64778b;
+
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s,
+        color 0.2s,
+        border-color 0.2s;
+}
+
+.gesproy-subnav .gesproy-subnav-enlace > i {
+    font-size: 13px;
+    color: var(--estado-color);
+}
+
+
+/* ==========================================
+   COLORES DE CADA ESTADO
+========================================== */
+
+/* DEFINICIÓN - AZUL */
+
+.gesproy-subnav .gesproy-subnav-enlace:has(> .bi-pencil-square) {
+    --estado-color: #2563eb;
+    --estado-fondo: #eff6ff;
+}
+
+/* SOLICITADOS - MORADO */
+
+.gesproy-subnav .gesproy-subnav-enlace:has(> .bi-send) {
+    --estado-color: #7c3aed;
+    --estado-fondo: #f5f3ff;
+}
+
+/* NEGOCIACIÓN - MORADO */
+
+.gesproy-subnav .gesproy-subnav-enlace:has(> .bi-chat-dots) {
+    --estado-color: #7c3aed;
+    --estado-fondo: #f5f3ff;
+}
+
+/* EN PROCESO - VERDE */
+
+.gesproy-subnav .gesproy-subnav-enlace:has(> .bi-play-circle) {
+    --estado-color: #16a34a;
+    --estado-fondo: #f0fdf4;
+}
+
+/* FINALIZADOS - VERDE */
+
+.gesproy-subnav .gesproy-subnav-enlace:has(> .bi-check-circle) {
+    --estado-color: #16a34a;
+    --estado-fondo: #f0fdf4;
+}
+
+/* DENEGADOS - NARANJA */
+
+.gesproy-subnav .gesproy-subnav-enlace:has(> .bi-x-circle) {
+    --estado-color: #c2410c;
+    --estado-fondo: #fff7ed;
+}
+
+/* HOVER */
+
+.gesproy-subnav .gesproy-subnav-enlace:hover {
+    color: var(--estado-color);
+    background: var(--estado-fondo);
+    border-bottom-color: var(--estado-color);
+    text-decoration: none;
+}
+
+/* ESTADO SELECCIONADO */
+
+.gesproy-subnav .gesproy-subnav-enlace.activo {
+    color: var(--estado-color);
+    background: var(--estado-fondo);
+    border-bottom-color: var(--estado-color);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+
+/* ============================================================
+   13. BOTÓN AÑADIR PROYECTO
+   INMEDIATAMENTE DESPUÉS DE DENEGADOS
+============================================================ */
+
+.gesproy-subnav .gesproy-subnav-enlace--anadir {
+    --estado-color: #16a34a;
+    --estado-fondo: #f0fdf4;
+
+    /*
+       IMPORTANTE:
+       8px lo mantiene junto a Denegados.
+       No usar margin-left: auto.
+    */
+
+    margin-left: 8px;
+
+    padding: 0 16px;
+    flex-shrink: 0;
+
+    background: #f0fdf4;
+    color: #16a34a;
+
+    border-bottom-color: transparent;
+    font-weight: 600;
+}
+
+.gesproy-subnav .gesproy-subnav-enlace--anadir > i {
+    color: #16a34a;
+}
+
+/* HOVER DE AÑADIR */
+
+.gesproy-subnav .gesproy-subnav-enlace--anadir:hover {
+    background: #dcfce7;
+    color: #15803d;
+    border-bottom-color: #16a34a;
+}
+
+/* AÑADIR SELECCIONADO */
+
+.gesproy-subnav .gesproy-subnav-enlace--anadir.activo {
+    background: #dcfce7;
+    color: #15803d;
+    border-bottom-color: #16a34a;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   14. RESPONSIVE - TABLETS
+============================================================ */
+
+@media (max-width: 1000px) {
+
+    /* Los estados se podrán desplazar horizontalmente */
+
+    .gesproy-subnav-contenido {
+        padding: 0 12px;
+        gap: 0;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .gesproy-subnav-contenido::-webkit-scrollbar {
+        display: none;
+    }
+
+    .gesproy-subnav .gesproy-subnav-enlace {
+        flex-shrink: 0;
+        padding: 0 12px;
+    }
+
+    /* Añadir sigue junto a Denegados */
+
+    .gesproy-subnav .gesproy-subnav-enlace--anadir {
+        margin-left: 8px;
+        padding: 0 14px;
+    }
+}
+
+
+/* ============================================================
+   15. RESPONSIVE - MÓVILES
+============================================================ */
+
 @media (max-width: 768px) {
+
+    .gesproy-ancho {
+        width: calc(100% - 24px);
+    }
+
+    .gesproy-navegacion .gesproy-nav-contenido {
+        column-gap: 8px;
+        padding: 10px 12px;
+    }
+
+    .gesproy-navegacion .gesproy-enlaces > .gesproy-enlace {
+        padding: 9px 10px;
+    }
+
+    .gesproy-navegacion .gesproy-enlace-salir {
+        padding: 9px 10px;
+    }
+
     .fila-formulario {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -799,4 +1243,66 @@ body {
     }
 }
 
+@media (max-width: 650px) {
+
+    /* CONTENEDORES */
+
+    .proceso-contenedor,
+    .negociacion-contenedor,
+    .contenedor-proyectos {
+        padding: 0 14px;
+        margin: 25px auto;
+    }
+
+    /* CABECERAS */
+
+    .proceso-cabecera,
+    .negociacion-cabecera,
+    .cabecera-proyectos {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* TABLAS */
+
+    .proceso-tabla-contenedor,
+    .negociacion-tabla-contenedor,
+    .tarjeta-tabla {
+        overflow-x: auto;
+    }
+
+    .proceso-tabla,
+    .negociacion-tabla,
+    .tabla-proyectos {
+        min-width: 650px;
+    }
+
+    /* NAVEGACIÓN SECUNDARIA */
+
+    .gesproy-subnav-titulo {
+        display: none;
+    }
+
+    .gesproy-subnav-contenido {
+        min-height: 42px;
+        padding: 0 8px;
+    }
+
+    .gesproy-subnav .gesproy-subnav-enlace {
+        min-height: 42px;
+        padding: 0 11px;
+        font-size: 11px;
+    }
+
+    .gesproy-subnav .gesproy-subnav-enlace > i {
+        font-size: 12px;
+    }
+
+    /* AÑADIR: JUNTO A DENEGADOS */
+
+    .gesproy-subnav .gesproy-subnav-enlace--anadir {
+        margin-left: 8px;
+        padding: 0 12px;
+    }
 }

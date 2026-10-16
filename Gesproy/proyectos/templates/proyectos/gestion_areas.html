@@ -1,0 +1,219 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Administración de áreas - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/tipos_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tipos-contenedor">
+
+    <!-- CABECERA -->
+    <div class="tipos-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-grid"></i>
+                Administración de áreas
+            </h1>
+
+            <p>
+                Consulta y administra las áreas
+                de investigación de Gesproy.
+            </p>
+        </div>
+
+        <!-- BOTÓN AÑADIR -->
+        <button type="button"
+                class="tipos-boton-anadir"
+                id="abrir-modal-area">
+
+            <i class="bi bi-plus-circle"></i>
+            Añadir área
+
+        </button>
+
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="tipos-contador">
+
+        <i class="bi bi-grid"></i>
+
+        Total de áreas: {{ areas|length }}
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="tipos-tabla-contenedor">
+
+        <table class="tipos-tabla">
+
+            <thead>
+                <tr>
+                    <th>Área</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for area in areas %}
+
+                <tr>
+                    <td>
+                        <i class="bi bi-grid tipos-icono"></i>
+
+                        {{ area.nombre }}
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td class="tipos-vacio">
+                        No hay áreas registradas.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- REGRESAR -->
+    <div class="tipos-pie">
+
+        <a href="{% url 'panel_administracion' %}"
+           class="tipos-boton-volver">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver a administración
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     VENTANA EMERGENTE: AÑADIR ÁREA
+========================================== -->
+
+<dialog id="modal-area" class="tipos-modal">
+
+    <div class="tipos-modal-cabecera">
+
+        <div class="tipos-modal-icono">
+            <i class="bi bi-grid"></i>
+        </div>
+
+        <h2>Añadir área</h2>
+
+        <p>
+            Introduce el nombre de la nueva área.
+        </p>
+
+    </div>
+
+    <form method="post" class="tipos-modal-formulario">
+
+        {% csrf_token %}
+
+        <label for="{{ formulario.nombre.id_for_label }}">
+            Nombre del área
+        </label>
+
+        {{ formulario.nombre }}
+
+        <!-- ERRORES DE VALIDACIÓN -->
+        {% if formulario.nombre.errors %}
+
+        <div class="tipos-error">
+            {{ formulario.nombre.errors }}
+        </div>
+
+        {% endif %}
+
+        {% if formulario.non_field_errors %}
+
+        <div class="tipos-error">
+            {{ formulario.non_field_errors }}
+        </div>
+
+        {% endif %}
+
+        <!-- BOTONES -->
+        <div class="tipos-modal-acciones">
+
+            <button type="button"
+                    id="cerrar-modal-area"
+                    class="tipos-boton-cancelar">
+
+                Cancelar
+
+            </button>
+
+            <button type="submit"
+                    class="tipos-boton-guardar">
+
+                <i class="bi bi-check-circle"></i>
+                Guardar
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+
+<!-- ==========================================
+     JAVASCRIPT DE LA VENTANA
+========================================== -->
+
+<script>
+
+    const modalArea = document.getElementById("modal-area");
+
+    const botonAbrir = document.getElementById(
+        "abrir-modal-area"
+    );
+
+    const botonCerrar = document.getElementById(
+        "cerrar-modal-area"
+    );
+
+    // ABRIR VENTANA
+    botonAbrir.addEventListener("click", function() {
+
+        modalArea.showModal();
+
+    });
+
+    // CERRAR VENTANA
+    botonCerrar.addEventListener("click", function() {
+
+        modalArea.close();
+
+    });
+
+    // REABRIR SI HAY ERRORES
+    {% if formulario.errors %}
+        modalArea.showModal();
+    {% endif %}
+
+</script>
+
+{% endblock %}

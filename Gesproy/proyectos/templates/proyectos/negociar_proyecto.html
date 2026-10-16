@@ -1,0 +1,316 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Cambiar a negociación - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion solicitud-cabecera">
+
+        <h1>
+            <i class="bi bi-chat-dots"></i>
+            Cambio de estado de un proyecto
+        </h1>
+
+        <p>
+            De <strong>SOLICITADO</strong>
+            a <strong>EN NEGOCIACIÓN</strong>
+        </p>
+
+    </div>
+
+    <!-- TARJETA PRINCIPAL -->
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            <!-- ERRORES GENERALES -->
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- ACRÓNIMO -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.acronimo.id_for_label }}">
+                        {{ formulario.acronimo.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.acronimo }}
+                        {{ formulario.acronimo.errors }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- NOMBRE -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.nombre.id_for_label }}">
+                        {{ formulario.nombre.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.nombre }}
+                        {{ formulario.nombre.errors }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ORGANISMO -->
+            <div class="solicitud-fila">
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.organismo.id_for_label }}">
+                        {{ formulario.organismo.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.organismo }}
+                        {{ formulario.organismo.errors }}
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TIPO DE PROYECTO Y PORCENTAJE -->
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.tipo_proyecto.id_for_label }}">
+                        {{ formulario.tipo_proyecto.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.tipo_proyecto }}
+                        {{ formulario.tipo_proyecto.errors }}
+                    </div>
+
+                </div>
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.porcentaje_subvencion.id_for_label }}">
+                        {{ formulario.porcentaje_subvencion.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.porcentaje_subvencion }}
+                            <span>%</span>
+                        </div>
+                        {{ formulario.porcentaje_subvencion.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- CANTIDADES SOLICITADAS -->
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.importe_solicitado.id_for_label }}">
+                        {{ formulario.importe_solicitado.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.importe_solicitado }}
+                            <span>€</span>
+                        </div>
+                        {{ formulario.importe_solicitado.errors }}
+                    </div>
+
+                </div>
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.importe_solicitado_cesga.id_for_label }}">
+                        {{ formulario.importe_solicitado_cesga.label }}
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.importe_solicitado_cesga }}
+                            <span>€</span>
+                        </div>
+                        {{ formulario.importe_solicitado_cesga.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FECHAS -->
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.fecha_solicitud.id_for_label }}">
+                        {{ formulario.fecha_solicitud.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.fecha_solicitud }}
+                        {{ formulario.fecha_solicitud.errors }}
+                    </div>
+
+                </div>
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.fecha_resolucion.id_for_label }}">
+                        {{ formulario.fecha_resolucion.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.fecha_resolucion }}
+                        {{ formulario.fecha_resolucion.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- PARTICIPACIÓN Y DURACIÓN -->
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.tipo_participacion.id_for_label }}">
+                        {{ formulario.tipo_participacion.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.tipo_participacion }}
+                        {{ formulario.tipo_participacion.errors }}
+                    </div>
+
+                </div>
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.duracion.id_for_label }}">
+                        {{ formulario.duracion.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.duracion }}
+                            <span>meses</span>
+                        </div>
+                        {{ formulario.duracion.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- IMPORTES CONCEDIDOS -->
+            <div class="solicitud-fila solicitud-doble">
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.importe_concedido.id_for_label }}">
+                        {{ formulario.importe_concedido.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.importe_concedido }}
+                            <span>€</span>
+                        </div>
+                        {{ formulario.importe_concedido.errors }}
+                    </div>
+
+                </div>
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.importe_concedido_cesga.id_for_label }}">
+                        {{ formulario.importe_concedido_cesga.label }} *
+                    </label>
+
+                    <div class="solicitud-control">
+                        <div class="solicitud-con-unidad">
+                            {{ formulario.importe_concedido_cesga }}
+                            <span>€</span>
+                        </div>
+                        {{ formulario.importe_concedido_cesga.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- COMENTARIO -->
+            <div class="solicitud-fila">
+
+                <div class="solicitud-campo">
+
+                    <label for="{{ formulario.comentario.id_for_label }}">
+                        {{ formulario.comentario.label }}
+                    </label>
+
+                    <div class="solicitud-control">
+                        {{ formulario.comentario }}
+                        {{ formulario.comentario.errors }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-check-circle"></i>
+                    Actualizar
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'proyectos_solicitados' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

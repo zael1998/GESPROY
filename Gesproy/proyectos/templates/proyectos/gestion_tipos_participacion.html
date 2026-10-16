@@ -1,0 +1,221 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Administración de tipos de participación - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/tipos_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tipos-contenedor">
+
+    <!-- CABECERA -->
+    <div class="tipos-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-diagram-3"></i>
+                Administración de tipos de participación
+            </h1>
+
+            <p>
+                Consulta y administra las modalidades
+                de participación de los proyectos.
+            </p>
+        </div>
+
+        <!-- BOTÓN AÑADIR -->
+        <button type="button"
+                class="tipos-boton-anadir"
+                id="abrir-modal-participacion">
+
+            <i class="bi bi-plus-circle"></i>
+            Añadir tipo
+
+        </button>
+
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="tipos-contador">
+
+        <i class="bi bi-diagram-3"></i>
+
+        Total de tipos de participación: {{ tipos|length }}
+
+    </div>
+
+    <!-- LISTADO -->
+    <div class="tipos-tabla-contenedor">
+
+        <table class="tipos-tabla">
+
+            <thead>
+                <tr>
+                    <th>Tipo de participación</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for tipo in tipos %}
+
+                <tr>
+                    <td>
+                        <i class="bi bi-diagram-3 tipos-icono"></i>
+
+                        {{ tipo.nombre }}
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td class="tipos-vacio">
+                        No hay tipos de participación registrados.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- REGRESAR -->
+    <div class="tipos-pie">
+
+        <a href="{% url 'panel_administracion' %}"
+           class="tipos-boton-volver">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver a administración
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     MODAL: AÑADIR TIPO DE PARTICIPACIÓN
+========================================== -->
+
+<dialog id="modal-participacion" class="tipos-modal">
+
+    <div class="tipos-modal-cabecera">
+
+        <div class="tipos-modal-icono">
+            <i class="bi bi-diagram-3"></i>
+        </div>
+
+        <h2>Añadir tipo de participación</h2>
+
+        <p>
+            Introduce el nombre de la nueva modalidad.
+        </p>
+
+    </div>
+
+    <form method="post" class="tipos-modal-formulario">
+
+        {% csrf_token %}
+
+        <label for="{{ formulario.nombre.id_for_label }}">
+            Nombre del tipo de participación
+        </label>
+
+        {{ formulario.nombre }}
+
+        <!-- ERRORES -->
+        {% if formulario.nombre.errors %}
+
+        <div class="tipos-error">
+            {{ formulario.nombre.errors }}
+        </div>
+
+        {% endif %}
+
+        {% if formulario.non_field_errors %}
+
+        <div class="tipos-error">
+            {{ formulario.non_field_errors }}
+        </div>
+
+        {% endif %}
+
+        <!-- BOTONES -->
+        <div class="tipos-modal-acciones">
+
+            <button type="button"
+                    id="cerrar-modal-participacion"
+                    class="tipos-boton-cancelar">
+
+                Cancelar
+
+            </button>
+
+            <button type="submit"
+                    class="tipos-boton-guardar">
+
+                <i class="bi bi-check-circle"></i>
+                Guardar
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+
+<!-- ==========================================
+     JAVASCRIPT DEL MODAL
+========================================== -->
+
+<script>
+
+    const modalParticipacion = document.getElementById(
+        "modal-participacion"
+    );
+
+    const botonAbrir = document.getElementById(
+        "abrir-modal-participacion"
+    );
+
+    const botonCerrar = document.getElementById(
+        "cerrar-modal-participacion"
+    );
+
+    // ABRIR VENTANA
+    botonAbrir.addEventListener("click", function() {
+
+        modalParticipacion.showModal();
+
+    });
+
+    // CERRAR VENTANA
+    botonCerrar.addEventListener("click", function() {
+
+        modalParticipacion.close();
+
+    });
+
+    // REABRIR SI HAY ERRORES DE VALIDACIÓN
+    {% if formulario.errors %}
+        modalParticipacion.showModal();
+    {% endif %}
+
+</script>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block title %}
@@ -6,86 +7,182 @@ Proyectos solicitados
 
 {% block content %}
 
-<h1>Listado de los proyectos SOLICITADOS</h1>
+<div class="proceso-contenedor">
 
-<table>
+    <!-- CABECERA -->
+    <div class="proceso-cabecera">
 
-    <thead>
-        <tr>
-            <th>Acrónimo del proyecto</th>
-            <th>Organismo</th>
-            <th>Solicitud de resolución</th>
-            <th>Opciones</th>
-        </tr>
-    </thead>
+        <div>
+            <h1>Proyectos solicitados</h1>
 
-    <tbody>
+            <p>
+                Consulta y gestiona los proyectos que están
+                pendientes de resolución.
+            </p>
+        </div>
 
-        {% for proyecto in proyectos %}
+        <span class="proceso-total">
+            Total: {{ proyectos|length }}
+        </span>
 
-            <tr>
+    </div>
 
-                <td title="{{ proyecto.nombre }}">
-                    {{ proyecto.acronimo }}
-                </td>
+    <!-- TABLA DE PROYECTOS -->
+    <div class="proceso-tabla-contenedor">
 
-                <td>
-                    {{ proyecto.organismo.nombre }}
-                </td>
+        <table class="proceso-tabla">
 
-                <td>
-                    {{ proyecto.fecha_solicitud|date:"d M Y" }}
-                    <br>
-                    {{ proyecto.fecha_resolucion|date:"d M Y" }}
-                </td>
+            <thead>
+                <tr>
+                    <th>Acrónimo del proyecto</th>
+                    <th>Organismo</th>
+                    <th>Solicitud / Resolución prevista</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
 
-                
-                <td class="opciones">
+            <tbody>
 
-                    <a href="#" title="Editar">
-                        <i class="bi bi-pencil icono-opcion icono-editar"></i>
-                    </a>
+                {% for proyecto in proyectos %}
 
-                    <a href="#" title="Cambiar a negociación">
-                        <i class="bi bi-chat-dots icono-opcion icono-negociacion"></i>
-                    </a>
+                <tr>
 
-                    <a href="#" title="Cambiar a proceso">
-                        <i class="bi bi-play icono-opcion icono-proceso"></i>
-                    </a>
+                    <!-- ACRÓNIMO: ENLACE A LOS DETALLES -->
+                    <td class="proceso-acronimo">
 
-                    <a href="#" title="Cambiar a denegado">
-                        <i class="bi bi-x-circle icono-opcion icono-denegado"></i>
-                    </a>
+                        {% include 'proyectos/componentes/acronimo_proyecto.html' with proyecto=proyecto %}
 
-                    <a href="#" title="Borrar proyecto">
-                        <i class="bi bi-trash icono-opcion icono-borrar"></i>
-                    </a>
+                    </td>
 
-                    <a href="#" title="Cambiar a estado anterior">
-                        <i class="bi bi-arrow-left icono-opcion icono-anterior"></i>
-                    </a>
+                    <!-- ORGANISMO -->
+                    <td>
+                        {{ proyecto.organismo.nombre|default:"Sin organismo" }}
+                    </td>
 
-                </td>
+                    <!-- FECHAS -->
+                    <td class="proceso-fechas">
 
+                        <div>
+                            <span class="proceso-fecha-etiqueta">
+                                Solicitud:
+                            </span>
 
+                            {{ proyecto.fecha_solicitud|date:"d/m/Y"|default:"—" }}
+                        </div>
 
-            </tr>
+                        <div>
+                            <span class="proceso-fecha-etiqueta">
+                                Resolución prevista:
+                            </span>
 
-        {% empty %}
+                            {{ proyecto.fecha_prevista_resolucion|date:"d/m/Y"|default:"—" }}
+                        </div>
 
-            <tr>
-                <td colspan="4">
-                    No hay proyectos solicitados.
-                </td>
-            </tr>
+                    </td>
 
-        {% endfor %}
+                    <!-- OPCIONES -->
+                    <td class="proceso-opciones">
 
-    </tbody>
+                        <!-- EDITAR PROYECTO -->
+                        <a href="{% url 'editar_proyecto_solicitado' proyecto.id %}"
+                           class="boton-icono editar"
+                           title="Editar proyecto">
 
-</table>
+                            <i class="bi bi-pencil-square"></i>
 
-<p>Total: {{ proyectos|length }}</p>
+                        </a>
+
+                        <!-- CAMBIAR A NEGOCIACIÓN -->
+                        <a href="{% url 'negociar_proyecto' proyecto.id %}"
+                           class="boton-icono negociacion"
+                           title="Cambiar a negociación">
+
+                            <i class="bi bi-chat-dots"></i>
+
+                        </a>
+
+                        <!-- CAMBIAR A PROCESO -->
+                        <a href="{% url 'pasar_proyecto_a_proceso' proyecto.id %}"
+                           class="boton-icono proceso"
+                           title="Cambiar a proceso">
+
+                            <i class="bi bi-play-circle"></i>
+
+                        </a>
+
+                        <!-- CAMBIAR A DENEGADO -->
+                        <a href="{% url 'denegar_proyecto' proyecto.id %}"
+                           class="boton-icono denegado"
+                           title="Cambiar a denegado">
+
+                            <i class="bi bi-x-circle"></i>
+
+                        </a>
+
+                        <!-- FINANCIACIÓN POR LÍNEAS DE INVESTIGACIÓN -->
+                        {% if request.user.is_staff %}
+
+                            <a href="{% url 'financiacion_proyecto' proyecto.id %}"
+                               class="boton-icono financiacion"
+                               title="Gestionar financiación">
+
+                                <i class="bi bi-cash-stack"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                        <!-- BORRAR PROYECTO -->
+                        {% if request.user.is_staff %}
+
+                            <a href="{% url 'borrar_proyecto_solicitado' proyecto.id %}"
+                               class="boton-icono borrar"
+                               title="Borrar proyecto">
+
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                        <!-- VOLVER AL ESTADO ANTERIOR -->
+                        <form method="post"
+                              action="{% url 'volver_proyecto_a_definicion' proyecto.id %}"
+                              style="display: inline; margin: 0;"
+                              onsubmit="return confirm('¿Estás seguro de que quieres devolver este proyecto al estado En definición?');">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="boton-icono anterior"
+                                    title="Volver a definición">
+
+                                <i class="bi bi-arrow-counterclockwise"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" class="proceso-vacio">
+                        No hay proyectos solicitados.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 {% endblock %}

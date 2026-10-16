@@ -1,0 +1,78 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ titulo }} - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/calendario_laboral.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="cal-formulario-contenedor">
+
+    <a href="{% url 'calendario_laboral' %}"
+       class="cal-volver">
+        <i class="bi bi-arrow-left"></i>
+        Volver al calendario
+    </a>
+
+    <div class="cal-formulario-tarjeta">
+
+        <h1>{{ titulo }}</h1>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% for campo in formulario %}
+
+                <div class="cal-campo">
+
+                    <label for="{{ campo.id_for_label }}">
+                        {{ campo.label }}
+                    </label>
+
+                    {{ campo }}
+
+                    {% for error in campo.errors %}
+                        <span class="cal-error">
+                            {{ error }}
+                        </span>
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+            {% if formulario.non_field_errors %}
+                <div class="cal-error">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="cal-formulario-acciones">
+
+                <button type="submit"
+                        class="cal-boton cal-boton-principal">
+                    Guardar festivo
+                </button>
+
+                <a href="{% url 'calendario_laboral' %}"
+                   class="cal-boton">
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

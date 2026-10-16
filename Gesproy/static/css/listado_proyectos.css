@@ -1,0 +1,531 @@
+
+/* ==========================================
+   GESPROY - LISTADO GENERAL DE PROYECTOS
+========================================== */
+
+.listado-contenedor {
+    max-width: 1250px;
+    margin: 35px auto 65px;
+    padding: 0 24px;
+    color: #263747;
+}
+
+/* ==========================================
+   CABECERA
+========================================== */
+
+.listado-cabecera {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.listado-sobrelinea {
+    display: block;
+    margin-bottom: 8px;
+    color: #397a87;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.045em;
+}
+
+.listado-cabecera h1 {
+    margin: 0 0 7px;
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #263747;
+}
+
+.listado-cabecera p {
+    margin: 0;
+    color: #657386;
+    font-size: 14px;
+}
+
+.listado-total {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 15px;
+    border: 1px solid #d9e9e6;
+    border-radius: 10px;
+    background: #f2faf7;
+    color: #30685c;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.listado-total i {
+    font-size: 18px;
+}
+
+/* ==========================================
+   BUSCADOR Y FILTROS
+========================================== */
+
+.listado-panel-filtros {
+    margin-bottom: 19px;
+    padding: 18px 20px;
+    border: 1px solid #dce3e9;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(38, 55, 71, 0.025);
+}
+
+.listado-formulario {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.listado-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.listado-campo-busqueda {
+    flex: 1 1 280px;
+}
+
+.listado-campo-estado {
+    flex: 0 1 225px;
+}
+
+.listado-campo label {
+    color: #576778;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.listado-input-icono {
+    position: relative;
+}
+
+.listado-input-icono i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8a9aaa;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.listado-campo input,
+.listado-campo select {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid #d4dde5;
+    border-radius: 8px;
+    background: #fcfdfd;
+    color: #2f4050;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.listado-campo input {
+    padding-left: 39px;
+}
+
+.listado-campo input:focus,
+.listado-campo select:focus {
+    outline: 2px solid #b8dcd5;
+    outline-offset: 1px;
+    border-color: #6bafa0;
+}
+
+.listado-acciones-filtro {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+}
+
+.listado-boton-buscar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 19px;
+    border: none;
+    border-radius: 8px;
+    background: #356b8c;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+}
+
+.listado-boton-buscar:hover {
+    background: #275875;
+}
+
+.listado-boton-limpiar {
+    color: #617080;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.listado-boton-limpiar:hover {
+    color: #245a7b;
+    text-decoration: underline;
+}
+
+/* ==========================================
+   TARJETA Y TABLA
+========================================== */
+
+.listado-tarjeta {
+    overflow: hidden;
+    border: 1px solid #dce3e9;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 3px 14px rgba(38, 55, 71, 0.035);
+}
+
+.listado-tabla-titulo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #e6eaee;
+}
+
+.listado-tabla-titulo h2 {
+    margin: 0 0 5px;
+    color: #263747;
+    font-size: 17px;
+}
+
+.listado-tabla-titulo p {
+    margin: 0;
+    color: #718092;
+    font-size: 12px;
+}
+
+.listado-orden {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #8b97a4;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.listado-tabla-desplazable {
+    overflow-x: auto;
+}
+
+.listado-tabla {
+    width: 100%;
+    min-width: 1150px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.listado-tabla th {
+    padding: 15px 16px;
+    background: #f6f8f8;
+    border-bottom: 1px solid #e0e6e8;
+    color: #6b7c88;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.listado-tabla td {
+    padding: 16px;
+    border-bottom: 1px solid #edf0f2;
+    vertical-align: middle;
+    line-height: 1.5;
+}
+
+.listado-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.listado-tabla tbody tr:hover {
+    background: #f8fbfa;
+}
+
+/* ==========================================
+   ACRÓNIMOS
+========================================== */
+
+.listado-celda-acronimo {
+    white-space: nowrap;
+}
+
+.listado-tabla a.acronimo-proyecto-enlace,
+.listado-tabla a.acronimo-proyecto-enlace:link,
+.listado-tabla a.acronimo-proyecto-enlace:visited {
+    color: #346584;
+    text-decoration: none;
+    font-weight: 700;
+    transition: color 0.18s ease;
+}
+
+.listado-tabla a.acronimo-proyecto-enlace:hover,
+.listado-tabla a.acronimo-proyecto-enlace:focus-visible {
+    color: #167e92;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* ==========================================
+   CELDAS
+========================================== */
+
+.listado-celda-nombre {
+    min-width: 220px;
+    max-width: 350px;
+    color: #344557;
+    font-weight: 500;
+}
+
+.listado-celda-organismo {
+    min-width: 190px;
+    max-width: 280px;
+    color: #586979;
+}
+
+.listado-celda-tipo {
+    color: #566575;
+}
+
+/* ==========================================
+   ESTADOS
+========================================== */
+
+.listado-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    color: #69798b;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.listado-estado-punto {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.listado-estado--definicion {
+    color: #758395;
+}
+
+.listado-estado--solicitado {
+    color: #996728;
+}
+
+.listado-estado--negociacion {
+    color: #7961aa;
+}
+
+.listado-estado--proceso {
+    color: #25899a;
+}
+
+.listado-estado--finalizado {
+    color: #338565;
+}
+
+.listado-estado--denegado {
+    color: #ba5b53;
+}
+
+/* ==========================================
+   SEGUIMIENTO - TIEMPO Y HORAS
+========================================== */
+
+/* Reservar espacio para las dos barras */
+.listado-tabla th:last-child,
+.listado-tabla td:last-child {
+    min-width: 280px;
+}
+
+/* Misma distribución que Proyectos en proceso */
+.listado-tabla .proceso-barras {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: max-content;
+}
+
+.listado-tabla .proceso-indicador {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+}
+
+/* Etiquetas: Tiempo y Horas */
+.listado-tabla .proceso-etiqueta {
+    width: 55px;
+    flex-shrink: 0;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Fondo de cada barra */
+.listado-tabla .proceso-barra {
+    width: 160px;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* Porcentaje de tiempo */
+.listado-tabla .proceso-barra-relleno {
+    height: 100%;
+    background-color: #4c7896;
+    border-radius: 4px;
+}
+
+/* Porcentaje de horas */
+.listado-tabla .proceso-barra-relleno.proceso-barra-trabajo {
+    background-color: #4c9d70;
+}
+
+/* Número porcentual */
+.listado-tabla .proceso-valor {
+    min-width: 45px;
+    font-size: 12px;
+    color: #444;
+    text-align: right;
+}
+
+/* Proyectos que no están en proceso */
+.listado-sin-datos {
+    color: #a0a9b2;
+    font-size: 13px;
+}
+
+/* ==========================================
+   SIN RESULTADOS
+========================================== */
+
+.listado-vacio {
+    padding: 44px 16px !important;
+    text-align: center;
+    color: #85929f;
+}
+
+.listado-vacio i {
+    display: block;
+    margin-bottom: 10px;
+    color: #a6bbb4;
+    font-size: 26px;
+}
+
+.listado-vacio strong,
+.listado-vacio span {
+    display: block;
+}
+
+.listado-vacio strong {
+    color: #465b68;
+    font-size: 15px;
+}
+
+.listado-vacio span {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+/* ==========================================
+   PAGINACIÓN
+========================================== */
+
+.listado-paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid #edf0f2;
+    color: #8793a0;
+    font-size: 12px;
+}
+
+.listado-paginacion > div {
+    display: flex;
+    gap: 10px;
+}
+
+.listado-paginacion a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid #dce4e7;
+    border-radius: 7px;
+    color: #3c6d80;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.listado-paginacion a:hover {
+    background: #f2f8f6;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 750px) {
+
+    .listado-contenedor {
+        margin: 25px auto;
+        padding: 0 14px;
+    }
+
+    .listado-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .listado-cabecera h1 {
+        font-size: 24px;
+    }
+
+    .listado-panel-filtros {
+        padding: 16px;
+    }
+
+    .listado-campo-busqueda,
+    .listado-campo-estado {
+        flex: 1 1 100%;
+    }
+
+    .listado-tabla-titulo {
+        padding: 17px;
+    }
+
+    .listado-orden {
+        display: none;
+    }
+
+    .listado-paginacion {
+        padding: 14px;
+    }
+}

@@ -1,0 +1,144 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Administración de socios - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/socios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="socios-contenedor">
+
+    <!-- CABECERA -->
+    <div class="socios-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-people"></i>
+                Administración de socios
+            </h1>
+
+            <p>
+                Consulta los socios registrados
+                y sus responsables de contacto.
+            </p>
+        </div>
+
+        <a href="{% url 'anadir_socio' %}"
+           class="socios-boton-anadir">
+
+            <i class="bi bi-plus-circle"></i>
+            Añadir socio
+
+        </a>
+
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="socios-resumen">
+        <i class="bi bi-buildings"></i>
+        Total de socios: {{ socios|length }}
+    </div>
+
+    <!-- TABLA -->
+    <div class="socios-tabla-contenedor">
+
+        <table class="socios-tabla">
+
+            <thead>
+                <tr>
+                    <th>Socio</th>
+                    <th>Responsable</th>
+                    <th>Correo electrónico</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for socio in socios %}
+
+                    {% with contacto=socio.contactos.0 %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ socio.nombre_empresa }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {% if contacto %}
+                                {{ contacto.apellido }},
+                                {{ contacto.nombre }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if contacto and contacto.email %}
+
+                                <a href="mailto:{{ contacto.email }}"
+                                   class="socios-correo">
+
+                                    {{ contacto.email }}
+
+                                </a>
+
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if contacto %}
+                                {{ contacto.telefono|default:"—" }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                    </tr>
+
+                    {% endwith %}
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="4" class="socios-vacio">
+                            <i class="bi bi-inbox"></i>
+                            No hay socios registrados.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- REGRESAR -->
+    <div class="socios-pie">
+
+        <a href="{% url 'panel_administracion' %}"
+           class="socios-boton-volver">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver a administración
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Gestión de investigadores
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="proceso-contenedor">
+
+    <div class="proceso-cabecera">
+        <div>
+            <h1>Gestión de investigadores</h1>
+            <p>Consulta, añade y administra los investigadores del sistema.</p>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <span class="proceso-total">
+                Total: {{ investigadores|length }}
+            </span>
+
+            <a href="{% url 'anadir_investigador' %}" class="boton-principal" style="text-decoration: none;">
+                <i class="bi bi-plus-circle"></i>
+                Añadir investigador
+            </a>
+        </div>
+    </div>
+
+    <div class="proceso-tabla-contenedor">
+        <table class="proceso-tabla">
+            <thead>
+                <tr>
+                    <th>Investigador</th>
+                    <th>Correo</th>
+                    <th>Administrador</th>
+                    <th>Estado</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for investigador in investigadores %}
+                <tr>
+
+                    <td>
+                        <strong>
+                            {% if investigador.last_name or investigador.first_name %}
+                                {{ investigador.last_name }}, {{ investigador.first_name }}
+                            {% else %}
+                                {{ investigador.username }}
+                            {% endif %}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ investigador.email|default:"Sin correo" }}
+                    </td>
+
+                    <td>
+                        {% if investigador.is_staff %}
+                            <span style="font-weight: 700; color: #15803d;">Sí</span>
+                        {% else %}
+                            <span style="font-weight: 700; color: #6b7280;">No</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if investigador.is_active %}
+                            <span style="display: inline-flex; align-items: center; gap: 6px; color: #15803d; font-weight: 600;">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Activo
+                            </span>
+                        {% else %}
+                            <span style="display: inline-flex; align-items: center; gap: 6px; color: #b91c1c; font-weight: 600;">
+                                <i class="bi bi-x-circle-fill"></i>
+                                Inactivo
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="proceso-opciones">
+
+                        <form method="post"
+                              action="{% url 'cambiar_estado_investigador' investigador.id %}"
+                              style="display: inline;"
+                              onsubmit="return confirm('¿Seguro que quieres cambiar el estado de este investigador?');">
+                            {% csrf_token %}
+
+                            {% if investigador.is_active %}
+                                <button type="submit"
+                                        class="boton-icono borrar"
+                                        title="Dar de baja">
+                                    <i class="bi bi-person-dash"></i>
+                                </button>
+                            {% else %}
+                                <button type="submit"
+                                        class="boton-icono finalizado"
+                                        title="Dar de alta">
+                                    <i class="bi bi-person-plus"></i>
+                                </button>
+                            {% endif %}
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="proceso-vacio">
+                        No hay investigadores registrados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

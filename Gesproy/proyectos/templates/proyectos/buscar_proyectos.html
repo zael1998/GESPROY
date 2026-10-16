@@ -1,0 +1,319 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Buscar proyectos - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/busqueda.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="busqueda-contenedor">
+
+    <!-- CABECERA -->
+    <div class="busqueda-cabecera">
+
+        <h1>
+            <i class="bi bi-search"></i>
+            Búsqueda de proyectos
+        </h1>
+
+        <p>
+            Selecciona los criterios que deseas utilizar
+            para localizar proyectos en Gesproy.
+        </p>
+
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="busqueda-tarjeta">
+
+        <div class="busqueda-seccion">
+            <h2>Criterios de búsqueda</h2>
+        </div>
+
+        <form method="get">
+
+            <!-- ACRÓNIMO -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_acronimo }}
+                    <label for="{{ formulario.acronimo.id_for_label }}">
+                        Acrónimo
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.acronimo }}
+                    {{ formulario.acronimo.errors }}
+                </div>
+
+            </div>
+
+            <!-- NOMBRE -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_nombre }}
+                    <label for="{{ formulario.nombre.id_for_label }}">
+                        Nombre
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.nombre }}
+                    {{ formulario.nombre.errors }}
+                </div>
+
+            </div>
+
+            <!-- ESTADO -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_estado }}
+                    <label for="{{ formulario.estado.id_for_label }}">
+                        Estado
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.estado }}
+                    {{ formulario.estado.errors }}
+
+                    <small>
+                        Mantén Ctrl para seleccionar varios estados.
+                    </small>
+                </div>
+
+            </div>
+
+            <!-- ORGANISMO -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_organismo }}
+                    <label for="{{ formulario.organismo.id_for_label }}">
+                        Organismo
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.organismo }}
+                    {{ formulario.organismo.errors }}
+                </div>
+
+            </div>
+
+            <!-- TIPO DE PROYECTO -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_tipo_proyecto }}
+                    <label for="{{ formulario.tipo_proyecto.id_for_label }}">
+                        Tipo de proyecto
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.tipo_proyecto }}
+                    {{ formulario.tipo_proyecto.errors }}
+                </div>
+
+            </div>
+
+            <!-- PARTICIPACIÓN -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_participacion }}
+                    <label for="{{ formulario.participacion.id_for_label }}">
+                        Participación
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.participacion }}
+                    {{ formulario.participacion.errors }}
+                </div>
+
+            </div>
+
+            <!-- INVESTIGADOR -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_investigador }}
+                    <label for="{{ formulario.investigador.id_for_label }}">
+                        Investigador
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.investigador }}
+                    {{ formulario.investigador.errors }}
+                </div>
+
+            </div>
+
+            <!-- SOCIO -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_socio }}
+                    <label for="{{ formulario.socio.id_for_label }}">
+                        Socio
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.socio }}
+                    {{ formulario.socio.errors }}
+                </div>
+
+            </div>
+
+            <!-- ÁREAS -->
+            <div class="busqueda-fila">
+
+                <div class="busqueda-etiqueta">
+                    {{ formulario.usar_areas }}
+                    <label for="{{ formulario.areas.id_for_label }}">
+                        Áreas
+                    </label>
+                </div>
+
+                <div class="busqueda-campo">
+                    {{ formulario.areas }}
+                    {{ formulario.areas.errors }}
+                </div>
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="busqueda-acciones">
+
+                <button type="submit"
+                        name="buscar"
+                        value="1"
+                        class="busqueda-boton-buscar">
+
+                    <i class="bi bi-search"></i>
+                    Buscar proyectos
+
+                </button>
+
+                <a href="{% url 'buscar_proyectos' %}"
+                   class="busqueda-boton-limpiar">
+
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- RESULTADOS -->
+    {% if proyectos is not None %}
+
+    <div class="busqueda-resultados">
+
+        <div class="busqueda-resultados-cabecera">
+
+            <h2>
+                <i class="bi bi-list-ul"></i>
+                Resultados de búsqueda
+            </h2>
+
+            <span>
+                {{ proyectos|length }} proyectos encontrados
+            </span>
+
+        </div>
+
+        <div class="busqueda-tabla-contenedor">
+
+            <table class="busqueda-tabla">
+
+                <thead>
+                    <tr>
+                        <th>Acrónimo</th>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Organismo</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for proyecto in proyectos %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ proyecto.acronimo }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ proyecto.nombre }}
+                        </td>
+
+                        <td>
+                            <span class="busqueda-estado">
+                                {{ proyecto.get_estado_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ proyecto.organismo|default:"—" }}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'detalle_proyecto' proyecto.id %}"
+                               class="busqueda-boton-detalle"
+                               title="Ver proyecto">
+
+                                <i class="bi bi-eye"></i>
+                                Ver
+
+                            </a>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="busqueda-sin-resultados">
+                            No se encontraron proyectos
+                            con los criterios seleccionados.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

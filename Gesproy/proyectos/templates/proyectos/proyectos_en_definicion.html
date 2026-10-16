@@ -43,9 +43,11 @@ Proyectos en definición
                 <tr>
 
                     <!-- ACRÓNIMO -->
-                    <td class="proceso-acronimo"
-                        title="{{ proyecto.nombre }}">
-                        {{ proyecto.acronimo }}
+                    <!-- ACRÓNIMO DEL PROYECTO -->
+                    <td class="proceso-acronimo">
+
+                    {% include 'proyectos/componentes/acronimo_proyecto.html' with proyecto=proyecto %}
+
                     </td>
 
                     <!-- NOMBRE -->
@@ -83,14 +85,31 @@ Proyectos en definición
 
                         </a>
 
+                        <!-- FINANCIACIÓN POR LÍNEAS DE INVESTIGACIÓN -->
+                        {% if request.user.is_staff %}
+
+                            <a href="{% url 'financiacion_proyecto' proyecto.id %}"
+                               class="boton-icono financiacion"
+                               title="Gestionar financiación">
+
+                                <i class="bi bi-cash-stack"></i>
+
+                            </a>
+
+                        {% endif %}
+
                         <!-- BORRAR PROYECTO -->
-                        <a href="{% url 'borrar_proyecto_definicion' proyecto.id %}"
-                           class="boton-icono borrar"
-                           title="Borrar proyecto">
+                        {% if request.user.is_staff %}
 
-                            <i class="bi bi-trash"></i>
+                            <a href="{% url 'borrar_proyecto_definicion' proyecto.id %}"
+                               class="boton-icono borrar"
+                               title="Borrar proyecto">
 
-                        </a>
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+                        {% endif %}
 
                     </td>
 

@@ -37,10 +37,14 @@ Proyectos denegados
                 <tr>
 
                     <!-- ACRÓNIMO -->
-                    <td class="proceso-acronimo"
-                        title="{{ proyecto.nombre }}">
-                        {{ proyecto.acronimo }}
+                    
+                    <!-- ACRÓNIMO DEL PROYECTO -->
+                    <td class="proceso-acronimo">
+
+                    {% include 'proyectos/componentes/acronimo_proyecto.html' with proyecto=proyecto %}
+
                     </td>
+
 
                     <!-- ORGANISMO -->
                     <td>
@@ -69,19 +73,19 @@ Proyectos denegados
                     <!-- OPCIONES -->
                     <td class="proceso-opciones">
 
-                        <a href="#"
+                        <a href="{% url 'copiar_proyecto_denegado' proyecto.id %}"
                            class="boton-icono duplicar"
                            title="Duplicar proyecto">
                             <i class="bi bi-files"></i>
                         </a>
 
-                        <a href="#"
+                        <a href="{% url 'borrar_proyecto_denegado' proyecto.id %}"
                            class="boton-icono borrar"
                            title="Borrar proyecto">
                             <i class="bi bi-trash"></i>
                         </a>
 
-                        <a href="#"
+                        <a href="{% url 'volver_estado_anterior_denegado' proyecto.id %}"
                            class="boton-icono anterior"
                            title="Volver al estado anterior">
                             <i class="bi bi-arrow-left-circle"></i>

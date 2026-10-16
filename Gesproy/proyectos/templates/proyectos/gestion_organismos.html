@@ -1,0 +1,221 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Administración de organismos - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/tipos_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tipos-contenedor">
+
+    <!-- CABECERA -->
+    <div class="tipos-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-buildings"></i>
+                Administración de organismos
+            </h1>
+
+            <p>
+                Consulta y administra los organismos
+                registrados en Gesproy.
+            </p>
+        </div>
+
+        <!-- BOTÓN AÑADIR -->
+        <button type="button"
+                class="tipos-boton-anadir"
+                id="abrir-modal-organismo">
+
+            <i class="bi bi-plus-circle"></i>
+            Añadir organismo
+
+        </button>
+
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="tipos-contador">
+
+        <i class="bi bi-buildings"></i>
+
+        Total de organismos: {{ organismos|length }}
+
+    </div>
+
+    <!-- TABLA DE ORGANISMOS -->
+    <div class="tipos-tabla-contenedor">
+
+        <table class="tipos-tabla">
+
+            <thead>
+                <tr>
+                    <th>Organismo</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for organismo in organismos %}
+
+                <tr>
+                    <td>
+                        <i class="bi bi-building tipos-icono"></i>
+
+                        {{ organismo.nombre }}
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td class="tipos-vacio">
+                        No hay organismos registrados.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- VOLVER A ADMINISTRACIÓN -->
+    <div class="tipos-pie">
+
+        <a href="{% url 'panel_administracion' %}"
+           class="tipos-boton-volver">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver a administración
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     VENTANA EMERGENTE PARA AÑADIR ORGANISMO
+========================================== -->
+
+<dialog id="modal-organismo" class="tipos-modal">
+
+    <div class="tipos-modal-cabecera">
+
+        <div class="tipos-modal-icono">
+            <i class="bi bi-building-add"></i>
+        </div>
+
+        <h2>Añadir organismo</h2>
+
+        <p>
+            Introduce el nombre del nuevo organismo.
+        </p>
+
+    </div>
+
+    <form method="post" class="tipos-modal-formulario">
+
+        {% csrf_token %}
+
+        <label for="{{ formulario.nombre.id_for_label }}">
+            Nombre del organismo
+        </label>
+
+        {{ formulario.nombre }}
+
+        <!-- ERRORES DE VALIDACIÓN -->
+        {% if formulario.nombre.errors %}
+
+        <div class="tipos-error">
+            {{ formulario.nombre.errors }}
+        </div>
+
+        {% endif %}
+
+        {% if formulario.non_field_errors %}
+
+        <div class="tipos-error">
+            {{ formulario.non_field_errors }}
+        </div>
+
+        {% endif %}
+
+        <!-- BOTONES -->
+        <div class="tipos-modal-acciones">
+
+            <button type="button"
+                    id="cerrar-modal-organismo"
+                    class="tipos-boton-cancelar">
+
+                Cancelar
+
+            </button>
+
+            <button type="submit"
+                    class="tipos-boton-guardar">
+
+                <i class="bi bi-check-circle"></i>
+                Guardar
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+
+<!-- ==========================================
+     JAVASCRIPT DEL MODAL
+========================================== -->
+
+<script>
+
+    const modalOrganismo = document.getElementById(
+        "modal-organismo"
+    );
+
+    const botonAbrir = document.getElementById(
+        "abrir-modal-organismo"
+    );
+
+    const botonCerrar = document.getElementById(
+        "cerrar-modal-organismo"
+    );
+
+    // ABRIR VENTANA
+    botonAbrir.addEventListener("click", function() {
+
+        modalOrganismo.showModal();
+
+    });
+
+    // CERRAR VENTANA
+    botonCerrar.addEventListener("click", function() {
+
+        modalOrganismo.close();
+
+    });
+
+    // REABRIR SI HAY ERRORES DE VALIDACIÓN
+    {% if formulario.errors %}
+        modalOrganismo.showModal();
+    {% endif %}
+
+</script>
+
+{% endblock %}

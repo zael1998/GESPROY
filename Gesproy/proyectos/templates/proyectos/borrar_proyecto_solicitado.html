@@ -1,0 +1,8 @@
+<form method="post"
+      onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto? Esta acción es permanente y no se puede deshacer.');">
+
+    {% csrf_token %}
+
+    <button type="submit">Borrar</button>
+
+</form>

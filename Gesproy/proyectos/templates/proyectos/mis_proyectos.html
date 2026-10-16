@@ -1,0 +1,254 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Mis proyectos - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/mis_proyectos.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mis-contenedor">
+
+    <!-- CABECERA -->
+    <div class="mis-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-person-workspace"></i>
+                Mis proyectos
+            </h1>
+
+            <p>
+                Proyectos en los que participas
+                como investigador o responsable.
+            </p>
+        </div>
+
+        <span class="mis-contador">
+            {{ proyectos|length }} proyectos
+        </span>
+
+    </div>
+
+    <!-- FILTRO RESPONSABLE -->
+    <div class="mis-filtros">
+
+        {% if solo_responsable %}
+
+            <a href="{% url 'mis_proyectos' %}"
+               class="mis-filtro-activo">
+
+                <i class="bi bi-people"></i>
+                Ver todos mis proyectos
+
+            </a>
+
+        {% else %}
+
+            <a href="{% url 'mis_proyectos' %}?solo_responsable=1"
+               class="mis-filtro">
+
+                <i class="bi bi-person-check"></i>
+                Ver solo los que soy responsable
+
+            </a>
+
+        {% endif %}
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="mis-tabla-contenedor">
+
+        <table class="mis-tabla">
+
+            <thead>
+                <tr>
+                    <th>Acrónimo del proyecto</th>
+                    <th>Nombre del proyecto</th>
+                    <th>Estado</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for proyecto in proyectos %}
+
+                <tr>
+
+                    <!-- ACRÓNIMO -->
+                    <td>
+                        <a href="{% url 'detalle_proyecto' proyecto.id %}"
+                           class="mis-acronimo">
+
+                            {{ proyecto.acronimo }}
+
+                        </a>
+
+                        {% if proyecto.es_responsable %}
+                            <span class="mis-responsable">
+                                Responsable
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <!-- NOMBRE -->
+                    <td>
+                        {{ proyecto.nombre }}
+                    </td>
+
+                    <!-- ESTADO -->
+                    <td>
+                        <span class="mis-estado mis-estado-{{ proyecto.estado|lower }}">
+                            {{ proyecto.get_estado_display }}
+                        </span>
+                    </td>
+
+                    <!-- OPCIONES -->
+                    <td class="mis-opciones">
+
+                        {% if proyecto.estado == "DEFINICION" %}
+
+                            <!-- EDITAR -->
+                            <a href="{% url 'editar_proyecto_definicion' proyecto.id %}"
+                               class="boton-icono editar"
+                               title="Editar proyecto">
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+                            <!-- PASAR A SOLICITADO -->
+                            <a href="{% url 'solicitar_proyecto' proyecto.id %}"
+                               class="boton-icono solicitado"
+                               title="Cambiar a solicitado">
+
+                                <i class="bi bi-send"></i>
+
+                            </a>
+
+                            <!-- PASAR A FINALIZADO -->
+                            <a href="{% url 'finalizar_proyecto_definicion' proyecto.id %}"
+                               class="boton-icono finalizado"
+                               title="Cambiar a finalizado">
+
+                                <i class="bi bi-check-circle"></i>
+
+                            </a>
+
+                        {% elif proyecto.estado == "SOLICITADO" %}
+
+                            <!-- EDITAR -->
+                            <a href="{% url 'editar_proyecto_solicitado' proyecto.id %}"
+                               class="boton-icono editar"
+                               title="Editar proyecto">
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+                            <!-- NEGOCIAR -->
+                            <a href="{% url 'negociar_proyecto' proyecto.id %}"
+                               class="boton-icono negociacion"
+                               title="Cambiar a negociación">
+
+                                <i class="bi bi-chat-dots"></i>
+
+                            </a>
+
+                            <!-- PASAR A PROCESO -->
+                            <a href="{% url 'pasar_proyecto_a_proceso' proyecto.id %}"
+                               class="boton-icono proceso"
+                               title="Cambiar a proceso">
+
+                                <i class="bi bi-play-circle"></i>
+
+                            </a>
+
+                            <!-- DENEGAR -->
+                            <a href="{% url 'denegar_proyecto' proyecto.id %}"
+                               class="boton-icono denegado"
+                               title="Denegar proyecto">
+
+                                <i class="bi bi-x-circle"></i>
+
+                            </a>
+
+                        {% elif proyecto.estado == "NEGOCIACION" %}
+
+                            <!-- EDITAR -->
+                            <a href="{% url 'editar_proyecto_negociacion' proyecto.id %}"
+                               class="boton-icono editar"
+                               title="Editar proyecto">
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+                            <!-- PASAR A PROCESO -->
+                            <a href="{% url 'pasar_negociacion_a_proceso' proyecto.id %}"
+                               class="boton-icono proceso"
+                               title="Cambiar a proceso">
+
+                                <i class="bi bi-play-circle"></i>
+
+                            </a>
+
+                            <!-- DENEGAR -->
+                            <a href="{% url 'denegar_proyecto_negociacion' proyecto.id %}"
+                               class="boton-icono denegado"
+                               title="Denegar proyecto">
+
+                                <i class="bi bi-x-circle"></i>
+
+                            </a>
+
+                        {% else %}
+
+                            <!-- CONSULTAR PROYECTO -->
+                            <a href="{% url 'detalle_proyecto' proyecto.id %}"
+                               class="boton-icono editar"
+                               title="Consultar proyecto">
+
+                                <i class="bi bi-eye"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" class="mis-vacio">
+
+                        {% if solo_responsable %}
+                            No tienes proyectos asignados
+                            como responsable.
+                        {% else %}
+                            No tienes proyectos asociados.
+                        {% endif %}
+
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Borrar proyecto en proceso - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <div class="cabecera-edicion">
+        <h1>
+            <i class="bi bi-trash"></i>
+            Borrar proyecto en proceso
+        </h1>
+
+        <p>Confirma si deseas eliminar este proyecto.</p>
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Confirmar eliminación</h2>
+        </div>
+
+        <p>
+            ¿Estás seguro de que quieres eliminar
+            el proyecto <strong>{{ proyecto.acronimo }}</strong>?
+        </p>
+
+        <p><strong>Nombre:</strong> {{ proyecto.nombre }}</p>
+
+        <p>Esta acción es permanente y no se puede deshacer.</p>
+
+        {% if error %}
+            <div class="errores-formulario">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="formulario-edicion">
+            {% csrf_token %}
+
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-trash"></i>
+                    Confirmar eliminación
+                </button>
+
+                <a href="{% url 'proyectos_en_proceso' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-arrow-left"></i>
+                    Cancelar
+                </a>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

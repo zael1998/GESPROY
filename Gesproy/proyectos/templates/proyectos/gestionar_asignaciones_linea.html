@@ -1,0 +1,314 @@
+
+{% extends 'base.html' %}
+{% load static l10n %}
+
+{% block title %}
+Asignaciones - {{ linea.nombre }} - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/gestionar_asignaciones_linea.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="linea-contenedor">
+
+    <!-- CABECERA -->
+    <div class="linea-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-wallet2"></i>
+                {{ linea.nombre }}
+            </h1>
+
+            <p>
+                Distribución del presupuesto entre proyectos.
+            </p>
+        </div>
+
+        <a href="{% url 'gestion_lineas_investigacion' %}"
+           class="linea-volver">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver a líneas de investigación
+
+        </a>
+
+    </div>
+
+    <!-- MENSAJES -->
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="linea-mensaje linea-mensaje-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+    <!-- RESUMEN DEL PRESUPUESTO -->
+    <div class="linea-resumen">
+
+        <div class="linea-resumen-tarjeta">
+
+            <span>Presupuesto total</span>
+
+            <strong>
+                {{ linea.presupuesto|floatformat:2 }} €
+            </strong>
+
+        </div>
+
+        <div class="linea-resumen-tarjeta">
+
+            <span>Presupuesto asignado</span>
+
+            <strong>
+                {{ importe_asignado|floatformat:2 }} €
+            </strong>
+
+            <small>
+                {{ porcentaje_asignado|floatformat:2 }} %
+            </small>
+
+        </div>
+
+        <div class="linea-resumen-tarjeta">
+
+            <span>Presupuesto disponible</span>
+
+            <strong class="linea-verde">
+                {{ importe_disponible|floatformat:2 }} €
+            </strong>
+
+            <small>
+                {{ porcentaje_disponible|floatformat:2 }} %
+            </small>
+
+        </div>
+
+    </div>
+
+    <!-- TABLA DE PROYECTOS -->
+    <section class="linea-tarjeta">
+
+        <div class="linea-tarjeta-cabecera">
+
+            <h2>Proyectos financiados</h2>
+
+            <span>
+                {{ asignaciones|length }} proyectos
+            </span>
+
+        </div>
+
+        <div class="linea-tabla-contenedor">
+
+            <table class="linea-tabla">
+
+                <thead>
+                    <tr>
+                        <th>Acrónimo</th>
+                        <th>Proyecto</th>
+                        <th>Porcentaje</th>
+                        <th>Importe asignado</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for asignacion in asignaciones %}
+
+                    <tr>
+
+                        <!-- ACRÓNIMO -->
+                        <td>
+                            <strong>
+                                {{ asignacion.proyecto.acronimo }}
+                            </strong>
+                        </td>
+
+                        <!-- NOMBRE -->
+                        <td>
+                            {{ asignacion.proyecto.nombre }}
+                        </td>
+
+                        <!-- EDITAR PORCENTAJE -->
+                        <td>
+
+                            <form method="post"
+                                  class="linea-editar">
+
+                                {% csrf_token %}
+
+                                <input type="hidden"
+                                       name="accion"
+                                       value="editar">
+
+                                <input type="hidden"
+                                       name="asignacion_id"
+                                       value="{{ asignacion.id }}">
+
+                                <input type="number"
+                                       name="porcentaje"
+                                       value="{{ asignacion.porcentaje|unlocalize }}"
+                                       min="0.01"
+                                       max="100"
+                                       step="0.01"
+                                       required>
+
+                                <span>%</span>
+
+                                <button type="submit"
+                                        class="linea-guardar"
+                                        title="Guardar porcentaje">
+
+                                    <i class="bi bi-check-lg"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                        <!-- IMPORTE -->
+                        <td class="linea-importe">
+                            {{ asignacion.importe_calculado|floatformat:2 }} €
+                        </td>
+
+                        <!-- ELIMINAR -->
+                        <td>
+
+                            <form method="post"
+                                  onsubmit="return confirm('¿Eliminar esta asignación?');">
+
+                                {% csrf_token %}
+
+                                <input type="hidden"
+                                       name="accion"
+                                       value="eliminar">
+
+                                <input type="hidden"
+                                       name="asignacion_id"
+                                       value="{{ asignacion.id }}">
+
+                                <button type="submit"
+                                        class="linea-eliminar"
+                                        title="Eliminar asignación">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="linea-vacio">
+                            Esta línea todavía no financia ningún proyecto.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- ASIGNAR A OTRO PROYECTO -->
+    <section class="linea-tarjeta">
+
+        <div class="linea-tarjeta-cabecera">
+            <h2>
+                <i class="bi bi-plus-circle"></i>
+                Asignar presupuesto a un proyecto
+            </h2>
+        </div>
+
+        <form method="post" class="linea-formulario">
+
+            {% csrf_token %}
+
+            <input type="hidden"
+                   name="accion"
+                   value="crear">
+
+            <div class="linea-campos">
+
+                <!-- PROYECTO -->
+                <div class="linea-campo">
+
+                    <label for="{{ formulario.proyecto.id_for_label }}">
+                        Proyecto
+                    </label>
+
+                    {{ formulario.proyecto }}
+                    {{ formulario.proyecto.errors }}
+
+                </div>
+
+                <!-- PORCENTAJE -->
+                <div class="linea-campo">
+
+                    <label for="{{ formulario.porcentaje.id_for_label }}">
+                        Porcentaje a asignar (%)
+                    </label>
+
+                    {{ formulario.porcentaje }}
+                    {{ formulario.porcentaje.errors }}
+
+                </div>
+
+            </div>
+
+            {% if formulario.non_field_errors %}
+
+                <div class="linea-error">
+                    {{ formulario.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+            <p class="linea-ayuda">
+                Selecciona el proyecto que recibirá financiación
+                de esta línea e indica qué porcentaje del
+                presupuesto quieres asignarle.
+                Actualmente hay un
+                <strong>{{ porcentaje_disponible|floatformat:2 }} %</strong>
+                disponible.
+            </p>
+
+            <div class="linea-formulario-acciones">
+
+                <button type="submit" class="linea-boton-anadir">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Añadir asignación
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+{% endblock %}

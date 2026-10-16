@@ -1,0 +1,138 @@
+
+/* ==========================================
+   PANEL DE ADMINISTRACIÓN
+========================================== */
+
+.admin-contenedor {
+    max-width: 1180px;
+    margin: 40px auto;
+    padding: 0 24px 50px;
+}
+
+/* CABECERA */
+
+.admin-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+    margin-bottom: 34px;
+}
+
+.admin-icono-principal {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #dbeafe;
+    color: #2563eb;
+    font-size: 29px;
+}
+
+.admin-cabecera h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    color: #0f172a;
+}
+
+.admin-cabecera p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* TÍTULO DE SECCIÓN */
+
+.admin-seccion-titulo {
+    margin-bottom: 20px;
+}
+
+.admin-seccion-titulo h2 {
+    font-size: 19px;
+    margin: 0 0 6px;
+    color: #1e293b;
+}
+
+.admin-seccion-titulo p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* CUADRÍCULA */
+
+.admin-cuadricula {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+/* TARJETAS */
+
+.admin-tarjeta {
+    padding: 25px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.admin-tarjeta:hover {
+    border-color: #93c5fd;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.07);
+}
+
+.admin-tarjeta-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 17px;
+    background: #eff6ff;
+    border-radius: 12px;
+    color: #2563eb;
+    font-size: 23px;
+}
+
+.admin-tarjeta h3 {
+    margin: 0 0 10px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.admin-tarjeta p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #64748b;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 950px) {
+    .admin-cuadricula {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-cuadricula {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-cabecera {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-contenedor {
+        padding: 0 15px 30px;
+    }
+}

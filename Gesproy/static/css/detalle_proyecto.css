@@ -1,0 +1,596 @@
+
+/* ==========================================
+   GESPROY - FICHA DEL PROYECTO
+========================================== */
+
+.ficha-contenedor {
+    max-width: 1250px;
+    margin: 28px auto 65px;
+    padding: 0 24px;
+    color: #263747;
+}
+
+/* ==========================================
+   CABECERA
+========================================== */
+
+.ficha-cabecera {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.ficha-identidad {
+    min-width: 0;
+}
+
+.ficha-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 15px;
+    color: #667b91;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.ficha-volver:hover {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.ficha-acronimo-estado {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 13px;
+}
+
+.ficha-acronimo-estado h1 {
+    margin: 0;
+    color: #1c6689;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.ficha-nombre {
+    margin: 8px 0 0;
+    color: #263747;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.ficha-acciones {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding-bottom: 3px;
+}
+
+.ficha-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid #d3dee8;
+    border-radius: 7px;
+    background: #fff;
+    color: #365672;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color 0.2s;
+}
+
+.ficha-boton:hover {
+    background: #f1f6fa;
+}
+
+.ficha-boton-azul {
+    background: #eff9fa;
+    border-color: #cbe7e9;
+    color: #087f91;
+}
+
+.ficha-boton-azul:hover {
+    background: #ddf3f5;
+}
+
+/* ==========================================
+   ESTADO JUNTO AL ACRÓNIMO
+========================================== */
+
+.ficha-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ficha-punto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.ficha-estado--definicion {
+    color: #748294;
+}
+
+.ficha-estado--solicitado {
+    color: #986323;
+}
+
+.ficha-estado--negociacion {
+    color: #7c61a7;
+}
+
+.ficha-estado--proceso {
+    color: #16899a;
+}
+
+.ficha-estado--finalizado {
+    color: #26865d;
+}
+
+.ficha-estado--denegado {
+    color: #c43636;
+}
+
+/* ==========================================
+   LÍNEA DE ESTADOS
+========================================== */
+
+.ficha-etapas {
+    margin-bottom: 17px;
+    padding: 18px 24px 15px;
+    border: 1px solid #dbe3eb;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.ficha-etapas-linea {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(105px, 1fr));
+    min-width: 630px;
+}
+
+.ficha-etapa {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    color: #b3bfcc;
+    text-align: center;
+}
+
+.ficha-etapa:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: calc(50% + 9px);
+    width: calc(100% - 18px);
+    height: 2px;
+    background: #dce3ea;
+}
+
+.ficha-etapa-marcador {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border: 3px solid #d6dee7;
+    border-radius: 50%;
+    background: #d6dee7;
+    box-sizing: border-box;
+}
+
+.ficha-etapa-texto {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ficha-etapa-completada {
+    color: #5e9b98;
+}
+
+.ficha-etapa-completada .ficha-etapa-marcador {
+    width: 17px;
+    height: 17px;
+    border-color: #7bb7b1;
+    background: #7bb7b1;
+    color: #fff;
+    font-size: 11px;
+}
+
+.ficha-etapa-completada:not(:last-child)::after {
+    background: #a7ceca;
+}
+
+.ficha-etapa-activa {
+    color: #147f91;
+}
+
+.ficha-etapa-activa .ficha-etapa-marcador {
+    width: 17px;
+    height: 17px;
+    border-color: #148a9c;
+    background: #148a9c;
+    box-shadow: 0 0 0 4px #e5f7f8;
+}
+
+.ficha-etapa-denegado.ficha-etapa-activa {
+    color: #c02f35;
+}
+
+.ficha-etapa-denegado.ficha-etapa-activa .ficha-etapa-marcador {
+    border-radius: 3px;
+    border-color: #bd343d;
+    background: #bd343d;
+    box-shadow: 0 0 0 4px #fdebed;
+    color: #fff;
+}
+
+.ficha-etapa-marcador i {
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* ==========================================
+   PESTAÑAS
+========================================== */
+
+/*
+   CORRECCIÓN:
+   Evitar que aparezca una barra vertical
+   innecesaria a la derecha de las pestañas.
+*/
+
+.ficha-contenedor nav.ficha-pestanas {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+
+    margin: 0 0 20px;
+    padding: 0;
+
+    border-bottom: 1px solid #d8e1eb;
+
+    overflow: visible;
+    box-sizing: border-box;
+}
+
+.ficha-pestana {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 13px 15px;
+    margin-bottom: -1px;
+
+    border-bottom: 2px solid transparent;
+
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+
+    flex-shrink: 0;
+
+    transition:
+        color 0.18s,
+        background-color 0.18s;
+}
+
+.ficha-pestana:hover {
+    color: #087f91;
+    background: #f2f9fa;
+    text-decoration: none;
+}
+
+.ficha-pestana.activa {
+    color: #126f82;
+    border-bottom-color: #1293a4;
+    background: #ffffff;
+    font-weight: 700;
+}
+
+.ficha-contador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 18px;
+    padding: 2px 6px;
+
+    border-radius: 4px;
+    background: #e8edf4;
+
+    color: #52677f;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+/* ==========================================
+   TARJETAS
+========================================== */
+
+.ficha-datos-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.ficha-tarjeta {
+    overflow: hidden;
+    border: 1px solid #dbe3ec;
+    border-radius: 7px;
+    background: #ffffff;
+}
+
+.ficha-tarjeta > h2,
+.ficha-seccion-cabecera {
+    margin: 0;
+    padding: 14px 15px;
+    border-bottom: 1px solid #e1e7ee;
+    background: #f6f8fb;
+}
+
+.ficha-tarjeta > h2,
+.ficha-seccion-cabecera h2 {
+    color: #496683;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.ficha-seccion-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.ficha-seccion-cabecera h2 {
+    margin: 0;
+}
+
+.ficha-seccion-total {
+    color: #8594a5;
+    font-size: 12px;
+}
+
+.ficha-tarjeta-cuerpo {
+    padding: 8px 12px 14px;
+}
+
+.ficha-dato {
+    display: grid;
+    grid-template-columns: 43% minmax(0, 1fr);
+    gap: 10px;
+    padding: 11px 3px;
+    border-bottom: 1px solid #e9eef2;
+    align-items: start;
+}
+
+.ficha-dato:last-child {
+    border-bottom: none;
+}
+
+.ficha-dato > span {
+    color: #71839a;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.ficha-dato strong {
+    min-width: 0;
+    color: #2a4055;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.ficha-dato a {
+    color: #13869a;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.ficha-dato a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   COMENTARIO
+========================================== */
+
+.ficha-comentario {
+    margin-top: 15px;
+}
+
+.ficha-comentario-texto {
+    padding: 17px;
+    color: #526477;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   TABLAS DE LAS PESTAÑAS
+========================================== */
+
+.ficha-tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.ficha-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.ficha-tabla th {
+    padding: 15px 17px;
+    background: #f8fafc;
+    border-bottom: 1px solid #dfe7ef;
+    color: #65809a;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ficha-tabla td {
+    padding: 15px 17px;
+    border-bottom: 1px solid #e9eef3;
+    color: #31485c;
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+.ficha-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.ficha-tabla tbody tr:hover {
+    background: #f8fbfc;
+}
+
+.ficha-tabla td strong {
+    font-weight: 600;
+}
+
+.ficha-contacto {
+    color: #73859b;
+}
+
+.ficha-si {
+    color: #16845c;
+    font-weight: 700;
+}
+
+.ficha-importe {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ficha-fecha-denegacion {
+    width: 155px;
+    white-space: nowrap;
+    color: #526d85 !important;
+}
+
+.ficha-causa {
+    min-width: 280px;
+    overflow-wrap: anywhere;
+}
+
+.ficha-vacio {
+    padding: 35px !important;
+    text-align: center;
+    color: #8a99a9 !important;
+}
+
+/* ==========================================
+   RESPONSIVE - TABLETS
+========================================== */
+
+@media (max-width: 1100px) {
+
+    .ficha-datos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ficha-etapas {
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+}
+
+/* ==========================================
+   RESPONSIVE - MÓVILES
+========================================== */
+
+@media (max-width: 650px) {
+
+    .ficha-contenedor {
+        margin: 22px auto 40px;
+        padding: 0 14px;
+    }
+
+    .ficha-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ficha-nombre {
+        font-size: 18px;
+    }
+
+    .ficha-datos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ficha-etapas {
+        padding: 18px 12px 15px;
+    }
+
+    /*
+       En móvil las pestañas se desplazan
+       horizontalmente, sin barra vertical.
+    */
+
+    .ficha-contenedor nav.ficha-pestanas {
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        flex-wrap: nowrap;
+
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .ficha-contenedor nav.ficha-pestanas::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ficha-pestana {
+        padding: 12px 10px;
+    }
+
+    .ficha-tabla {
+        min-width: 600px;
+    }
+}

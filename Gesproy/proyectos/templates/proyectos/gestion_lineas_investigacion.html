@@ -1,0 +1,261 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Líneas de investigación - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/tipos_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tipos-contenedor">
+
+    <!-- CABECERA -->
+    <div class="tipos-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-wallet2"></i>
+                Líneas de investigación
+            </h1>
+
+            <p>
+                Gestiona las líneas de investigación,
+                sus presupuestos y asignaciones a proyectos.
+            </p>
+        </div>
+
+        <button type="button"
+                class="tipos-boton-anadir"
+                id="abrir-modal-linea">
+
+            <i class="bi bi-plus-circle"></i>
+            Añadir línea
+
+        </button>
+
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="tipos-contador">
+
+        <i class="bi bi-wallet2"></i>
+        Total de líneas: {{ lineas|length }}
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="tipos-tabla-contenedor">
+
+        <table class="tipos-tabla">
+
+            <thead>
+                <tr>
+                    <th>Línea de investigación</th>
+                    <th>Presupuesto</th>
+                    <th>Asignado</th>
+                    <th>Disponible</th>
+                    <th>Porcentaje asignado</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for linea in lineas %}
+
+                <tr>
+
+                    <!-- NOMBRE -->
+                    <td>
+                        <strong>{{ linea.nombre }}</strong>
+                    </td>
+
+                    <!-- PRESUPUESTO TOTAL -->
+                    <td>
+                        {{ linea.presupuesto|floatformat:2 }} €
+                    </td>
+
+                    <!-- PRESUPUESTO ASIGNADO -->
+                    <td>
+                        {{ linea.importe_asignado|floatformat:2 }} €
+                    </td>
+
+                    <!-- PRESUPUESTO DISPONIBLE -->
+                    <td>
+                        {{ linea.importe_disponible|floatformat:2 }} €
+                    </td>
+
+                    <!-- PORCENTAJE ASIGNADO -->
+                    <td>
+                        {{ linea.porcentaje_asignado|floatformat:2 }} %
+                    </td>
+
+                    <!-- OPCIONES -->
+                    <td>
+
+                        <!-- GESTIONAR ASIGNACIONES -->
+                        <a href="{% url 'gestionar_asignaciones_linea' linea.id %}"
+                           class="boton-icono financiacion"
+                           title="Gestionar asignaciones de esta línea"
+                           aria-label="Gestionar asignaciones de {{ linea.nombre }}">
+
+                            <i class="bi bi-cash-stack"></i>
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6" class="tipos-vacio">
+                        No hay líneas de investigación registradas.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- VOLVER -->
+    <div class="tipos-pie">
+
+        <a href="{% url 'panel_administracion' %}"
+           class="tipos-boton-volver">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver a administración
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     MODAL: AÑADIR LÍNEA DE INVESTIGACIÓN
+========================================== -->
+
+<dialog id="modal-linea" class="tipos-modal">
+
+    <div class="tipos-modal-cabecera">
+
+        <div class="tipos-modal-icono">
+            <i class="bi bi-wallet2"></i>
+        </div>
+
+        <h2>Añadir línea de investigación</h2>
+
+        <p>
+            Introduce el nombre y presupuesto
+            de la nueva línea.
+        </p>
+
+    </div>
+
+    <form method="post" class="tipos-modal-formulario">
+
+        {% csrf_token %}
+
+        <!-- NOMBRE -->
+        <label for="{{ formulario.nombre.id_for_label }}">
+            Nombre de la línea *
+        </label>
+
+        {{ formulario.nombre }}
+        {{ formulario.nombre.errors }}
+
+        <!-- PRESUPUESTO -->
+        <label for="{{ formulario.presupuesto.id_for_label }}"
+               style="margin-top: 18px;">
+
+            Presupuesto (€) *
+
+        </label>
+
+        {{ formulario.presupuesto }}
+        {{ formulario.presupuesto.errors }}
+
+        {% if formulario.non_field_errors %}
+
+            <div class="tipos-error">
+                {{ formulario.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+        <!-- BOTONES -->
+        <div class="tipos-modal-acciones">
+
+            <button type="button"
+                    class="tipos-boton-cancelar"
+                    id="cerrar-modal-linea">
+
+                Cancelar
+
+            </button>
+
+            <button type="submit"
+                    class="tipos-boton-guardar">
+
+                <i class="bi bi-check-circle"></i>
+                Guardar
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+
+<!-- ==========================================
+     JAVASCRIPT DEL MODAL
+========================================== -->
+
+<script>
+
+    const modalLinea = document.getElementById("modal-linea");
+
+    const botonAbrirLinea = document.getElementById("abrir-modal-linea");
+
+    const botonCerrarLinea = document.getElementById("cerrar-modal-linea");
+
+    // ABRIR MODAL
+    botonAbrirLinea.addEventListener("click", function() {
+
+        modalLinea.showModal();
+
+    });
+
+    // CERRAR MODAL
+    botonCerrarLinea.addEventListener("click", function() {
+
+        modalLinea.close();
+
+    });
+
+    // ABRIR AUTOMÁTICAMENTE SI HAY ERRORES
+    {% if formulario.errors %}
+
+        modalLinea.showModal();
+
+    {% endif %}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,382 @@
+
+{% extends 'base.html' %}
+{% load static l10n %}
+
+{% block title %}
+Listado de proyectos - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/listado_proyectos.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main class="listado-contenedor">
+
+    <!-- ==================================
+         CABECERA
+    ================================== -->
+    <header class="listado-cabecera">
+
+        <div>
+
+            <span class="listado-sobrelinea">
+                Consulta de proyectos
+            </span>
+
+            <h1>Listado de proyectos</h1>
+
+            <p>
+                Todos los proyectos que puedes consultar,
+                en un mismo lugar.
+            </p>
+
+        </div>
+
+        <div class="listado-total">
+
+            <i class="bi bi-folder2-open"></i>
+
+            <span>
+                <strong>{{ total_resultados }}</strong>
+                proyecto{{ total_resultados|pluralize }}
+            </span>
+
+        </div>
+
+    </header>
+
+    <!-- ==================================
+         BÚSQUEDA Y FILTROS
+    ================================== -->
+    <section class="listado-panel-filtros">
+
+        <form method="get"
+              class="listado-formulario">
+
+            <!-- BUSCADOR -->
+            <div class="listado-campo listado-campo-busqueda">
+
+                <label for="listado-buscar">
+                    Buscar proyecto
+                </label>
+
+                <div class="listado-input-icono">
+
+                    <i class="bi bi-search"></i>
+
+                    <input type="search"
+                           id="listado-buscar"
+                           name="q"
+                           value="{{ busqueda }}"
+                           placeholder="Acrónimo, nombre u organismo...">
+
+                </div>
+
+            </div>
+
+            <!-- ESTADO -->
+            <div class="listado-campo listado-campo-estado">
+
+                <label for="listado-estado">
+                    Estado
+                </label>
+
+                <select id="listado-estado"
+                        name="estado">
+
+                    <option value="">
+                        Todos los estados
+                    </option>
+
+                    {% for valor, etiqueta in estados %}
+
+                        <option value="{{ valor }}"
+                                {% if estado_actual == valor %}selected{% endif %}>
+
+                            {{ etiqueta }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="listado-acciones-filtro">
+
+                <button type="submit"
+                        class="listado-boton-buscar">
+
+                    <i class="bi bi-funnel"></i>
+                    Aplicar
+
+                </button>
+
+                {% if busqueda or estado_actual %}
+
+                    <a href="{% url 'listado_proyectos' %}"
+                       class="listado-boton-limpiar">
+
+                        Limpiar
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </form>
+
+    </section>
+
+    <!-- ==================================
+         TABLA GENERAL
+    ================================== -->
+    <section class="listado-tarjeta">
+
+        <!-- CABECERA DE LA TABLA -->
+        <div class="listado-tabla-titulo">
+
+            <div>
+
+                <h2>Proyectos</h2>
+
+                <p>
+                    Pulsa un acrónimo para consultar su ficha.
+                </p>
+
+            </div>
+
+            <span class="listado-orden">
+
+                <i class="bi bi-sort-alpha-down"></i>
+                Orden alfabético
+
+            </span>
+
+        </div>
+
+        <div class="listado-tabla-desplazable">
+
+            <table class="listado-tabla">
+
+                <thead>
+
+                    <tr>
+                        <th>Acrónimo</th>
+                        <th>Nombre del proyecto</th>
+                        <th>Estado</th>
+                        <th>Organismo</th>
+                        <th>Tipo</th>
+                        <th>Seguimiento</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for proyecto in proyectos %}
+
+                    <tr>
+
+                        <!-- ACRÓNIMO CLICABLE -->
+                        <td class="listado-celda-acronimo">
+
+                            {% include 'proyectos/componentes/acronimo_proyecto.html' with proyecto=proyecto %}
+
+                        </td>
+
+                        <!-- NOMBRE -->
+                        <td class="listado-celda-nombre">
+
+                            {{ proyecto.nombre }}
+
+                        </td>
+
+                        <!-- ESTADO -->
+                        <td>
+
+                            <span class="listado-estado listado-estado--{{ proyecto.estado|lower }}">
+
+                                <span class="listado-estado-punto"></span>
+
+                                {{ proyecto.get_estado_display }}
+
+                            </span>
+
+                        </td>
+
+                        <!-- ORGANISMO -->
+                        <td class="listado-celda-organismo">
+
+                            {{ proyecto.organismo.nombre|default:"Sin organismo" }}
+
+                        </td>
+
+                        <!-- TIPO -->
+                        <td class="listado-celda-tipo">
+
+                            {{ proyecto.tipo_proyecto.nombre|default:"Sin especificar" }}
+
+                        </td>
+
+                        <!-- SEGUIMIENTO -->
+                        <td>
+
+                            {% if proyecto.estado == 'PROCESO' %}
+
+                                <div class="proceso-barras">
+
+                                    <!-- BARRA DE TIEMPO -->
+                                    <div class="proceso-indicador">
+
+                                        <span class="proceso-etiqueta">
+                                            Tiempo
+                                        </span>
+
+                                        <div class="proceso-barra">
+
+                                            <div class="proceso-barra-relleno"
+                                                 style="width: {{ proyecto.porcentaje_tiempo|default:0|unlocalize }}%;">
+                                            </div>
+
+                                        </div>
+
+                                        <span class="proceso-valor">
+                                            {{ proyecto.porcentaje_tiempo|default:0|floatformat:0 }} %
+                                        </span>
+
+                                    </div>
+
+                                    <!-- BARRA DE HORAS -->
+                                    <div class="proceso-indicador">
+
+                                        <span class="proceso-etiqueta">
+                                            Horas
+                                        </span>
+
+                                        <div class="proceso-barra">
+
+                                            {% if proyecto.porcentaje_trabajo != None %}
+
+                                                <div class="proceso-barra-relleno proceso-barra-trabajo"
+                                                     style="width: {{ proyecto.porcentaje_trabajo|unlocalize }}%;">
+                                                </div>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                        <span class="proceso-valor">
+
+                                            {% if proyecto.porcentaje_trabajo != None %}
+
+                                                {{ proyecto.porcentaje_trabajo|floatformat:0 }} %
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            {% else %}
+
+                                <span class="listado-sin-datos">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="listado-vacio">
+
+                            <i class="bi bi-folder-x"></i>
+
+                            <strong>
+                                No encontramos proyectos
+                            </strong>
+
+                            <span>
+                                Prueba con otra búsqueda
+                                o cambia el estado seleccionado.
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- ==================================
+             PAGINACIÓN
+        ================================== -->
+        {% if pagina.paginator.num_pages > 1 %}
+
+        <nav class="listado-paginacion"
+             aria-label="Paginación de proyectos">
+
+            <span>
+                Página {{ pagina.number }}
+                de {{ pagina.paginator.num_pages }}
+            </span>
+
+            <div>
+
+                {% if pagina.has_previous %}
+
+                    <a href="?q={{ busqueda|urlencode }}&amp;estado={{ estado_actual|urlencode }}&amp;pagina={{ pagina.previous_page_number }}">
+
+                        <i class="bi bi-chevron-left"></i>
+                        Anterior
+
+                    </a>
+
+                {% endif %}
+
+                {% if pagina.has_next %}
+
+                    <a href="?q={{ busqueda|urlencode }}&amp;estado={{ estado_actual|urlencode }}&amp;pagina={{ pagina.next_page_number }}">
+
+                        Siguiente
+                        <i class="bi bi-chevron-right"></i>
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </nav>
+
+        {% endif %}
+
+    </section>
+
+</main>
+
+{% endblock %}

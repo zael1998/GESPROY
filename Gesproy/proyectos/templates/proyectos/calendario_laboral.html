@@ -1,0 +1,213 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Calendario laboral - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/calendario_laboral.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="cal-contenedor">
+
+    <div class="cal-cabecera">
+
+        <div>
+            <h1>Calendario laboral</h1>
+            <p>Festivos nacionales, autonómicos, locales y del centro.</p>
+        </div>
+
+        {% if request.user.is_staff %}
+
+        <div class="cal-acciones">
+
+            <a href="{% url 'crear_festivo' %}"
+               class="cal-boton">
+                <i class="bi bi-plus-lg"></i>
+                Añadir festivo
+            </a>
+
+            <form method="post"
+                  action="{% url 'importar_calendario_laboral' %}">
+
+                {% csrf_token %}
+
+                <input type="hidden"
+                       name="anio"
+                       value="{{ anio }}">
+
+                <button type="submit"
+                        class="cal-boton cal-boton-principal">
+                    <i class="bi bi-cloud-arrow-down"></i>
+                    Importar calendario oficial
+                </button>
+
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+
+            <div class="cal-mensaje">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+    {% endif %}
+
+    <div class="cal-filtros">
+
+        <span>AÑO</span>
+
+        {% for numero in anios_disponibles %}
+
+            <a href="?anio={{ numero }}"
+               class="cal-anio {% if numero == anio %}activo{% endif %}">
+                {{ numero }}
+            </a>
+
+        {% endfor %}
+
+    </div>
+
+    <div class="cal-tabla-contenedor">
+
+        <table class="cal-tabla">
+
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Nombre</th>
+                    <th>Ámbito</th>
+                    <th>Fuente</th>
+
+                    {% if request.user.is_staff %}
+                        <th>Acciones</th>
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for festivo in festivos %}
+
+                <tr>
+
+                    <td class="cal-fecha">
+                        {{ festivo.fecha|date:"d/m/Y" }}
+                    </td>
+
+                    <td>
+
+                        {{ festivo.nombre }}
+
+                        {% if festivo.editado_manualmente %}
+
+                            <span class="cal-etiqueta">
+                                EDITADO A MANO
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        <span class="cal-ambito cal-ambito-{{ festivo.ambito }}">
+                            {{ festivo.get_ambito_display }}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        {% if festivo.url_fuente %}
+
+                            <a href="{{ festivo.url_fuente }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="cal-fuente">
+                                {{ festivo.fuente|default:"Fuente oficial" }}
+                            </a>
+
+                        {% else %}
+
+                            <span class="cal-fuente">
+                                {{ festivo.fuente|default:"—" }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    {% if request.user.is_staff %}
+
+                    <td>
+
+                        <div class="cal-acciones-fila">
+
+                            <a href="{% url 'editar_festivo' festivo.id %}"
+                               class="cal-boton-fila">
+                                Editar
+                            </a>
+
+                            <form method="post"
+                                  action="{% url 'eliminar_festivo' festivo.id %}"
+                                  onsubmit="return confirm('¿Eliminar este festivo?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="cal-boton-fila cal-borrar">
+                                    Borrar
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </td>
+
+                    {% endif %}
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5" class="cal-vacio">
+                        Todavía no hay festivos registrados para este año.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <p class="cal-pie">
+        Los festivos importados proceden de
+        <a href="https://calendariosnacionales.com/es/api/"
+           target="_blank"
+           rel="noopener noreferrer">
+            Calendarios Nacionales
+        </a>.
+        Comprueba los datos con las publicaciones oficiales del
+        BOE y la Xunta de Galicia antes de utilizarlos
+        para decisiones laborales.
+    </p>
+
+</div>
+
+{% endblock %}

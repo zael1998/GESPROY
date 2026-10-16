@@ -1,0 +1,230 @@
+
+/* ==========================================
+   MIS PROYECTOS - GESPROY
+========================================== */
+
+.mis-contenedor {
+    max-width: 1300px;
+    margin: 36px auto;
+    padding: 0 24px 50px;
+}
+
+/* CABECERA */
+
+.mis-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.mis-cabecera h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.mis-cabecera h1 i {
+    color: #2563eb;
+    margin-right: 8px;
+}
+
+.mis-cabecera p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.mis-contador {
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 10px 15px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* FILTROS */
+
+.mis-filtros {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.mis-filtro,
+.mis-filtro-activo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid #dbe3ec;
+    border-radius: 8px;
+    background: white;
+    color: #475569;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.mis-filtro:hover,
+.mis-filtro-activo:hover {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.mis-filtro-activo {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #2563eb;
+}
+
+/* CONTENEDOR DE TABLA */
+
+.mis-tabla-contenedor {
+    overflow-x: auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+}
+
+/* TABLA */
+
+.mis-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.mis-tabla th {
+    padding: 16px 18px;
+    background: #f1f5f9;
+    color: #475569;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.mis-tabla td {
+    padding: 14px 18px;
+    color: #475569;
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: middle;
+}
+
+.mis-tabla tbody tr:hover {
+    background: #f8fafc;
+}
+
+.mis-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.mis-tabla th:last-child,
+.mis-tabla td:last-child {
+    text-align: center;
+    min-width: 180px;
+}
+
+/* ACRÓNIMO */
+
+.mis-acronimo {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mis-acronimo:hover {
+    text-decoration: underline;
+}
+
+.mis-responsable {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 4px 8px;
+    background: #f0fdf4;
+    color: #15803d;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ESTADOS */
+
+.mis-estado {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.mis-estado-definicion {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.mis-estado-solicitado,
+.mis-estado-negociacion {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.mis-estado-proceso {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.mis-estado-finalizado {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.mis-estado-denegado {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+/* ACCIONES */
+
+.mis-opciones {
+    white-space: nowrap;
+}
+
+.mis-opciones .boton-icono {
+    margin: 0 3px;
+}
+
+/* SIN RESULTADOS */
+
+.mis-vacio {
+    text-align: center !important;
+    padding: 36px 16px !important;
+    color: #64748b !important;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+
+    .mis-contenedor {
+        padding: 0 14px 35px;
+    }
+
+    .mis-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .mis-filtros {
+        justify-content: flex-start;
+    }
+
+    .mis-tabla {
+        min-width: 760px;
+    }
+}

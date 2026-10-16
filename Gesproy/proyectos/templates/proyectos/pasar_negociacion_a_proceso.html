@@ -1,0 +1,99 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Pasar proyecto a proceso - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion">
+        <h1>
+            <i class="bi bi-play-circle"></i>
+            Pasar proyecto a proceso
+        </h1>
+
+        <p>
+            Completa los datos necesarios para iniciar
+            el proyecto {{ proyecto.acronimo }}.
+        </p>
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- CAMPOS -->
+            {% for campo in formulario %}
+
+                <div class="fila-formulario">
+
+                    <label for="{{ campo.id_for_label }}">
+                        {{ campo.label }}
+                        {% if campo.field.required %}*{% endif %}
+                    </label>
+
+                    <div class="campo-formulario">
+                        {{ campo }}
+
+                        {% if campo.help_text %}
+                            <small class="texto-ayuda">
+                                {{ campo.help_text }}
+                            </small>
+                        {% endif %}
+
+                        {{ campo.errors }}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+            <!-- BOTONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-play-circle"></i>
+                    Pasar a proceso
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'proyectos_en_negociacion' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

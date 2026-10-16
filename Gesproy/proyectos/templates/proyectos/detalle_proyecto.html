@@ -1,7 +1,702 @@
-<h1>{{ proyecto.nombre }}</h1>
 
-<p>Acrónimo: {{ proyecto.acronimo }}</p>
-<p>Estado: {{ proyecto.estado }}</p>
-<p>Importe solicitado: {{ proyecto.importe_solicitado }}</p>
-<p>Importe concedido: {{ proyecto.importe_concedido }}</p>
-<p>Comentario: {{ proyecto.comentario }}</p>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ proyecto.acronimo }} - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/detalle_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main class="ficha-contenedor">
+
+    <!-- CABECERA -->
+    <div class="ficha-cabecera">
+
+        <div class="ficha-identidad">
+
+            <a href="{% url 'listado_proyectos' %}"
+               class="ficha-volver">
+                <i class="bi bi-arrow-left"></i>
+                Proyectos
+            </a>
+
+            <div class="ficha-acronimo-estado">
+
+                <h1>{{ proyecto.acronimo }}</h1>
+
+                <span class="ficha-estado ficha-estado--{{ proyecto.estado|lower }}">
+                    <span class="ficha-punto"></span>
+                    {{ proyecto.get_estado_display }}
+                </span>
+
+            </div>
+
+            <p class="ficha-nombre">
+                {{ proyecto.nombre }}
+            </p>
+
+        </div>
+
+        <!-- ACCIONES DISPONIBLES -->
+        {% if puede_editar %}
+
+        <div class="ficha-acciones">
+
+            {% if proyecto.estado == 'DEFINICION' %}
+
+                <a href="{% url 'editar_proyecto_definicion' proyecto.id %}"
+                   class="ficha-boton">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                </a>
+
+            {% elif proyecto.estado == 'SOLICITADO' %}
+
+                <a href="{% url 'editar_proyecto_solicitado' proyecto.id %}"
+                   class="ficha-boton">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                </a>
+
+            {% elif proyecto.estado == 'NEGOCIACION' %}
+
+                <a href="{% url 'editar_proyecto_negociacion' proyecto.id %}"
+                   class="ficha-boton">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                </a>
+
+            {% elif proyecto.estado == 'PROCESO' %}
+
+                <a href="{% url 'editar_proyecto_proceso' proyecto.id %}"
+                   class="ficha-boton">
+                    <i class="bi bi-pencil-square"></i>
+                    Editar
+                </a>
+
+            {% elif proyecto.estado == 'DENEGADO' %}
+
+                <a href="{% url 'volver_estado_anterior_denegado' proyecto.id %}"
+                   class="ficha-boton">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Reabrir
+                </a>
+
+            {% elif proyecto.estado == 'FINALIZADO' %}
+
+                <a href="{% url 'reactivar_proyecto_finalizado' proyecto.id %}"
+                   class="ficha-boton">
+                    <i class="bi bi-arrow-repeat"></i>
+                    Reactivar
+                </a>
+
+            {% endif %}
+
+            <a href="{% url 'financiacion_proyecto' proyecto.id %}"
+               class="ficha-boton ficha-boton-azul">
+                <i class="bi bi-cash-stack"></i>
+                Financiación
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <!-- ======================================
+         LÍNEA DE ESTADOS
+    ====================================== -->
+    <section class="ficha-etapas">
+
+        <div class="ficha-etapas-linea">
+
+            {% for paso in pasos_estado %}
+
+                <div class="ficha-etapa
+                            {% if paso.activo %}ficha-etapa-activa{% endif %}
+                            {% if paso.completado %}ficha-etapa-completada{% endif %}
+                            {% if paso.denegado %}ficha-etapa-denegado{% endif %}">
+
+                    <span class="ficha-etapa-marcador">
+
+                        {% if paso.activo and paso.denegado %}
+                            <i class="bi bi-x"></i>
+                        {% elif paso.completado %}
+                            <i class="bi bi-check"></i>
+                        {% endif %}
+
+                    </span>
+
+                    <span class="ficha-etapa-texto">
+                        {{ paso.nombre }}
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+    <!-- ======================================
+         PESTAÑAS
+    ====================================== -->
+    <nav class="ficha-pestanas"
+         aria-label="Apartados del proyecto">
+
+        <a href="?pestana=datos"
+           class="ficha-pestana {% if pestana == 'datos' %}activa{% endif %}"
+           {% if pestana == 'datos' %}aria-current="page"{% endif %}>
+            Datos
+        </a>
+
+        <a href="?pestana=investigadores"
+           class="ficha-pestana {% if pestana == 'investigadores' %}activa{% endif %}"
+           {% if pestana == 'investigadores' %}aria-current="page"{% endif %}>
+
+            Investigadores
+            <span class="ficha-contador">
+                {{ total_investigadores }}
+            </span>
+
+        </a>
+
+        <a href="?pestana=socios"
+           class="ficha-pestana {% if pestana == 'socios' %}activa{% endif %}"
+           {% if pestana == 'socios' %}aria-current="page"{% endif %}>
+
+            Socios
+            <span class="ficha-contador">
+                {{ total_socios }}
+            </span>
+
+        </a>
+
+        <a href="?pestana=denegaciones"
+           class="ficha-pestana {% if pestana == 'denegaciones' %}activa{% endif %}"
+           {% if pestana == 'denegaciones' %}aria-current="page"{% endif %}>
+
+            Denegaciones
+            <span class="ficha-contador">
+                {{ total_denegaciones }}
+            </span>
+
+        </a>
+
+    </nav>
+
+    <!-- ======================================
+         PESTAÑA: DATOS
+    ====================================== -->
+    {% if pestana == 'datos' %}
+
+    <div class="ficha-datos-grid">
+
+        <!-- IDENTIFICACIÓN -->
+        <section class="ficha-tarjeta">
+
+            <h2>Identificación</h2>
+
+            <div class="ficha-tarjeta-cuerpo">
+
+                <div class="ficha-dato">
+                    <span>Nombre</span>
+                    <strong>{{ proyecto.nombre }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Acrónimo</span>
+                    <strong>{{ proyecto.acronimo }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Estado</span>
+                    <strong>{{ proyecto.get_estado_display }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Organismo</span>
+                    <strong>{{ proyecto.organismo.nombre|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Centro concedente</span>
+                    <strong>{{ proyecto.centro_concedente|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Enlace</span>
+
+                    {% if proyecto.enlace_proyecto %}
+
+                        <a href="{{ proyecto.enlace_proyecto }}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Abrir enlace
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+
+                    {% else %}
+                        <strong>—</strong>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- CLASIFICACIÓN -->
+        <section class="ficha-tarjeta">
+
+            <h2>Clasificación</h2>
+
+            <div class="ficha-tarjeta-cuerpo">
+
+                <div class="ficha-dato">
+                    <span>Tipo</span>
+                    <strong>{{ proyecto.tipo_proyecto.nombre|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Participación</span>
+                    <strong>{{ proyecto.tipo_participacion.nombre|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Áreas</span>
+
+                    <strong>
+                        {% for area in proyecto.areas.all %}
+                            {{ area.nombre }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Líneas de investigación</span>
+
+                    <strong>
+                        {% for nombre in nombres_lineas %}
+                            {{ nombre }}{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            —
+                        {% endfor %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Investigador principal</span>
+
+                    <strong>
+                        {% if proyecto.investigador_principal %}
+
+                            {% with usuario=proyecto.investigador_principal.usuario %}
+                                {{ usuario.get_full_name|default:usuario.username }}
+                            {% endwith %}
+
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Porcentaje de éxito</span>
+
+                    <strong>
+                        {% if proyecto.porcentaje_exito != None %}
+                            {{ proyecto.porcentaje_exito|floatformat:2 }} %
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ECONÓMICO -->
+        <section class="ficha-tarjeta">
+
+            <h2>Económico</h2>
+
+            <div class="ficha-tarjeta-cuerpo">
+
+                <div class="ficha-dato">
+                    <span>Importe solicitado</span>
+
+                    <strong>
+                        {% if proyecto.importe_solicitado != None %}
+                            {{ proyecto.importe_solicitado|floatformat:2 }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Solicitado CESGA</span>
+
+                    <strong>
+                        {% if proyecto.importe_solicitado_cesga != None %}
+                            {{ proyecto.importe_solicitado_cesga|floatformat:2 }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Importe concedido</span>
+
+                    <strong>
+                        {% if proyecto.importe_concedido != None %}
+                            {{ proyecto.importe_concedido|floatformat:2 }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Concedido CESGA</span>
+
+                    <strong>
+                        {% if proyecto.importe_concedido_cesga != None %}
+                            {{ proyecto.importe_concedido_cesga|floatformat:2 }} €
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Subvención</span>
+
+                    <strong>
+                        {% if proyecto.porcentaje_subvencion != None %}
+                            {{ proyecto.porcentaje_subvencion|floatformat:2 }} %
+                        {% else %}
+                            —
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Pagado</span>
+
+                    <strong>
+                        {% if proyecto.pagado %}
+                            Sí
+                        {% else %}
+                            No
+                        {% endif %}
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- CALENDARIO -->
+        <section class="ficha-tarjeta">
+
+            <h2>Calendario</h2>
+
+            <div class="ficha-tarjeta-cuerpo">
+
+                <div class="ficha-dato">
+                    <span>Duración (meses)</span>
+                    <strong>{{ proyecto.duracion|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Solicitud</span>
+                    <strong>{{ proyecto.fecha_solicitud|date:"d/m/Y"|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Resolución prevista</span>
+                    <strong>{{ proyecto.fecha_prevista_resolucion|date:"d/m/Y"|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Resolución</span>
+                    <strong>{{ proyecto.fecha_resolucion|date:"d/m/Y"|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Inicio</span>
+                    <strong>{{ proyecto.fecha_inicio|date:"d/m/Y"|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Fin prevista</span>
+                    <strong>{{ proyecto.fecha_final_prevista|date:"d/m/Y"|default:"—" }}</strong>
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Fin</span>
+                    <strong>{{ proyecto.fecha_fin|date:"d/m/Y"|default:"—" }}</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- COMENTARIO -->
+    <section class="ficha-tarjeta ficha-comentario">
+
+        <h2>Comentario</h2>
+
+        <div class="ficha-comentario-texto">
+            {{ proyecto.comentario|default:"Sin comentarios."|linebreaksbr }}
+        </div>
+
+    </section>
+
+    <!-- ======================================
+         PESTAÑA: INVESTIGADORES
+    ====================================== -->
+    {% elif pestana == 'investigadores' %}
+
+    <section class="ficha-tarjeta">
+
+        <div class="ficha-seccion-cabecera">
+
+            <h2>Investigadores del proyecto</h2>
+
+            <span class="ficha-seccion-total">
+                {{ total_investigadores }} investigadores
+            </span>
+
+        </div>
+
+        <div class="ficha-tabla-contenedor">
+
+            <table class="ficha-tabla">
+
+                <thead>
+                    <tr>
+                        <th>Nombre completo</th>
+                        <th>Porcentaje</th>
+                        <th>Responsable</th>
+                        <th>Validador</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for investigador in investigadores %}
+
+                    <tr>
+
+                        <td>
+                            <strong>{{ investigador.nombre }}</strong>
+                        </td>
+
+                        <td>
+                            {% if investigador.porcentaje != None %}
+                                {{ investigador.porcentaje|floatformat:2 }} %
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if investigador.responsable %}
+                                <span class="ficha-si">Sí</span>
+                            {% else %}
+                                No
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ investigador.validador }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="4" class="ficha-vacio">
+                            No hay investigadores asociados.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- ======================================
+         PESTAÑA: SOCIOS
+    ====================================== -->
+    {% elif pestana == 'socios' %}
+
+    <section class="ficha-tarjeta">
+
+        <div class="ficha-seccion-cabecera">
+
+            <h2>Socios del proyecto</h2>
+
+            <span class="ficha-seccion-total">
+                {{ total_socios }} socios
+            </span>
+
+        </div>
+
+        <div class="ficha-tabla-contenedor">
+
+            <table class="ficha-tabla">
+
+                <thead>
+                    <tr>
+                        <th>Empresa (contacto)</th>
+                        <th>Porcentaje</th>
+                        <th>Importe</th>
+                        <th>Investigador responsable</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for socio in socios %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong>{{ socio.empresa }}</strong>
+
+                            {% if socio.contacto != '—' %}
+                                <span class="ficha-contacto">
+                                    ({{ socio.contacto }})
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+                            {{ socio.porcentaje|floatformat:2 }} %
+                        </td>
+
+                        <td class="ficha-importe">
+                            {{ socio.importe|floatformat:2 }} €
+                        </td>
+
+                        <td>
+                            {{ socio.responsable }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="4" class="ficha-vacio">
+                            No hay socios asociados a este proyecto.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- ======================================
+         PESTAÑA: DENEGACIONES
+    ====================================== -->
+    {% elif pestana == 'denegaciones' %}
+
+    <section class="ficha-tarjeta">
+
+        <h2>Historial de denegaciones</h2>
+
+        <div class="ficha-tabla-contenedor">
+
+            <table class="ficha-tabla">
+
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Causa</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for denegacion in denegaciones %}
+
+                    <tr>
+
+                        <td class="ficha-fecha-denegacion">
+
+                            {% if denegacion.fecha %}
+
+                                {% if denegacion.solo_fecha %}
+                                    {{ denegacion.fecha|date:"d/m/Y" }}
+                                {% else %}
+                                    {{ denegacion.fecha|date:"d/m/Y H:i" }}
+                                {% endif %}
+
+                            {% else %}
+                                —
+                            {% endif %}
+
+                        </td>
+
+                        <td class="ficha-causa">
+                            {{ denegacion.causa|linebreaksbr }}
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="2" class="ficha-vacio">
+                            Este proyecto no tiene denegaciones registradas.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+</main>
+
+{% endblock %}

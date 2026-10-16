@@ -1,0 +1,197 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Añadir socio - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion">
+
+        <h1>
+            <i class="bi bi-person-plus"></i>
+            Añadir socio
+        </h1>
+
+        <p>
+            Introduce los datos del socio
+            y de su responsable.
+        </p>
+
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+            <!-- DATOS DEL SOCIO -->
+            <div class="seccion-edicion">
+                <h2>Datos del socio</h2>
+            </div>
+
+            <!-- SOCIO -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.nombre_empresa.id_for_label }}">
+                    Socio *
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.nombre_empresa }}
+                    {{ formulario.nombre_empresa.errors }}
+                </div>
+
+            </div>
+
+            <!-- DIRECCIÓN -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.direccion.id_for_label }}">
+                    Dirección
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.direccion }}
+                    {{ formulario.direccion.errors }}
+                </div>
+
+            </div>
+
+            <!-- DATOS DEL RESPONSABLE -->
+            <div class="seccion-edicion">
+                <h2>Datos del responsable</h2>
+            </div>
+
+            <!-- APELLIDOS -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.apellido.id_for_label }}">
+                    Apellidos *
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.apellido }}
+                    {{ formulario.apellido.errors }}
+                </div>
+
+            </div>
+
+            <!-- NOMBRE -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.nombre.id_for_label }}">
+                    Nombre *
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.nombre }}
+                    {{ formulario.nombre.errors }}
+                </div>
+
+            </div>
+
+            <!-- TELÉFONO 1 -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.telefono.id_for_label }}">
+                    Teléfono 1
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.telefono }}
+                    {{ formulario.telefono.errors }}
+                </div>
+
+            </div>
+
+            <!-- TELÉFONO 2 -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.telefono2.id_for_label }}">
+                    Teléfono 2
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.telefono2 }}
+                    {{ formulario.telefono2.errors }}
+                </div>
+
+            </div>
+
+            <!-- FAX -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.fax.id_for_label }}">
+                    Fax
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.fax }}
+                    {{ formulario.fax.errors }}
+                </div>
+
+            </div>
+
+            <!-- CORREO -->
+            <div class="fila-formulario">
+
+                <label for="{{ formulario.email.id_for_label }}">
+                    Correo electrónico *
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.email }}
+                    {{ formulario.email.errors }}
+                </div>
+
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-plus-circle"></i>
+                    Añadir socio
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'gestion_socios' %}"
+                   class="boton-enlace">
+
+                    <i class="bi bi-x-circle"></i>
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

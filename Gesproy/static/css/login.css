@@ -1,0 +1,221 @@
+
+/* ==========================================
+   LOGIN GESPROY
+========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(
+        135deg,
+        #e7eef9,
+        #f8fafc
+    );
+    color: #1e293b;
+}
+
+/* PÁGINA */
+
+.login-pagina {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 16px;
+}
+
+/* TARJETA */
+
+.login-tarjeta {
+    width: 100%;
+    max-width: 440px;
+    background: white;
+    padding: 38px;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow:
+        0 20px 60px rgba(30, 58, 95, 0.10);
+}
+
+/* MARCA */
+
+.login-marca {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: #e8f0fd;
+    color: #2563eb;
+    font-size: 27px;
+}
+
+.login-marca h1 {
+    margin: 0;
+    font-size: 29px;
+    color: #1e3a5f;
+    font-weight: 700;
+}
+
+.login-marca p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* BIENVENIDA */
+
+.login-cabecera {
+    text-align: center;
+    margin-bottom: 29px;
+}
+
+.login-cabecera h2 {
+    font-size: 23px;
+    margin: 0 0 10px;
+    color: #0f172a;
+}
+
+.login-cabecera p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    color: #64748b;
+}
+
+/* FORMULARIO */
+
+.login-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 21px;
+}
+
+.login-campo label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.login-input {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.login-input:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px #dbeafe;
+}
+
+.login-input i {
+    color: #94a3b8;
+    font-size: 18px;
+}
+
+.login-input input {
+    width: 100%;
+    padding: 14px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+/* BOTÓN */
+
+.login-boton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-boton:hover {
+    background: #1d4ed8;
+}
+
+/* ERRORES */
+
+.login-error {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.login-error .errorlist,
+.login-campo .errorlist {
+    margin: 0;
+    padding-left: 18px;
+    color: #b91c1c;
+    font-size: 12px;
+}
+
+/* PIE */
+
+.login-pie {
+    margin-top: 28px;
+    text-align: center;
+    padding-top: 22px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.login-pie i {
+    margin-right: 6px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+
+    .login-tarjeta {
+        padding: 28px 22px;
+    }
+
+    .login-marca h1 {
+        font-size: 25px;
+    }
+
+    .login-cabecera h2 {
+        font-size: 21px;
+    }
+}

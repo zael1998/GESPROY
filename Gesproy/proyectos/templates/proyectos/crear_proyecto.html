@@ -90,12 +90,27 @@ Añadir proyecto - Gesproy
                     Investigador principal
                     {% if not formulario.investigador_principal.field.required %}
                         <span class="etiqueta-opcional">(Opcional)</span>
+                    {% else %}
+                        *
                     {% endif %}
                 </label>
 
                 <div class="campo-formulario">
                     {{ formulario.investigador_principal }}
                     {{ formulario.investigador_principal.errors }}
+                </div>
+            </div>
+
+            <!-- FECHA FINAL PREVISTA -->
+            <div class="fila-formulario">
+                <label for="{{ formulario.fecha_final_prevista.id_for_label }}">
+                    Fecha final prevista
+                    {% if formulario.fecha_final_prevista.field.required %}*{% endif %}
+                </label>
+
+                <div class="campo-formulario">
+                    {{ formulario.fecha_final_prevista }}
+                    {{ formulario.fecha_final_prevista.errors }}
                 </div>
             </div>
 

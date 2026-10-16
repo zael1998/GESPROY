@@ -1,0 +1,142 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Borrar proyecto finalizado - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion">
+
+        <h1>
+            <i class="bi bi-trash"></i>
+            Borrar proyecto finalizado
+        </h1>
+
+        <p>
+            Confirma si deseas eliminar definitivamente
+            este proyecto.
+        </p>
+
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <!-- TÍTULO -->
+        <div class="seccion-edicion">
+            <h2>Confirmar eliminación</h2>
+        </div>
+
+        <!-- DATOS DEL PROYECTO -->
+        <div class="fila-formulario">
+
+            <label>Acrónimo</label>
+
+            <div class="campo-formulario">
+                <strong>{{ proyecto.acronimo }}</strong>
+            </div>
+
+        </div>
+
+        <div class="fila-formulario">
+
+            <label>Nombre</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.nombre }}
+            </div>
+
+        </div>
+
+        <div class="fila-formulario">
+
+            <label>Organismo</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.organismo|default:"—" }}
+            </div>
+
+        </div>
+
+        <div class="fila-formulario">
+
+            <label>Fecha de inicio</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.fecha_inicio|date:"d/m/Y"|default:"—" }}
+            </div>
+
+        </div>
+
+        <div class="fila-formulario">
+
+            <label>Fecha de finalización</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.fecha_fin|date:"d/m/Y"|default:"—" }}
+            </div>
+
+        </div>
+
+        <!-- ADVERTENCIA -->
+        <div class="seccion-edicion">
+
+            <p>
+                <strong>Atención:</strong>
+                estás a punto de eliminar el proyecto
+                {{ proyecto.acronimo }}.
+            </p>
+
+            <p>
+                Esta acción es permanente y no se puede deshacer.
+            </p>
+
+        </div>
+
+        <!-- ERRORES -->
+        {% if error %}
+
+            <div class="errores-formulario">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+        <!-- FORMULARIO DE CONFIRMACIÓN -->
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-trash"></i>
+                    Confirmar eliminación
+                </button>
+
+                <a href="{% url 'proyectos_finalizados' %}"
+                   class="boton-enlace">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

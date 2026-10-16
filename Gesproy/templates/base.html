@@ -1,28 +1,276 @@
+
 {% load static %}
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}Gesproy{% endblock %}</title>
+    <title>
+        {% block title %}Gesproy{% endblock %}
+    </title>
 
-    <!-- Bootstrap Icons -->
+    <!-- BOOTSTRAP ICONS -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
-    <!-- Nuestro CSS -->
-    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <!-- CSS GENERAL -->
+    <link rel="stylesheet"
+          href="{% static 'css/estilos.css' %}">
 
+    <!-- CSS ESPECÍFICO -->
     {% block extra_css %}
     {% endblock %}
+
 </head>
 
 <body>
 
-    {% block content %}
-    {% endblock %}
+    <!-- ==========================================
+         CABECERA PRINCIPAL
+    ========================================== -->
+
+    <header class="gesproy-cabecera">
+
+        <div class="gesproy-ancho">
+
+            <a href="{% url 'mis_proyectos' %}"
+               class="gesproy-marca">
+
+                <i class="bi bi-grid-3x3-gap"></i>
+                Gestión de proyectos
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- ==========================================
+         NAVEGACIÓN PRINCIPAL
+    ========================================== -->
+
+    <nav class="gesproy-navegacion"
+         aria-label="Navegación principal">
+
+        <div class="gesproy-nav-contenido">
+
+            <div class="gesproy-enlaces">
+
+                <!-- MIS PROYECTOS -->
+                <a href="{% url 'mis_proyectos' %}"
+                   class="gesproy-enlace {% if request.resolver_match.url_name == 'mis_proyectos' %}activo{% endif %}">
+
+                    <i class="bi bi-person-workspace"></i>
+                    Mis proyectos
+
+                </a>
+
+
+                <!-- LISTADO GENERAL -->
+                <a href="{% url 'listado_proyectos' %}"
+                   class="gesproy-enlace {% if request.resolver_match.url_name == 'listado_proyectos' %}activo{% endif %}">
+
+                    <i class="bi bi-list-ul"></i>
+                    Listado
+
+                </a>
+
+
+                <!-- PROYECTOS -->
+                <a href="{% url 'proyectos_en_proceso' %}"
+                   class="gesproy-enlace {% if request.resolver_match.url_name == 'proyectos_en_definicion' or request.resolver_match.url_name == 'proyectos_solicitados' or request.resolver_match.url_name == 'proyectos_en_negociacion' or request.resolver_match.url_name == 'proyectos_en_proceso' or request.resolver_match.url_name == 'proyectos_finalizados' or request.resolver_match.url_name == 'proyectos_denegados' or request.resolver_match.url_name == 'detalle_proyecto' or request.resolver_match.url_name == 'crear_proyecto' or '/proyecto/' in request.path %}activo{% endif %}">
+
+                    <i class="bi bi-folder2-open"></i>
+                    Proyectos
+
+                </a>
+
+
+                <!-- BUSCAR -->
+                <a href="{% url 'buscar_proyectos' %}"
+                   class="gesproy-enlace {% if request.resolver_match.url_name == 'buscar_proyectos' %}activo{% endif %}">
+
+                    <i class="bi bi-search"></i>
+                    Buscar
+
+                </a>
+
+
+                <!-- CALENDARIO -->
+                <a href="{% url 'calendario_laboral' %}"
+                   class="gesproy-enlace {% if request.resolver_match.url_name == 'calendario_laboral' or request.resolver_match.url_name == 'crear_festivo' or request.resolver_match.url_name == 'editar_festivo' %}activo{% endif %}">
+
+                    <i class="bi bi-calendar3"></i>
+                    Calendario
+
+                </a>
+
+
+                <!-- ==================================
+                     OPCIONES DE ADMINISTRADOR
+                ================================== -->
+
+                {% if request.user.is_authenticated and request.user.is_staff %}
+
+                    <!-- PANEL DE ADMINISTRACIÓN -->
+                    <a href="{% url 'panel_administracion' %}"
+                       class="gesproy-enlace {% if request.resolver_match.url_name == 'panel_administracion' %}activo{% endif %}">
+
+                        <i class="bi bi-gear"></i>
+                        Admin
+
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- ==================================
+                 CERRAR SESIÓN
+            ================================== -->
+
+            {% if request.user.is_authenticated %}
+
+                <form method="post"
+                      action="{% url 'logout' %}"
+                      class="gesproy-form-salir">
+
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="gesproy-enlace gesproy-enlace-salir"
+                            title="Cerrar sesión">
+
+                        <i class="bi bi-box-arrow-right"></i>
+                        Cerrar sesión
+
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+
+    <!-- ==========================================
+         NAVEGACIÓN SECUNDARIA DE PROYECTOS
+    ========================================== -->
+
+    {% if request.resolver_match.url_name == 'proyectos_en_definicion' or request.resolver_match.url_name == 'proyectos_solicitados' or request.resolver_match.url_name == 'proyectos_en_negociacion' or request.resolver_match.url_name == 'proyectos_en_proceso' or request.resolver_match.url_name == 'proyectos_finalizados' or request.resolver_match.url_name == 'proyectos_denegados' or request.resolver_match.url_name == 'detalle_proyecto' or request.resolver_match.url_name == 'crear_proyecto' or '/proyecto/' in request.path %}
+
+    <nav class="gesproy-subnav"
+         aria-label="Estados de los proyectos">
+
+        <div class="gesproy-subnav-contenido">
+
+            <span class="gesproy-subnav-titulo">
+                Estados
+            </span>
+
+
+            <!-- DEFINICIÓN -->
+            <a href="{% url 'proyectos_en_definicion' %}"
+               class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_en_definicion' or proyecto.estado == 'DEFINICION' %}activo{% endif %}">
+
+                <i class="bi bi-pencil-square"></i>
+                Definición
+
+            </a>
+
+
+            <!-- SOLICITADOS -->
+            <a href="{% url 'proyectos_solicitados' %}"
+               class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_solicitados' or proyecto.estado == 'SOLICITADO' %}activo{% endif %}">
+
+                <i class="bi bi-send"></i>
+                Solicitados
+
+            </a>
+
+
+            <!-- NEGOCIACIÓN -->
+            <a href="{% url 'proyectos_en_negociacion' %}"
+               class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_en_negociacion' or proyecto.estado == 'NEGOCIACION' %}activo{% endif %}">
+
+                <i class="bi bi-chat-dots"></i>
+                Negociación
+
+            </a>
+
+
+            <!-- EN PROCESO -->
+            <a href="{% url 'proyectos_en_proceso' %}"
+               class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_en_proceso' or proyecto.estado == 'PROCESO' %}activo{% endif %}">
+
+                <i class="bi bi-play-circle"></i>
+                En proceso
+
+            </a>
+
+
+            <!-- FINALIZADOS -->
+            <a href="{% url 'proyectos_finalizados' %}"
+               class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_finalizados' or proyecto.estado == 'FINALIZADO' %}activo{% endif %}">
+
+                <i class="bi bi-check-circle"></i>
+                Finalizados
+
+            </a>
+
+
+            <!-- DENEGADOS -->
+            <a href="{% url 'proyectos_denegados' %}"
+               class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_denegados' or proyecto.estado == 'DENEGADO' %}activo{% endif %}">
+
+                <i class="bi bi-x-circle"></i>
+                Denegados
+
+            </a>
+
+
+            <!-- ==================================
+                 AÑADIR PROYECTO
+                 SOLO ADMINISTRADORES
+            ================================== -->
+
+            {% if request.user.is_authenticated and request.user.is_staff %}
+
+                <a href="{% url 'crear_proyecto' %}"
+                   class="gesproy-subnav-enlace gesproy-subnav-enlace--anadir {% if request.resolver_match.url_name == 'crear_proyecto' %}activo{% endif %}">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Añadir
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+    {% endif %}
+
+
+    <!-- ==========================================
+         CONTENIDO PRINCIPAL
+    ========================================== -->
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
 
 </body>
+
 </html>

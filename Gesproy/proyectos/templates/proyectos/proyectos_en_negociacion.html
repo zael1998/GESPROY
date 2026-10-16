@@ -9,18 +9,26 @@ Proyectos en negociación
 
 <div class="negociacion-contenedor">
 
+    <!-- CABECERA -->
     <div class="negociacion-cabecera">
+
         <div>
             <h1>Proyectos en negociación</h1>
-            <p>Listado de proyectos pendientes de resolución definitiva.</p>
+
+            <p>
+                Listado de proyectos pendientes de resolución definitiva.
+            </p>
         </div>
 
         <span class="negociacion-total">
             Total: {{ proyectos|length }}
         </span>
+
     </div>
 
+    <!-- TABLA DE PROYECTOS -->
     <div class="negociacion-tabla-contenedor">
+
         <table class="negociacion-tabla">
 
             <thead>
@@ -33,19 +41,24 @@ Proyectos en negociación
             </thead>
 
             <tbody>
+
                 {% for proyecto in proyectos %}
+
                 <tr>
 
+                    <!-- ACRÓNIMO: ENLACE A LOS DETALLES -->
                     <td>
-                        <strong title="{{ proyecto.nombre }}">
-                            {{ proyecto.acronimo }}
-                        </strong>
+
+                        {% include 'proyectos/componentes/acronimo_proyecto.html' with proyecto=proyecto %}
+
                     </td>
 
+                    <!-- ORGANISMO -->
                     <td>
-                        {{ proyecto.organismo.nombre }}
+                        {{ proyecto.organismo.nombre|default:"—" }}
                     </td>
 
+                    <!-- FECHAS -->
                     <td class="negociacion-fechas">
 
                         <span>
@@ -60,52 +73,98 @@ Proyectos en negociación
 
                     </td>
 
+                    <!-- OPCIONES -->
                     <td class="negociacion-opciones">
 
-                        <a href="#"
+                        <!-- EDITAR PROYECTO -->
+                        <a href="{% url 'editar_proyecto_negociacion' proyecto.id %}"
                            class="boton-icono editar"
                            title="Editar proyecto">
+
                             <i class="bi bi-pencil-square"></i>
+
                         </a>
 
-                        <a href="#"
+                        <!-- PASAR A PROCESO -->
+                        <a href="{% url 'pasar_negociacion_a_proceso' proyecto.id %}"
                            class="boton-icono proceso"
                            title="Cambiar a proceso">
+
                             <i class="bi bi-play-circle"></i>
+
                         </a>
 
-                        <a href="#"
+                        <!-- DENEGAR PROYECTO -->
+                        <a href="{% url 'denegar_proyecto_negociacion' proyecto.id %}"
                            class="boton-icono denegado"
                            title="Cambiar a denegado">
+
                             <i class="bi bi-x-circle"></i>
+
                         </a>
 
-                        <a href="#"
-                           class="boton-icono borrar"
-                           title="Borrar proyecto">
-                            <i class="bi bi-trash"></i>
-                        </a>
+                        <!-- FINANCIACIÓN POR LÍNEAS DE INVESTIGACIÓN -->
+                        {% if request.user.is_staff %}
 
-                        <a href="#"
-                           class="boton-icono anterior"
-                           title="Volver al estado anterior">
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                        </a>
+                            <a href="{% url 'financiacion_proyecto' proyecto.id %}"
+                               class="boton-icono financiacion"
+                               title="Gestionar financiación">
+
+                                <i class="bi bi-cash-stack"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                        <!-- BORRAR PROYECTO -->
+                        {% if request.user.is_staff %}
+
+                            <a href="{% url 'borrar_proyecto_negociacion' proyecto.id %}"
+                               class="boton-icono borrar"
+                               title="Borrar proyecto">
+
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                        <!-- VOLVER A SOLICITADO -->
+                        <form method="post"
+                              action="{% url 'volver_negociacion_a_solicitado' proyecto.id %}"
+                              style="display: inline; margin: 0;">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="boton-icono anterior"
+                                    title="Volver a solicitado"
+                                    onclick="return confirm('¿Quieres devolver este proyecto a Solicitado?');">
+
+                                <i class="bi bi-arrow-counterclockwise"></i>
+
+                            </button>
+
+                        </form>
 
                     </td>
 
                 </tr>
 
                 {% empty %}
+
                 <tr>
                     <td colspan="4" class="negociacion-vacio">
                         No hay proyectos en negociación.
                     </td>
                 </tr>
+
                 {% endfor %}
+
             </tbody>
 
         </table>
+
     </div>
 
 </div>

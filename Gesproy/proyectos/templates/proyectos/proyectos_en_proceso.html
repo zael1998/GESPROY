@@ -9,18 +9,26 @@ Proyectos en proceso
 
 <div class="proceso-contenedor">
 
+    <!-- CABECERA -->
     <div class="proceso-cabecera">
+
         <div>
             <h1>Proyectos en proceso</h1>
-            <p>Seguimiento de los proyectos actualmente en ejecución.</p>
+
+            <p>
+                Seguimiento de los proyectos actualmente en ejecución.
+            </p>
         </div>
 
         <span class="proceso-total">
             Total: {{ proyectos|length }}
         </span>
+
     </div>
 
+    <!-- TABLA DE PROYECTOS -->
     <div class="proceso-tabla-contenedor">
+
         <table class="proceso-tabla">
 
             <thead>
@@ -33,17 +41,21 @@ Proyectos en proceso
             </thead>
 
             <tbody>
+
                 {% for proyecto in proyectos %}
+
                 <tr>
 
-                    <!-- ACRÓNIMO -->
-                    <td class="proceso-acronimo"
-                        title="{{ proyecto.nombre }}">
-                        {{ proyecto.acronimo }}
+                    <!-- ACRÓNIMO: ENLACE A LOS DETALLES -->
+                    <td class="proceso-acronimo">
+
+                        {% include 'proyectos/componentes/acronimo_proyecto.html' with proyecto=proyecto %}
+
                     </td>
 
                     <!-- BARRAS DE PROGRESO -->
                     <td>
+
                         <div class="proceso-barras">
 
                             <!-- PRIMERA BARRA: TIEMPO -->
@@ -54,9 +66,11 @@ Proyectos en proceso
                                 </span>
 
                                 <div class="proceso-barra">
+
                                     <div class="proceso-barra-relleno"
                                          style="width: {{ proyecto.porcentaje_tiempo|default:0|floatformat:0 }}%;">
                                     </div>
+
                                 </div>
 
                                 <span class="proceso-valor">
@@ -75,9 +89,11 @@ Proyectos en proceso
                                 <div class="proceso-barra">
 
                                     {% if proyecto.porcentaje_trabajo != None %}
+
                                         <div class="proceso-barra-relleno proceso-barra-trabajo"
                                              style="width: {{ proyecto.porcentaje_trabajo|floatformat:0 }}%;">
                                         </div>
+
                                     {% endif %}
 
                                 </div>
@@ -85,9 +101,13 @@ Proyectos en proceso
                                 <span class="proceso-valor">
 
                                     {% if proyecto.porcentaje_trabajo != None %}
+
                                         {{ proyecto.porcentaje_trabajo|floatformat:0 }} %
+
                                     {% else %}
+
                                         —
+
                                     {% endif %}
 
                                 </span>
@@ -95,6 +115,7 @@ Proyectos en proceso
                             </div>
 
                         </div>
+
                     </td>
 
                     <!-- FECHAS -->
@@ -104,6 +125,7 @@ Proyectos en proceso
                             <span class="proceso-fecha-etiqueta">
                                 Inicio:
                             </span>
+
                             {{ proyecto.fecha_inicio|date:"d/m/Y"|default:"—" }}
                         </div>
 
@@ -111,6 +133,7 @@ Proyectos en proceso
                             <span class="proceso-fecha-etiqueta">
                                 Fin:
                             </span>
+
                             {{ proyecto.fecha_fin|date:"d/m/Y"|default:"—" }}
                         </div>
 
@@ -119,28 +142,57 @@ Proyectos en proceso
                     <!-- OPCIONES -->
                     <td class="proceso-opciones">
 
-                        <a href="#"
+                        <!-- EDITAR PROYECTO -->
+                        <a href="{% url 'editar_proyecto_proceso' proyecto.id %}"
                            class="boton-icono editar"
                            title="Editar proyecto">
+
                             <i class="bi bi-pencil-square"></i>
+
                         </a>
 
-                        <a href="#"
+                        <!-- CAMBIAR A FINALIZADO -->
+                        <a href="{% url 'finalizar_proyecto_proceso' proyecto.id %}"
                            class="boton-icono finalizado"
                            title="Cambiar a finalizado">
+
                             <i class="bi bi-check-circle"></i>
+
                         </a>
 
-                        <a href="#"
-                           class="boton-icono borrar"
-                           title="Borrar proyecto">
-                            <i class="bi bi-trash"></i>
-                        </a>
+                        <!-- FINANCIACIÓN POR LÍNEAS DE INVESTIGACIÓN -->
+                        {% if request.user.is_staff %}
 
-                        <a href="#"
+                            <a href="{% url 'financiacion_proyecto' proyecto.id %}"
+                               class="boton-icono financiacion"
+                               title="Gestionar financiación">
+
+                                <i class="bi bi-cash-stack"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                        <!-- BORRAR PROYECTO -->
+                        {% if request.user.is_staff %}
+
+                            <a href="{% url 'borrar_proyecto_proceso' proyecto.id %}"
+                               class="boton-icono borrar"
+                               title="Borrar proyecto">
+
+                                <i class="bi bi-trash"></i>
+
+                            </a>
+
+                        {% endif %}
+
+                        <!-- VOLVER AL ESTADO ANTERIOR -->
+                        <a href="{% url 'volver_estado_anterior_proceso' proyecto.id %}"
                            class="boton-icono anterior"
                            title="Volver al estado anterior">
+
                             <i class="bi bi-arrow-counterclockwise"></i>
+
                         </a>
 
                     </td>
@@ -148,15 +200,19 @@ Proyectos en proceso
                 </tr>
 
                 {% empty %}
+
                 <tr>
                     <td colspan="4" class="proceso-vacio">
                         No hay proyectos en proceso.
                     </td>
                 </tr>
+
                 {% endfor %}
+
             </tbody>
 
         </table>
+
     </div>
 
 </div>

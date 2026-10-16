@@ -1,6 +1,6 @@
 
 from django.db import models
-
+from django.utils import timezone
 
 class Organismo(models.Model):
     nombre = models.CharField(max_length=100)
@@ -125,6 +125,13 @@ class Proyecto(models.Model):
         blank=True
     )
 
+    importe_concedido_cesga = models.DecimalField(
+        max_digits = 10,
+        decimal_places = 2,
+        null = True,
+        blank = True
+    )
+
     centro_concedente = models.CharField(
         max_length=100,
         null=True,
@@ -213,6 +220,7 @@ class Proyecto(models.Model):
         return self.nombre
 
 
+
 class Asignacion(models.Model):
 
     linea_investigacion = models.ForeignKey(
@@ -234,8 +242,16 @@ class Asignacion(models.Model):
         verbose_name = "Asignación"
         verbose_name_plural = "Asignaciones"
 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["proyecto", "linea_investigacion"],
+                name="asignacion_proyecto_linea_unica"
+            )
+        ]
+
     def __str__(self):
         return f"{self.linea_investigacion.nombre} - {self.proyecto.nombre}"
+
 
 
 class Dedicacion(models.Model):
@@ -260,6 +276,14 @@ class Dedicacion(models.Model):
     proyecto = models.ForeignKey(
         Proyecto,
         on_delete=models.PROTECT
+    )
+    validador = models.ForeignKey(
+        "usuarios.Investigador",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="dedicaciones_como_validador",
+        verbose_name="Validador"
     )
 
     class Meta:
@@ -365,26 +389,56 @@ class MovimientoEconomico(models.Model):
         return self.concepto
 
 
+# ==========================================
+# SOCIOS
+# ==========================================
+
 class Socio(models.Model):
 
-    nombre_empresa = models.CharField(max_length=100)
+    nombre_empresa = models.CharField(
+        max_length=100
+    )
+
+    direccion = models.TextField(
+        blank=True
+    )
 
     def __str__(self):
         return self.nombre_empresa
 
-    #me tome la libertad de crear algunos campos que no aparecen en el manual como tal pero
-    #me parece que son los que se suelen usar en modelos así
 
+# ==========================================
+# CONTACTOS DE SOCIOS
+# ==========================================
 
 class ContactoSocio(models.Model):
 
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(
+        max_length=100
+    )
 
-    apellido = models.CharField(max_length=100)
+    apellido = models.CharField(
+        max_length=100
+    )
 
     email = models.EmailField()
 
-    telefono = models.CharField(max_length=20)
+    # Teléfono principal
+    telefono = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    # Teléfono secundario
+    telefono2 = models.CharField(
+        max_length=20,
+        blank=True
+    )
+
+    fax = models.CharField(
+        max_length=20,
+        blank=True
+    )
 
     socio = models.ForeignKey(
         Socio,
@@ -392,7 +446,7 @@ class ContactoSocio(models.Model):
     )
 
     def __str__(self):
-        return self.nombre
+        return f"{self.apellido}, {self.nombre}"
 
 
 class ParticipacionSocio(models.Model):
@@ -405,6 +459,15 @@ class ParticipacionSocio(models.Model):
     importe = models.DecimalField(
         max_digits=10,
         decimal_places=2
+    )
+    
+    investigador_responsable = models.ForeignKey(
+        "usuarios.Investigador",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="participaciones_socios_responsable",
+        verbose_name="Investigador responsable"
     )
 
     socio = models.ForeignKey(
@@ -423,3 +486,96 @@ class ParticipacionSocio(models.Model):
 
     def __str__(self):
         return f"{self.socio.nombre_empresa} - {self.proyecto.nombre}"
+    
+
+# ==========================================
+# HISTORIAL DE DENEGACIONES DE PROYECTOS
+# ==========================================
+
+class DenegacionProyecto(models.Model):
+
+    proyecto = models.ForeignKey(
+        "proyectos.Proyecto",
+        on_delete=models.CASCADE,
+        related_name="denegaciones",
+        verbose_name="Proyecto"
+    )
+
+    fecha = models.DateTimeField(
+        default=timezone.now,
+        verbose_name="Fecha de denegación"
+    )
+
+    causa = models.TextField(
+        verbose_name="Causa de la denegación"
+    )
+
+    class Meta:
+        verbose_name = "Denegación de proyecto"
+        verbose_name_plural = "Denegaciones de proyectos"
+        ordering = ["-fecha"]
+
+    def __str__(self):
+        return f"{self.proyecto.acronimo} - {self.fecha:%d/%m/%Y}"
+    
+
+# ==========================================
+# CALENDARIO LABORAL
+# ==========================================
+
+class Festivo(models.Model):
+
+    AMBITOS = [
+        ("nacional", "Nacional"),
+        ("autonomico", "Autonómico"),
+        ("provincial", "Provincial"),
+        ("local", "Local"),
+        ("centro", "Del centro"),
+    ]
+
+    fecha = models.DateField(
+        unique=True,
+        verbose_name="Fecha"
+    )
+
+    nombre = models.CharField(
+        max_length=200,
+        verbose_name="Nombre del festivo"
+    )
+
+    ambito = models.CharField(
+        max_length=20,
+        choices=AMBITOS,
+        default="centro",
+        verbose_name="Ámbito"
+    )
+
+    fuente = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Fuente"
+    )
+
+    url_fuente = models.URLField(
+        max_length=500,
+        blank=True,
+        verbose_name="Enlace a la fuente"
+    )
+
+    importado = models.BooleanField(
+        default=False
+    )
+
+    editado_manualmente = models.BooleanField(
+        default=False
+    )
+
+    class Meta:
+        verbose_name = "Festivo"
+        verbose_name_plural = "Festivos"
+        ordering = ["-fecha"]
+
+    def __str__(self):
+        return f"{self.fecha:%d/%m/%Y} - {self.nombre}"
+
+

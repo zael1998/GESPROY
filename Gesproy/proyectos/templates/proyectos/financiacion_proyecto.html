@@ -1,0 +1,291 @@
+
+{% extends 'base.html' %}
+{% load static l10n %}
+
+{% block title %}
+Financiación - {{ proyecto.acronimo }} - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet"
+      href="{% static 'css/financiacion_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="fin-contenedor">
+
+    <!-- CABECERA -->
+    <div class="fin-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-cash-stack"></i>
+                Financiación del proyecto
+            </h1>
+
+            <p>
+                <strong>{{ proyecto.acronimo }}</strong>
+                — {{ proyecto.nombre }}
+            </p>
+        </div>
+
+        <a href="{% url 'buscar_proyectos' %}"
+           class="fin-volver">
+            <i class="bi bi-arrow-left"></i>
+            Volver a proyectos
+        </a>
+
+    </div>
+
+    <!-- MENSAJES -->
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="fin-alerta fin-alerta-{{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+    <!-- RESUMEN -->
+    <div class="fin-resumen">
+
+        <div>
+            <span class="fin-resumen-etiqueta">
+                Financiación total asignada
+            </span>
+
+            <div class="fin-resumen-importe">
+                {{ total_financiacion|floatformat:2 }} €
+            </div>
+
+            <span class="fin-resumen-ayuda">
+                Suma de las aportaciones de todas las líneas.
+            </span>
+        </div>
+
+        <div class="fin-resumen-icono">
+            <i class="bi bi-wallet2"></i>
+        </div>
+
+    </div>
+
+    <!-- TABLA -->
+    <section class="fin-tarjeta">
+
+        <div class="fin-tarjeta-cabecera">
+
+            <h2>Líneas asignadas</h2>
+
+            <span>
+                {{ asignaciones|length }} líneas
+            </span>
+
+        </div>
+
+        <div class="fin-tabla-contenedor">
+
+            <table class="fin-tabla">
+
+                <thead>
+                    <tr>
+                        <th>Línea de investigación</th>
+                        <th>Presupuesto de la línea</th>
+                        <th>Porcentaje asignado</th>
+                        <th>Importe del proyecto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for asignacion in asignaciones %}
+
+                    <tr>
+
+                        <!-- LÍNEA -->
+                        <td>
+                            <strong>
+                                {{ asignacion.linea_investigacion.nombre }}
+                            </strong>
+                        </td>
+
+                        <!-- PRESUPUESTO -->
+                        <td>
+                            {{ asignacion.linea_investigacion.presupuesto|floatformat:2 }} €
+                        </td>
+
+                        <!-- EDITAR PORCENTAJE -->
+                        <td>
+
+                            <form method="post"
+                                  class="fin-form-editar">
+
+                                {% csrf_token %}
+
+                                <input type="hidden"
+                                       name="accion"
+                                       value="editar">
+
+                                <input type="hidden"
+                                       name="asignacion_id"
+                                       value="{{ asignacion.id }}">
+
+                                <input type="number"
+                                       name="porcentaje"
+                                       value="{{ asignacion.porcentaje|unlocalize }}"
+                                       min="0.01"
+                                       max="100"
+                                       step="0.01"
+                                       required>
+
+                                <span>%</span>
+
+                                <button type="submit"
+                                        class="fin-boton-guardar"
+                                        title="Guardar porcentaje">
+
+                                    <i class="bi bi-check-lg"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                        <!-- IMPORTE -->
+                        <td class="fin-importe">
+                            {{ asignacion.importe_calculado|floatformat:2 }} €
+                        </td>
+
+                        <!-- ELIMINAR -->
+                        <td>
+
+                            <form method="post"
+                                  onsubmit="return confirm('¿Eliminar esta asignación?');">
+
+                                {% csrf_token %}
+
+                                <input type="hidden"
+                                       name="accion"
+                                       value="eliminar">
+
+                                <input type="hidden"
+                                       name="asignacion_id"
+                                       value="{{ asignacion.id }}">
+
+                                <button type="submit"
+                                        class="fin-boton-eliminar"
+                                        title="Eliminar asignación">
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5" class="fin-vacio">
+                            Este proyecto todavía no tiene líneas
+                            de investigación asignadas.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <!-- NUEVA ASIGNACIÓN -->
+    <section class="fin-tarjeta">
+
+        <div class="fin-tarjeta-cabecera">
+            <h2>
+                <i class="bi bi-plus-circle"></i>
+                Añadir línea de investigación
+            </h2>
+        </div>
+
+        <form method="post" class="fin-formulario">
+
+            {% csrf_token %}
+
+            <input type="hidden"
+                   name="accion"
+                   value="crear">
+
+            <div class="fin-campos">
+
+                <div class="fin-campo">
+
+                    <label for="{{ formulario.linea_investigacion.id_for_label }}">
+                        Línea de investigación
+                    </label>
+
+                    {{ formulario.linea_investigacion }}
+
+                    {{ formulario.linea_investigacion.errors }}
+
+                </div>
+
+                <div class="fin-campo">
+
+                    <label for="{{ formulario.porcentaje.id_for_label }}">
+                        Porcentaje a asignar (%)
+                    </label>
+
+                    {{ formulario.porcentaje }}
+
+                    {{ formulario.porcentaje.errors }}
+
+                </div>
+
+            </div>
+
+            {% if formulario.non_field_errors %}
+                <div class="fin-error">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <p class="fin-nota">
+                El porcentaje se calcula sobre el presupuesto
+                total de la línea seleccionada.
+                La suma asignada entre todos los proyectos
+                no puede superar el 100 %.
+            </p>
+
+            <div class="fin-acciones">
+
+                <button type="submit"
+                        class="fin-boton-anadir">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Añadir asignación
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+{% endblock %}

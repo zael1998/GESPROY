@@ -1,0 +1,196 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Administración - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/administracion.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-contenedor">
+
+    <!-- CABECERA -->
+    <div class="admin-cabecera">
+
+        <div class="admin-icono-principal">
+            <i class="bi bi-gear-wide-connected"></i>
+        </div>
+
+        <div>
+            <h1>Panel de administración</h1>
+
+            <p>
+                Gestiona los datos generales
+                y la configuración de Gesproy.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- TÍTULO DE SECCIÓN -->
+    <div class="admin-seccion-titulo">
+
+        <h2>Gestión de datos</h2>
+
+        <p>
+            Selecciona el apartado que deseas administrar.
+        </p>
+
+    </div>
+
+    <!-- TARJETAS DE ADMINISTRACIÓN -->
+    <div class="admin-cuadricula">
+
+        <!-- INVESTIGADORES -->
+        <a href="{% url 'gestion_investigadores' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-people"></i>
+            </div>
+
+            <h3>Investigadores</h3>
+
+            <p>
+                Consultar, añadir y gestionar las altas
+                y bajas de los investigadores.
+            </p>
+
+        </a>
+
+        <!-- SOCIOS -->
+        <a href="{% url 'gestion_socios' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-person-vcard"></i>
+            </div>
+
+            <h3>Socios</h3>
+
+            <p>
+                Consultar socios, sus responsables
+                y añadir nuevos registros.
+            </p>
+
+        </a>
+
+        <!-- TIPOS DE PROYECTO -->
+        <a href="{% url 'gestion_tipos_proyecto' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-folder2-open"></i>
+            </div>
+
+            <h3>Tipos de proyecto</h3>
+
+            <p>
+                Consultar y añadir los diferentes
+                tipos de proyecto disponibles.
+            </p>
+
+        </a>
+
+        <!-- ORGANISMOS -->
+        <a href="{% url 'gestion_organismos' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-buildings"></i>
+            </div>
+
+            <h3>Organismos</h3>
+
+            <p>
+                Consultar y añadir los organismos
+                asociados a los proyectos.
+            </p>
+
+        </a>
+
+        <!-- TIPOS DE PARTICIPACIÓN -->
+        <a href="{% url 'gestion_tipos_participacion' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-diagram-3"></i>
+            </div>
+
+            <h3>Tipos de participación</h3>
+
+            <p>
+                Consultar y añadir las distintas
+                modalidades de participación.
+            </p>
+
+        </a>
+
+        <!-- ÁREAS -->
+        <a href="{% url 'gestion_areas' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-grid"></i>
+            </div>
+
+            <h3>Áreas</h3>
+
+            <p>
+                Consultar y añadir las áreas
+                de investigación disponibles.
+            </p>
+
+        </a>
+
+        <!-- LÍNEAS DE INVESTIGACIÓN -->
+        <a href="{% url 'gestion_lineas_investigacion' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-wallet2"></i>
+            </div>
+
+            <h3>Líneas de investigación</h3>
+
+            <p>
+                Consultar y añadir líneas de investigación,
+                gestionar sus presupuestos y visualizar
+                los importes asignados y disponibles.
+            </p>
+
+        </a>
+
+        <!-- TAREAS POR DEFECTO -->
+        <div class="admin-tarjeta">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-list-check"></i>
+            </div>
+
+            <h3>Tareas por defecto</h3>
+
+            <p>
+                Configurar las tareas predefinidas
+                para los proyectos.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

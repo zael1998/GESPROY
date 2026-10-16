@@ -1,0 +1,180 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Volver al estado anterior - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion">
+
+        <h1>
+            <i class="bi bi-arrow-counterclockwise"></i>
+            Volver al estado anterior
+        </h1>
+
+        <p>
+            Selecciona el estado al que deseas devolver
+            el proyecto {{ proyecto.acronimo }}.
+        </p>
+
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <!-- DATOS DEL PROYECTO -->
+
+        <div class="fila-formulario">
+            <label>Acrónimo</label>
+
+            <div class="campo-formulario">
+                <strong>{{ proyecto.acronimo }}</strong>
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Nombre</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.nombre }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Organismo</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.organismo|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Causa de denegación</label>
+
+            <div class="campo-formulario">
+                {{ proyecto.causa_denegacion|default:"—" }}
+            </div>
+        </div>
+
+        <!-- FORMULARIO -->
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            <div class="seccion-edicion">
+                <h2>Seleccionar estado</h2>
+            </div>
+
+            {% if formulario.estado.errors %}
+                <div class="errores-formulario">
+                    {{ formulario.estado.errors }}
+                </div>
+            {% endif %}
+
+            <!-- DEFINICIÓN -->
+
+            <div class="fila-formulario">
+
+                <label for="estado_definicion">
+                    En Definición
+                </label>
+
+                <div class="campo-formulario">
+
+                    <input type="radio"
+                           id="estado_definicion"
+                           name="estado"
+                           value="DEFINICION"
+                           {% if formulario.estado.value == "DEFINICION" %}
+                               checked
+                           {% endif %}
+                           required>
+
+                </div>
+
+            </div>
+
+            <!-- SOLICITADO -->
+
+            <div class="fila-formulario">
+
+                <label for="estado_solicitado">
+                    Solicitado
+                </label>
+
+                <div class="campo-formulario">
+
+                    <input type="radio"
+                           id="estado_solicitado"
+                           name="estado"
+                           value="SOLICITADO"
+                           {% if formulario.estado.value == "SOLICITADO" %}
+                               checked
+                           {% endif %}>
+
+                </div>
+
+            </div>
+
+            <!-- NEGOCIACIÓN -->
+
+            <div class="fila-formulario">
+
+                <label for="estado_negociacion">
+                    En Negociación
+                </label>
+
+                <div class="campo-formulario">
+
+                    <input type="radio"
+                           id="estado_negociacion"
+                           name="estado"
+                           value="NEGOCIACION"
+                           {% if formulario.estado.value == "NEGOCIACION" %}
+                               checked
+                           {% endif %}>
+
+                </div>
+
+            </div>
+
+            <!-- BOTONES -->
+
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Cambiar estado
+                </button>
+
+                <a href="{% url 'proyectos_denegados' %}"
+                   class="boton-enlace">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

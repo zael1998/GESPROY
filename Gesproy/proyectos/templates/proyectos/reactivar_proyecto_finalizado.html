@@ -1,0 +1,142 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Reactivar proyecto finalizado - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <div class="cabecera-edicion">
+        <h1>
+            <i class="bi bi-arrow-clockwise"></i>
+            Reactivar proyecto finalizado
+        </h1>
+
+        <p>
+            Reactivar el proyecto {{ proyecto.acronimo }}
+            para devolverlo al estado En proceso.
+        </p>
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos del proyecto</h2>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Acrónimo</label>
+            <div class="campo-formulario">
+                {{ proyecto.acronimo }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Nombre</label>
+            <div class="campo-formulario">
+                {{ proyecto.nombre }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Organismo</label>
+            <div class="campo-formulario">
+                {{ proyecto.organismo|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Tipo de proyecto</label>
+            <div class="campo-formulario">
+                {{ proyecto.tipo_proyecto|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Porcentaje de subvención</label>
+            <div class="campo-formulario">
+                {{ proyecto.porcentaje_subvencion|default_if_none:"—" }} %
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Importe solicitado</label>
+            <div class="campo-formulario">
+                {{ proyecto.importe_solicitado|default_if_none:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Importe concedido</label>
+            <div class="campo-formulario">
+                {{ proyecto.importe_concedido|default_if_none:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Fecha de solicitud</label>
+            <div class="campo-formulario">
+                {{ proyecto.fecha_solicitud|date:"d/m/Y"|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Fecha de resolución</label>
+            <div class="campo-formulario">
+                {{ proyecto.fecha_resolucion|date:"d/m/Y"|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Fecha de inicio</label>
+            <div class="campo-formulario">
+                {{ proyecto.fecha_inicio|date:"d/m/Y"|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Fecha de fin</label>
+            <div class="campo-formulario">
+                {{ proyecto.fecha_fin|date:"d/m/Y"|default:"—" }}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <label>Comentario</label>
+            <div class="campo-formulario">
+                {{ proyecto.comentario|default:"—" }}
+            </div>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+            {% csrf_token %}
+
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Reactivar
+                </button>
+
+                <a href="{% url 'proyectos_finalizados' %}"
+                   class="boton-enlace">
+                    <i class="bi bi-arrow-left"></i>
+                    Regresar
+                </a>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

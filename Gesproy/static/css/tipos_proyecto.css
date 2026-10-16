@@ -1,0 +1,264 @@
+
+/* ==========================================
+   ADMINISTRACIÓN TIPOS DE PROYECTO
+========================================== */
+
+.tipos-contenedor {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 24px 50px;
+}
+
+/* CABECERA */
+
+.tipos-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.tipos-cabecera h1 {
+    font-size: 25px;
+    color: #1e293b;
+    margin: 0 0 8px;
+}
+
+.tipos-cabecera h1 i {
+    color: #2563eb;
+    margin-right: 8px;
+}
+
+.tipos-cabecera p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* BOTÓN AÑADIR */
+
+.tipos-boton-anadir {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    background: #2563eb;
+    border: none;
+    border-radius: 9px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.tipos-boton-anadir:hover {
+    background: #1d4ed8;
+}
+
+/* CONTADOR */
+
+.tipos-contador {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+/* TABLA */
+
+.tipos-tabla-contenedor {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tipos-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.tipos-tabla th {
+    text-align: left;
+    padding: 16px 20px;
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.tipos-tabla td {
+    padding: 13px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.tipos-tabla tbody tr:hover {
+    background: #f8fafc;
+}
+
+.tipos-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tipos-icono {
+    color: #2563eb;
+    margin-right: 10px;
+}
+
+.tipos-vacio {
+    text-align: center;
+    color: #64748b;
+    padding: 35px !important;
+}
+
+/* REGRESAR */
+
+.tipos-pie {
+    margin-top: 24px;
+}
+
+.tipos-boton-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: #e2e8f0;
+    color: #334155;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.tipos-boton-volver:hover {
+    background: #cbd5e1;
+}
+
+/* ==========================================
+   VENTANA EMERGENTE
+========================================== */
+
+.tipos-modal {
+    width: min(440px, calc(100% - 40px));
+    box-sizing: border-box;
+    padding: 30px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
+    color: #1e293b;
+}
+
+.tipos-modal::backdrop {
+    background: rgba(15, 23, 42, 0.50);
+}
+
+.tipos-modal-cabecera {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.tipos-modal-icono {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 15px;
+    background: #eff6ff;
+    border-radius: 14px;
+    color: #2563eb;
+    font-size: 26px;
+}
+
+.tipos-modal-cabecera h2 {
+    margin: 0 0 8px;
+    font-size: 21px;
+}
+
+.tipos-modal-cabecera p {
+    margin: 0;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.tipos-modal-formulario label {
+    display: block;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.tipos-modal-formulario input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+}
+
+.tipos-modal-formulario input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px #dbeafe;
+}
+
+.tipos-error {
+    margin-top: 9px;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+.tipos-modal-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.tipos-boton-cancelar,
+.tipos-boton-guardar {
+    padding: 11px 17px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.tipos-boton-cancelar {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.tipos-boton-guardar {
+    background: #2563eb;
+    color: white;
+}
+
+.tipos-boton-guardar:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+    .tipos-contenedor {
+        padding: 0 15px;
+    }
+
+    .tipos-cabecera {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .tipos-modal {
+        padding: 22px;
+    }
+}

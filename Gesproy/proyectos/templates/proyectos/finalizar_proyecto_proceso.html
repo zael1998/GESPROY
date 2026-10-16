@@ -1,0 +1,107 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Finalizar proyecto - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="contenedor-edicion">
+
+    <!-- CABECERA -->
+    <div class="cabecera-edicion">
+
+        <h1>
+            <i class="bi bi-check-circle"></i>
+            Finalizar proyecto
+        </h1>
+
+        <p>
+            Indica los datos de finalización del proyecto
+            {{ proyecto.acronimo }}.
+        </p>
+
+    </div>
+
+    <div class="tarjeta-edicion">
+
+        <div class="seccion-edicion">
+            <h2>Datos de finalización</h2>
+        </div>
+
+        <form method="post" class="formulario-edicion">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="errores-formulario">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for campo in formulario %}
+
+                <div class="fila-formulario">
+
+                    <label for="{{ campo.id_for_label }}">
+                        {{ campo.label }}
+
+                        {% if campo.field.required %}
+                            *
+                        {% endif %}
+                    </label>
+
+                    <div class="campo-formulario">
+
+                        {{ campo }}
+
+                        {% if campo.help_text %}
+                            <small class="texto-ayuda">
+                                {{ campo.help_text }}
+                            </small>
+                        {% endif %}
+
+                        {{ campo.errors }}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+            <!-- BOTONES -->
+            <div class="acciones-formulario">
+
+                <button type="submit" class="boton-principal">
+                    <i class="bi bi-check-circle"></i>
+                    Finalizar proyecto
+                </button>
+
+                <button type="reset" class="boton-secundario">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Restablecer
+                </button>
+
+                <a href="{% url 'proyectos_en_proceso' %}"
+                   class="boton-enlace">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Cancelar
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

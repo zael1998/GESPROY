@@ -61,6 +61,7 @@
             <div class="gesproy-enlaces">
 
                 <!-- MIS PROYECTOS -->
+
                 <a href="{% url 'mis_proyectos' %}"
                    class="gesproy-enlace {% if request.resolver_match.url_name == 'mis_proyectos' %}activo{% endif %}">
 
@@ -71,6 +72,7 @@
 
 
                 <!-- LISTADO GENERAL -->
+
                 <a href="{% url 'listado_proyectos' %}"
                    class="gesproy-enlace {% if request.resolver_match.url_name == 'listado_proyectos' %}activo{% endif %}">
 
@@ -81,6 +83,7 @@
 
 
                 <!-- PROYECTOS -->
+
                 <a href="{% url 'proyectos_en_proceso' %}"
                    class="gesproy-enlace {% if request.resolver_match.url_name == 'proyectos_en_definicion' or request.resolver_match.url_name == 'proyectos_solicitados' or request.resolver_match.url_name == 'proyectos_en_negociacion' or request.resolver_match.url_name == 'proyectos_en_proceso' or request.resolver_match.url_name == 'proyectos_finalizados' or request.resolver_match.url_name == 'proyectos_denegados' or request.resolver_match.url_name == 'detalle_proyecto' or request.resolver_match.url_name == 'crear_proyecto' or '/proyecto/' in request.path %}activo{% endif %}">
 
@@ -91,6 +94,7 @@
 
 
                 <!-- BUSCAR -->
+
                 <a href="{% url 'buscar_proyectos' %}"
                    class="gesproy-enlace {% if request.resolver_match.url_name == 'buscar_proyectos' %}activo{% endif %}">
 
@@ -100,12 +104,27 @@
                 </a>
 
 
-                <!-- CALENDARIO -->
+                <!-- CALENDARIO LABORAL -->
+
                 <a href="{% url 'calendario_laboral' %}"
                    class="gesproy-enlace {% if request.resolver_match.url_name == 'calendario_laboral' or request.resolver_match.url_name == 'crear_festivo' or request.resolver_match.url_name == 'editar_festivo' %}activo{% endif %}">
 
                     <i class="bi bi-calendar3"></i>
                     Calendario
+
+                </a>
+
+
+                <!-- ==================================
+                     MIS HORAS
+                     NUEVA SECCIÓN
+                ================================== -->
+
+                <a href="{% url 'horas:mis_horas' %}"
+                   class="gesproy-enlace {% if request.resolver_match.namespace == 'horas' and request.resolver_match.url_name == 'mis_horas' %}activo{% endif %}">
+
+                    <i class="bi bi-clock-history"></i>
+                    Mis horas
 
                 </a>
 
@@ -117,6 +136,7 @@
                 {% if request.user.is_authenticated and request.user.is_staff %}
 
                     <!-- PANEL DE ADMINISTRACIÓN -->
+
                     <a href="{% url 'panel_administracion' %}"
                        class="gesproy-enlace {% if request.resolver_match.url_name == 'panel_administracion' %}activo{% endif %}">
 
@@ -177,6 +197,7 @@
 
 
             <!-- DEFINICIÓN -->
+
             <a href="{% url 'proyectos_en_definicion' %}"
                class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_en_definicion' or proyecto.estado == 'DEFINICION' %}activo{% endif %}">
 
@@ -187,6 +208,7 @@
 
 
             <!-- SOLICITADOS -->
+
             <a href="{% url 'proyectos_solicitados' %}"
                class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_solicitados' or proyecto.estado == 'SOLICITADO' %}activo{% endif %}">
 
@@ -197,6 +219,7 @@
 
 
             <!-- NEGOCIACIÓN -->
+
             <a href="{% url 'proyectos_en_negociacion' %}"
                class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_en_negociacion' or proyecto.estado == 'NEGOCIACION' %}activo{% endif %}">
 
@@ -207,6 +230,7 @@
 
 
             <!-- EN PROCESO -->
+
             <a href="{% url 'proyectos_en_proceso' %}"
                class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_en_proceso' or proyecto.estado == 'PROCESO' %}activo{% endif %}">
 
@@ -217,6 +241,7 @@
 
 
             <!-- FINALIZADOS -->
+
             <a href="{% url 'proyectos_finalizados' %}"
                class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_finalizados' or proyecto.estado == 'FINALIZADO' %}activo{% endif %}">
 
@@ -227,6 +252,7 @@
 
 
             <!-- DENEGADOS -->
+
             <a href="{% url 'proyectos_denegados' %}"
                class="gesproy-subnav-enlace {% if request.resolver_match.url_name == 'proyectos_denegados' or proyecto.estado == 'DENEGADO' %}activo{% endif %}">
 

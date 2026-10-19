@@ -1,0 +1,330 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Tareas · {{ proyecto.acronimo }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/tareas.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tar-contenedor">
+
+    <!-- CABECERA -->
+
+    <div class="tar-cabecera">
+
+        <div>
+            <p class="tar-ruta">
+                Proyectos / {{ proyecto.acronimo }}
+            </p>
+
+            <h1>Tareas del proyecto</h1>
+
+            <p class="tar-subtitulo">
+                {{ proyecto.nombre }}
+            </p>
+        </div>
+
+        <div class="tar-cabecera-acciones">
+
+            <a href="{% url 'detalle_proyecto' proyecto.id %}"
+               class="tar-boton tar-boton-secundario">
+                <i class="bi bi-arrow-left"></i>
+                Volver al proyecto
+            </a>
+
+            {% if puede_gestionar %}
+
+                <a href="{% url 'horas:crear_tarea' proyecto.id %}"
+                   class="tar-boton tar-boton-principal">
+                    <i class="bi bi-plus-circle"></i>
+                    Nueva tarea
+                </a>
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- MENSAJES -->
+
+    {% if messages %}
+
+        <div class="tar-mensajes">
+
+            {% for mensaje in messages %}
+                <div class="tar-mensaje {% if 'error' in mensaje.tags %}tar-mensaje-error{% else %}tar-mensaje-ok{% endif %}">
+                    {{ mensaje }}
+                </div>
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+    <!-- RESUMEN -->
+
+    <div class="tar-resumen">
+
+        <div class="tar-resumen-item">
+            <span>Total de tareas</span>
+            <strong>{{ total_tareas }}</strong>
+        </div>
+
+        <div class="tar-resumen-item">
+            <span>Sin finalizar</span>
+            <strong>{{ tareas_pendientes }}</strong>
+        </div>
+
+        <div class="tar-resumen-item">
+            <span>Finalizadas</span>
+            <strong>{{ tareas_finalizadas }}</strong>
+        </div>
+
+        <div class="tar-resumen-item">
+            <span>Horas registradas</span>
+            <strong>{{ horas_totales|floatformat:2 }} h</strong>
+        </div>
+
+    </div>
+
+    <!-- LISTADO -->
+
+    <div class="tar-seccion-cabecera">
+
+        <h2>Listado de tareas</h2>
+
+        <span>
+            {% if proyecto.estado == "FINALIZADO" %}
+                Proyecto finalizado · Solo consulta
+            {% else %}
+                Proyecto en proceso
+            {% endif %}
+        </span>
+
+    </div>
+
+    {% if tareas %}
+
+        <div class="tar-listado">
+
+            {% for tarea in tareas %}
+
+                <article class="tar-tarea {% if tarea.finalizada %}tar-tarea-finalizada{% endif %}"
+                         style="--tar-nivel: {{ tarea.nivel }};">
+
+                    <div class="tar-tarea-superior">
+
+                        <div class="tar-tarea-info">
+
+                            <div class="tar-tarea-nombre">
+
+                                {% if tarea.nivel > 0 %}
+                                    <i class="bi bi-arrow-return-right tar-icono-subtarea"></i>
+                                {% else %}
+                                    <i class="bi bi-list-task tar-icono-principal"></i>
+                                {% endif %}
+
+                                <h3>{{ tarea.nombre }}</h3>
+
+                            </div>
+
+                            {% if tarea.descripcion %}
+
+                                <p class="tar-descripcion">
+                                    {{ tarea.descripcion }}
+                                </p>
+
+                            {% endif %}
+
+                            <div class="tar-metadatos">
+
+                                <span>
+                                    <i class="bi bi-calendar3"></i>
+
+                                    {{ tarea.fecha_inicio|date:"d/m/Y" }}
+                                    -
+
+                                    {% if tarea.fecha_fin %}
+                                        {{ tarea.fecha_fin|date:"d/m/Y" }}
+                                    {% else %}
+                                        Sin fecha final
+                                    {% endif %}
+                                </span>
+
+                                <span>
+                                    <i class="bi bi-person"></i>
+
+                                    {% if tarea.responsable_investigador %}
+                                        {{ tarea.responsable_investigador }}
+                                    {% else %}
+                                        Sin responsable
+                                    {% endif %}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="tar-tarea-estado">
+
+                            {% if tarea.finalizada %}
+
+                                <span class="tar-etiqueta tar-etiqueta-finalizada">
+                                    <i class="bi bi-check-circle"></i>
+                                    Finalizada
+                                </span>
+
+                            {% else %}
+
+                                <span class="tar-etiqueta tar-etiqueta-pendiente">
+                                    <i class="bi bi-clock"></i>
+                                    En proceso
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <!-- HORAS PREVISTAS Y REALES -->
+
+                    <div class="tar-horas">
+
+                        <div class="tar-horas-cabecera">
+
+                            <span>
+                                {{ tarea.horas_reales|floatformat:2 }} h registradas
+                                /
+                                {{ tarea.horas_estimadas|floatformat:2 }} h previstas
+                            </span>
+
+                            <strong>
+                                {{ tarea.porcentaje_horas|floatformat:1 }} %
+                            </strong>
+
+                        </div>
+
+                        <div class="tar-progreso">
+
+                            <div class="tar-progreso-relleno {% if tarea.porcentaje_horas > 100 %}tar-progreso-superado{% endif %}"
+                                 style="width: {{ tarea.porcentaje_barra|stringformat:'.2f' }}%;">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ACCIONES -->
+
+                    {% if puede_gestionar %}
+
+                        <div class="tar-acciones">
+
+                            <a href="{% url 'horas:editar_tarea' proyecto.id tarea.id %}"
+                               class="tar-accion">
+
+                                <i class="bi bi-pencil-square"></i>
+                                Editar
+
+                            </a>
+
+                            {% if tarea.finalizada %}
+
+                                <form method="post"
+                                      action="{% url 'horas:reabrir_tarea' proyecto.id tarea.id %}">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="tar-accion">
+
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                        Reabrir
+
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <form method="post"
+                                      action="{% url 'horas:finalizar_tarea' proyecto.id tarea.id %}">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="tar-accion tar-accion-finalizar">
+
+                                        <i class="bi bi-check-circle"></i>
+                                        Finalizar
+
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                            <form method="post"
+                                  action="{% url 'horas:eliminar_tarea' proyecto.id tarea.id %}"
+                                  onsubmit="return confirm('¿Seguro que quieres eliminar esta tarea?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="tar-accion tar-accion-eliminar">
+
+                                    <i class="bi bi-trash"></i>
+                                    Eliminar
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    {% endif %}
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="tar-vacio">
+
+            <i class="bi bi-list-task"></i>
+
+            <h3>Todavía no hay tareas</h3>
+
+            <p>
+                Este proyecto aún no tiene ninguna tarea registrada.
+            </p>
+
+            {% if puede_gestionar %}
+
+                <a href="{% url 'horas:crear_tarea' proyecto.id %}"
+                   class="tar-boton tar-boton-principal">
+
+                    Crear primera tarea
+
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

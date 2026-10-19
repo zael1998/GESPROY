@@ -1,8 +1,9 @@
 from django.urls import reverse
+from django import forms
 from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 from django.utils import timezone
-from django.db.models import Sum, Prefetch, Q
+from django.db.models import Sum, Prefetch, Q, Count
 from django.db.models.deletion import ProtectedError
 from django.db.models.functions import Lower
 from django.views.decorators.http import require_POST
@@ -61,7 +62,6 @@ from .forms import (
     FestivoForm
 )
 
-from horas.models import Tarea, RegistroHoras
 
 
 # LISTA DE TODOS LOS PROYECTOS
@@ -235,6 +235,8 @@ def detalle_proyecto(request, id):
         pk=id
     )
 
+
+
     # --------------------------------------
     # PERMISOS DE CONSULTA
     # --------------------------------------
@@ -246,7 +248,6 @@ def detalle_proyecto(request, id):
     asociado = False
 
     if investigador_actual is not None:
-
         asociado = (
             proyecto.investigador_principal_id == investigador_actual.id
             or Dedicacion.objects.filter(
@@ -255,10 +256,10 @@ def detalle_proyecto(request, id):
             ).exists()
         )
 
-    es_publico_interno = proyecto.estado in [
+    es_publico_interno = proyecto.estado in (
         "PROCESO",
         "FINALIZADO"
-    ]
+    )
 
     if not (
         request.user.is_staff
@@ -279,11 +280,91 @@ def detalle_proyecto(request, id):
         "datos",
         "investigadores",
         "socios",
-        "denegaciones"
+        "tareas",
+        "horas",
+        "denegaciones",
     }
 
     if pestana not in pestanas_validas:
         pestana = "datos"
+
+    # --------------------------------------
+    # TAREAS DEL PROYECTO
+    # --------------------------------------
+
+    mostrar_tareas = proyecto.estado in (
+        "PROCESO",
+        "FINALIZADO"
+    )
+
+    if pestana == "tareas" and not mostrar_tareas:
+        pestana = "datos"
+
+    # Las horas solo se pueden consultar en proyectos
+    # en proceso o finalizados.
+    if pestana == "horas" and not mostrar_tareas:
+        pestana = "datos"
+
+    puede_gestionar_tareas = (
+        proyecto.estado == "PROCESO"
+        and (
+            request.user.is_staff
+            or (
+                investigador_actual is not None
+                and proyecto.investigador_principal_id
+                == investigador_actual.pk
+            )
+        )
+    )
+        # --------------------------------------
+    # PERMISOS PARA IMPUTAR HORAS
+    # --------------------------------------
+
+    puede_imputar_horas = (
+        proyecto.estado == "PROCESO"
+        and investigador_actual is not None
+        and asociado
+    )
+
+    total_tareas = 0
+    tareas_ficha = []
+
+    if mostrar_tareas:
+        total_tareas = Tarea.objects.filter(
+            proyecto=proyecto
+        ).count()
+
+    if pestana == "tareas" and mostrar_tareas:
+        tareas_ficha = list(
+            Tarea.objects.filter(
+                proyecto=proyecto
+            ).select_related(
+                "tarea_padre",
+                "responsable_investigador__usuario"             
+            ).order_by(
+                "fecha_inicio",
+                "pk"
+            )
+        )
+
+        horas_por_tarea = {
+            registro["tarea_id"]: registro["total"]
+            for registro in (
+                RegistroHoras.objects.filter(
+                    tarea__proyecto=proyecto
+                ).values(
+                    "tarea_id"
+                ).annotate(
+                    total=Sum("horas")
+                )
+            )
+        }
+
+        for tarea in tareas_ficha:
+            tarea.horas_reales = horas_por_tarea.get(
+                tarea.pk,
+                Decimal("0.00")
+            )
 
     # --------------------------------------
     # LÍNEA DE ESTADOS
@@ -310,7 +391,6 @@ def detalle_proyecto(request, id):
     pasos_estado = []
 
     for indice, (codigo, nombre) in enumerate(estados):
-
         pasos_estado.append({
             "codigo": codigo,
             "nombre": nombre,
@@ -328,12 +408,10 @@ def detalle_proyecto(request, id):
     # --------------------------------------
 
     def nombre_investigador(investigador):
-
         if investigador is None:
             return "—"
 
         usuario = investigador.usuario
-
         return (
             usuario.get_full_name().strip()
             or usuario.username
@@ -357,13 +435,11 @@ def detalle_proyecto(request, id):
     investigadores_incluidos = set()
 
     for dedicacion in dedicaciones:
-
         investigador = dedicacion.investigador
-
         investigadores_incluidos.add(investigador.pk)
-
         investigadores.append({
             "id": investigador.pk,
+            "dedicacion_id": dedicacion.pk,
             "nombre": nombre_investigador(investigador),
             "porcentaje": dedicacion.porcentaje,
             "responsable": (
@@ -375,17 +451,16 @@ def detalle_proyecto(request, id):
             )
         })
 
-    # El investigador principal también debe aparecer,
-    # aunque todavía no tenga una dedicación registrada.
-
+    # El investigador principal debe aparecer aunque
+    # todavía no tenga una dedicación registrada.
     if (
         proyecto.investigador_principal_id
         and proyecto.investigador_principal_id
         not in investigadores_incluidos
     ):
-
         investigadores.append({
             "id": proyecto.investigador_principal_id,
+            "dedicacion_id": None,
             "nombre": nombre_investigador(
                 proyecto.investigador_principal
             ),
@@ -417,7 +492,6 @@ def detalle_proyecto(request, id):
     contactos_por_socio = {}
 
     if socios_ids:
-
         contactos = ContactoSocio.objects.filter(
             socio_id__in=socios_ids
         ).order_by(
@@ -426,9 +500,7 @@ def detalle_proyecto(request, id):
         )
 
         for contacto in contactos:
-
             if contacto.socio_id not in contactos_por_socio:
-
                 contactos_por_socio[contacto.socio_id] = (
                     f"{contacto.nombre} {contacto.apellido}"
                 ).strip()
@@ -436,7 +508,6 @@ def detalle_proyecto(request, id):
     socios = []
 
     for participacion in participaciones:
-
         socios.append({
             "id": participacion.pk,
             "empresa": participacion.socio.nombre_empresa,
@@ -481,7 +552,6 @@ def detalle_proyecto(request, id):
 
     # Compatibilidad con datos anteriores a la
     # creación del modelo DenegacionProyecto.
-
     if (
         not denegaciones
         and (
@@ -489,7 +559,6 @@ def detalle_proyecto(request, id):
             or proyecto.causa_denegacion
         )
     ):
-
         denegaciones.append({
             "fecha": proyecto.fecha_denegacion,
             "causa": proyecto.causa_denegacion or "Sin causa registrada",
@@ -497,10 +566,105 @@ def detalle_proyecto(request, id):
         })
 
     # --------------------------------------
+    # HORAS DEDICADAS AL PROYECTO
+    # --------------------------------------
+
+    grupos_horas = []
+    total_horas_proyecto = Decimal("0.00")
+
+    fecha_desde = request.GET.get("desde", "")
+    fecha_hasta = request.GET.get("hasta", "")
+
+    if pestana == "horas" and mostrar_tareas:
+
+        registros = RegistroHoras.objects.filter(
+            tarea__proyecto=proyecto
+        ).select_related(
+            "tarea",
+            "investigador__usuario"
+        ).order_by(
+            "tarea__nombre",
+            "tarea_id",
+            "investigador__usuario__last_name",
+            "investigador__usuario__first_name",
+            "investigador_id",
+            "-fecha",
+            "-pk"
+        )
+
+        # Filtro de fechas: se ignoran los valores inválidos.
+        if fecha_desde:
+            try:
+                desde = date.fromisoformat(fecha_desde)
+                registros = registros.filter(fecha__gte=desde)
+                fecha_desde = desde.isoformat()
+            except ValueError:
+                fecha_desde = ""
+
+        if fecha_hasta:
+            try:
+                hasta = date.fromisoformat(fecha_hasta)
+                registros = registros.filter(fecha__lte=hasta)
+                fecha_hasta = hasta.isoformat()
+            except ValueError:
+                fecha_hasta = ""
+
+        # Estructura: tarea -> investigadores -> registros.
+        # Se usan los ID como claves para evitar mezclar
+        # tareas o investigadores con nombres coincidentes.
+        grupos_por_tarea = {}
+
+        for registro in registros:
+            tarea_id = registro.tarea_id
+
+            if tarea_id not in grupos_por_tarea:
+                grupos_por_tarea[tarea_id] = {
+                    "tarea": registro.tarea,
+                    "total": Decimal("0.00"),
+                    "investigadores": {}
+                }
+
+            grupo = grupos_por_tarea[tarea_id]
+            grupo["total"] += registro.horas
+            total_horas_proyecto += registro.horas
+
+            investigador_id = registro.investigador_id
+
+            if investigador_id not in grupo["investigadores"]:
+                grupo["investigadores"][investigador_id] = {
+                    "investigador": registro.investigador,
+                    "total": Decimal("0.00"),
+                    "registros": []
+                }
+
+            subgrupo = grupo["investigadores"][investigador_id]
+            subgrupo["total"] += registro.horas
+            subgrupo["registros"].append(registro)
+
+        # Facilita el uso de los grupos en el template.
+        for grupo in grupos_por_tarea.values():
+            grupo["investigadores"] = list(
+                grupo["investigadores"].values()
+            )
+            grupos_horas.append(grupo)
+
+    # --------------------------------------
     # PERMISOS DE EDICIÓN
     # --------------------------------------
 
     puede_editar = request.user.is_staff
+
+    puede_gestionar_investigadores = (
+        proyecto.estado == "PROCESO"
+        and (
+            request.user.is_staff
+            or (
+                investigador_actual is not None
+                and proyecto.investigador_principal_id
+                == investigador_actual.pk
+            )
+        )
+    )
 
     # --------------------------------------
     # MOSTRAR FICHA
@@ -520,10 +684,268 @@ def detalle_proyecto(request, id):
             "puede_editar": puede_editar,
             "total_investigadores": len(investigadores),
             "total_socios": len(socios),
-            "total_denegaciones": len(denegaciones)
+            "total_denegaciones": len(denegaciones),
+            "total_tareas": total_tareas,
+            "tareas_ficha": tareas_ficha,
+            "puede_gestionar_tareas": puede_gestionar_tareas,
+            "grupos_horas": grupos_horas,
+            "total_horas_proyecto": total_horas_proyecto,
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta,
+            "puede_imputar_horas": puede_imputar_horas,
+            "puede_gestionar_investigadores": puede_gestionar_investigadores,
         }
     )
 
+
+
+
+# ==========================================
+# GESTIÓN DE INVESTIGADORES EN PROYECTOS
+# ==========================================
+
+class DedicacionProyectoForm(forms.ModelForm):
+    """Gestiona la dedicación y la asignación de su validador."""
+
+    class Meta:
+        model = Dedicacion
+        fields = ["investigador", "porcentaje", "fecha_inicio", "fecha_fin", "validador"]
+        widgets = {
+            "investigador": forms.Select(attrs={"class": "ficha-input"}),
+            "porcentaje": forms.NumberInput(attrs={
+                "class": "ficha-input", "min": "0.01", "max": "100", "step": "0.01"
+            }),
+            "fecha_inicio": forms.DateInput(
+                format="%Y-%m-%d",
+                attrs={"class": "ficha-input", "type": "date"}
+            ),
+            "fecha_fin": forms.DateInput(
+                format="%Y-%m-%d",
+                attrs={"class": "ficha-input", "type": "date"}
+            ),
+            "validador": forms.Select(attrs={"class": "ficha-input"}),
+        }
+
+    def __init__(self, *args, proyecto, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.proyecto = proyecto
+        self.fields["fecha_inicio"].input_formats = ["%Y-%m-%d"]
+        self.fields["fecha_fin"].input_formats = ["%Y-%m-%d"]
+
+        if self.instance.pk:
+            # Un investigador asociado no se sustituye por otro: se edita
+            # su dedicación. Para cambiar de persona, añade una asociación nueva.
+            self.fields["investigador"].queryset = Investigador.objects.filter(
+                pk=self.instance.investigador_id
+            )
+            self.fields["investigador"].disabled = True
+        else:
+            ya_asociados = Dedicacion.objects.filter(
+                proyecto=proyecto
+            ).values_list("investigador_id", flat=True)
+            self.fields["investigador"].queryset = (
+                Investigador.objects.exclude(pk__in=ya_asociados)
+                .select_related("usuario")
+                .order_by("usuario__last_name", "usuario__first_name", "pk")
+            )
+            if proyecto.fecha_inicio:
+                self.fields["fecha_inicio"].initial = proyecto.fecha_inicio
+
+        # Solo se puede asignar como validador a quien haya sido
+        # autorizado desde Administración y tenga la cuenta activa.
+        self.fields["validador"].queryset = (
+            Investigador.objects.filter(
+                puede_validar_horas=True,
+                usuario__is_active=True,
+            )
+            .select_related("usuario")
+            .order_by("usuario__last_name", "usuario__first_name", "pk")
+        )
+        self.fields["validador"].required = False
+        self.fields["validador"].empty_label = "Sin validador asignado"
+
+        self.fields["fecha_fin"].required = False
+        self.fields["investigador"].label = "Investigador"
+        self.fields["porcentaje"].label = "Dedicación (%)"
+        self.fields["fecha_inicio"].label = "Fecha de inicio"
+        self.fields["fecha_fin"].label = "Fecha de fin (opcional)"
+        self.fields["validador"].label = "Validador (opcional)"
+
+    def clean_investigador(self):
+        investigador = self.cleaned_data["investigador"]
+        duplicado = Dedicacion.objects.filter(
+            proyecto=self.proyecto,
+            investigador=investigador,
+        ).exclude(pk=self.instance.pk).exists()
+        if duplicado:
+            raise forms.ValidationError(
+                "Este investigador ya está asociado al proyecto."
+            )
+        return investigador
+
+    def clean_porcentaje(self):
+        porcentaje = self.cleaned_data["porcentaje"]
+        if not (Decimal("0") < porcentaje <= Decimal("100")):
+            raise forms.ValidationError(
+                "La dedicación debe ser mayor que 0 y no superar el 100 %."
+            )
+        return porcentaje
+
+    def clean(self):
+        datos = super().clean()
+        inicio = datos.get("fecha_inicio")
+        fin = datos.get("fecha_fin")
+        investigador = datos.get("investigador")
+        validador = datos.get("validador")
+
+        if validador is not None and investigador is not None:
+            if validador.pk == investigador.pk:
+                self.add_error(
+                    "validador",
+                    "Una persona no puede validar sus propias horas.",
+                )
+
+        if inicio and fin and fin < inicio:
+            self.add_error(
+                "fecha_fin", "La fecha final no puede ser anterior a la inicial."
+            )
+
+        if inicio and self.proyecto.fecha_inicio and inicio < self.proyecto.fecha_inicio:
+            self.add_error(
+                "fecha_inicio", "La dedicación no puede comenzar antes del proyecto."
+            )
+        if inicio and self.proyecto.fecha_fin and inicio > self.proyecto.fecha_fin:
+            self.add_error(
+                "fecha_inicio", "La dedicación no puede comenzar después del fin del proyecto."
+            )
+        if fin and self.proyecto.fecha_inicio and fin < self.proyecto.fecha_inicio:
+            self.add_error(
+                "fecha_fin", "La dedicación no puede finalizar antes del inicio del proyecto."
+            )
+        if fin and self.proyecto.fecha_fin and fin > self.proyecto.fecha_fin:
+            self.add_error(
+                "fecha_fin", "La dedicación no puede finalizar después del proyecto."
+            )
+
+        return datos
+
+
+def _volver_a_investigadores(proyecto_id):
+    return redirect(
+        f"{reverse('detalle_proyecto', args=[proyecto_id])}?pestana=investigadores"
+    )
+
+def comprobar_permiso_investigadores(request, proyecto):
+
+    investigador = Investigador.objects.filter(
+        usuario=request.user
+    ).first()
+
+    es_administrador = request.user.is_staff
+
+    es_investigador_principal = (
+        investigador is not None
+        and proyecto.investigador_principal_id == investigador.pk
+    )
+
+    if not (es_administrador or es_investigador_principal):
+        raise PermissionDenied(
+            "No tienes permiso para gestionar los investigadores "
+            "de este proyecto."
+        )
+
+
+@login_required
+def anadir_investigador_proyecto(request, id):
+
+    proyecto = get_object_or_404(
+        Proyecto,
+        pk=id,
+        estado="PROCESO"
+    )
+
+    comprobar_permiso_investigadores(request, proyecto)
+    formulario = DedicacionProyectoForm(
+        request.POST or None,
+        proyecto=proyecto,
+    )
+    
+    if request.method == "POST" and formulario.is_valid():
+        dedicacion = formulario.save(commit=False)
+        dedicacion.proyecto = proyecto
+        # Se guarda la asignación del validador elegida en el formulario.
+        dedicacion.save()
+        messages.success(request, "Investigador añadido al proyecto.")
+        return _volver_a_investigadores(proyecto.pk)
+
+    return render(request, "proyectos/formulario_dedicacion.html", {
+        "proyecto": proyecto,
+        "formulario": formulario,
+        "titulo": "Añadir investigador",
+        "modo_edicion": False,
+    })
+
+
+@login_required
+def editar_investigador_proyecto(request, id, dedicacion_id):
+    proyecto = get_object_or_404(Proyecto, pk=id, estado="PROCESO")
+    comprobar_permiso_investigadores(request, proyecto)
+    dedicacion = get_object_or_404(
+        Dedicacion, pk=dedicacion_id, proyecto=proyecto
+    )
+    formulario = DedicacionProyectoForm(
+        request.POST or None,
+        instance=dedicacion,
+        proyecto=proyecto,
+    )
+    if request.method == "POST" and formulario.is_valid():
+        # Se actualiza el porcentaje, periodo y validador asignado.
+        formulario.save()
+        messages.success(request, "Dedicación actualizada.")
+        return _volver_a_investigadores(proyecto.pk)
+
+    return render(request, "proyectos/formulario_dedicacion.html", {
+        "proyecto": proyecto,
+        "formulario": formulario,
+        "titulo": "Editar dedicación",
+        "modo_edicion": True,
+    })
+
+
+@login_required
+@require_POST
+def eliminar_investigador_proyecto(request, id, dedicacion_id):
+    proyecto = get_object_or_404(Proyecto, pk=id, estado="PROCESO")
+    comprobar_permiso_investigadores(request, proyecto)
+    dedicacion = get_object_or_404(
+        Dedicacion, pk=dedicacion_id, proyecto=proyecto
+    )
+
+    if dedicacion.investigador_id == proyecto.investigador_principal_id:
+        messages.error(
+            request,
+            "No se puede desvincular al investigador principal desde aquí."
+        )
+        return _volver_a_investigadores(proyecto.pk)
+
+    if Tarea.objects.filter(
+        proyecto=proyecto,
+        responsable_investigador=dedicacion.investigador,
+        finalizada=False,
+    ).exists():
+        messages.error(
+            request,
+            "Este investigador tiene tareas abiertas. Asígnalas a otra persona "
+            "o finalízalas antes de desvincularlo."
+        )
+        return _volver_a_investigadores(proyecto.pk)
+
+    dedicacion.delete()
+    messages.success(
+        request,
+        "Investigador desvinculado. Sus registros de horas anteriores se conservan."
+    )
+    return _volver_a_investigadores(proyecto.pk)
 
 
 # CREAR PROYECTO
@@ -1367,6 +1789,75 @@ def volver_estado_anterior_denegado(request, id):
 # ==========================================
 # PANEL DE ADMINISTRACIÓN DE GESPROY
 # ==========================================
+
+# ==========================================
+# ADMINISTRACIÓN DE VALIDADORES
+# ==========================================
+
+@staff_member_required
+def gestion_validadores(request):
+    """Solo los administradores habilitan o deshabilitan validadores."""
+
+    if request.method == "POST":
+        investigador = get_object_or_404(
+            Investigador.objects.select_related("usuario"),
+            pk=request.POST.get("investigador_id"),
+        )
+        accion = request.POST.get("accion")
+
+        if accion == "activar":
+            if not investigador.usuario.is_active:
+                messages.error(
+                    request,
+                    "No puedes activar un validador con la cuenta deshabilitada.",
+                )
+            else:
+                investigador.puede_validar_horas = True
+                investigador.save(update_fields=["puede_validar_horas"])
+                messages.success(
+                    request,
+                    "Investigador autorizado para validar horas.",
+                )
+
+        elif accion == "desactivar":
+            if Dedicacion.objects.filter(validador=investigador).exists():
+                messages.error(
+                    request,
+                    "Primero debes reasignar o retirar este validador "
+                    "de las dedicaciones de los proyectos.",
+                )
+            else:
+                investigador.puede_validar_horas = False
+                investigador.save(update_fields=["puede_validar_horas"])
+                messages.success(
+                    request,
+                    "Permiso de validador desactivado.",
+                )
+        else:
+            messages.error(request, "Acción no válida.")
+
+        return redirect("gestion_validadores")
+
+    investigadores = (
+        Investigador.objects.select_related("usuario")
+        .annotate(
+            asignaciones_como_validador=Count(
+                "dedicaciones_como_validador"
+            )
+        )
+        .order_by(
+            "usuario__last_name",
+            "usuario__first_name",
+            "usuario__username",
+        )
+    )
+
+    return render(
+        request,
+        "proyectos/gestion_validadores.html",
+        {"investigadores": investigadores},
+    )
+
 
 @staff_member_required
 def panel_administracion(request):

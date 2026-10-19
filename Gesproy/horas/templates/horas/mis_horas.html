@@ -1,0 +1,811 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Mis horas - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/mis_horas.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mh-contenedor">
+
+    <!-- CABECERA -->
+
+    <div class="mh-cabecera">
+
+        <div>
+            <h1>
+                <i class="bi bi-calendar-week"></i>
+                Mis horas
+            </h1>
+
+            <p>
+                Registra y consulta las horas de trabajo
+                dedicadas a tus proyectos.
+            </p>
+        </div>
+
+        <a href="{% url 'calendario_laboral' %}"
+           class="mh-enlace-calendario">
+            <i class="bi bi-calendar-check"></i>
+            Calendario laboral
+        </a>
+
+    </div>
+
+
+    <!-- MENSAJES -->
+
+    {% if messages %}
+
+        {% for mensaje in messages %}
+
+            <div class="mh-mensaje
+                {% if 'error' in mensaje.tags %}
+                    mh-mensaje-error
+                {% else %}
+                    mh-mensaje-ok
+                {% endif %}">
+
+                {{ mensaje }}
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- RESUMEN -->
+
+    <div class="mh-resumen">
+
+        <div class="mh-resumen-tarjeta">
+            <span>Horas registradas</span>
+            <strong>
+                {{ horas_mes|floatformat:2 }} h
+            </strong>
+        </div>
+
+        <div class="mh-resumen-tarjeta">
+            <span>Días trabajados</span>
+            <strong>
+                {{ dias_trabajados }}
+            </strong>
+        </div>
+
+        <div class="mh-resumen-tarjeta">
+            <span>Días seleccionados</span>
+            <strong id="mh-resumen-seleccion">
+                0
+            </strong>
+        </div>
+
+    </div>
+
+
+    <!-- CALENDARIO Y FORMULARIO -->
+
+    <div class="mh-principal">
+
+        <!-- COLUMNA DEL CALENDARIO -->
+
+        <section class="mh-tarjeta mh-calendario">
+
+            <div class="mh-calendario-cabecera">
+
+                <h2>
+                    {{ mes|date:"F Y"|capfirst }}
+                </h2>
+
+                <div class="mh-meses">
+
+                    <a href="?mes={{ mes_anterior|date:'Y-m' }}"
+                       title="Mes anterior"
+                       aria-label="Mes anterior">
+
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+
+                    <a href="?mes={{ mes_siguiente|date:'Y-m' }}"
+                       title="Mes siguiente"
+                       aria-label="Mes siguiente">
+
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <p class="mh-instruccion">
+                Pulsa en uno o varios días para registrar horas.
+            </p>
+
+
+            <!-- DÍAS DE LA SEMANA -->
+
+            <div class="mh-cuadricula">
+
+                <div class="mh-nombre-dia">L</div>
+                <div class="mh-nombre-dia">M</div>
+                <div class="mh-nombre-dia">X</div>
+                <div class="mh-nombre-dia">J</div>
+                <div class="mh-nombre-dia">V</div>
+                <div class="mh-nombre-dia">S</div>
+                <div class="mh-nombre-dia">D</div>
+
+
+                {% for semana in semanas %}
+
+                    {% for dia in semana %}
+
+                        {% if not dia.es_mes_actual %}
+
+                            <div class="mh-dia mh-dia-fuera"
+                                 aria-hidden="true">
+                            </div>
+
+                        {% elif dia.bloqueado %}
+
+                            <div class="mh-dia mh-dia-bloqueado
+                                        {% if dia.es_festivo %}mh-dia-festivo{% endif %}
+                                        {% if dia.es_hoy %}mh-dia-hoy{% endif %}"
+                                 title="{% if dia.es_festivo %}{{ dia.nombre_festivo }}{% elif dia.es_futuro %}Fecha futura{% else %}Día no laborable{% endif %}">
+
+                                <span class="mh-numero">
+                                    {{ dia.numero }}
+                                </span>
+
+                                {% if dia.horas %}
+                                    <small>
+                                        {{ dia.horas|floatformat:2 }} h
+                                    </small>
+                                {% endif %}
+
+                            </div>
+
+                        {% else %}
+
+                            <button
+                                type="button"
+                                class="mh-dia mh-dia-seleccionable
+                                       {% if dia.es_hoy %}mh-dia-hoy{% endif %}
+                                       {% if dia.horas %}mh-dia-con-horas{% endif %}"
+                                data-fecha="{{ dia.fecha|date:'Y-m-d' }}"
+                                aria-pressed="false"
+                                title="{% if dia.horas %}{{ dia.horas|floatformat:2 }} h registradas{% else %}Seleccionar día{% endif %}">
+
+                                <span class="mh-numero">
+                                    {{ dia.numero }}
+                                </span>
+
+                                {% if dia.horas %}
+                                    <small>
+                                        {{ dia.horas|floatformat:2 }} h
+                                    </small>
+                                {% endif %}
+
+                            </button>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- LEYENDA -->
+
+            <div class="mh-leyenda">
+
+                <span>
+                    <i class="mh-leyenda-cuadro mh-leyenda-seleccionado"></i>
+                    Seleccionado
+                </span>
+
+                <span>
+                    <i class="mh-leyenda-cuadro mh-leyenda-registrado"></i>
+                    Con horas
+                </span>
+
+                <span>
+                    <i class="mh-leyenda-cuadro mh-leyenda-festivo"></i>
+                    No laborable
+                </span>
+
+            </div>
+
+            <div class="mh-seleccion-info">
+
+                <span id="mh-texto-seleccion">
+                    Ningún día seleccionado.
+                </span>
+
+                <button type="button"
+                        id="mh-limpiar"
+                        class="mh-limpiar">
+                    Limpiar selección
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- COLUMNA DEL FORMULARIO -->
+
+        <section class="mh-tarjeta mh-formulario-tarjeta">
+
+            <div class="mh-formulario-titulo">
+
+                <h2>
+                    <i class="bi bi-clock-history"></i>
+                    Imputar horas
+                </h2>
+
+                <p>
+                    Las horas introducidas se aplicarán
+                    a cada día seleccionado.
+                </p>
+
+            </div>
+
+            {% if investigador %}
+
+                <form method="post"
+                      id="mh-formulario"
+                      novalidate>
+
+                    {% csrf_token %}
+
+                    <input type="hidden"
+                           name="mes"
+                           value="{{ mes_iso }}">
+
+                    {{ formulario.fechas }}
+
+                    {% if formulario.fechas.errors %}
+                        <div class="mh-error">
+                            {{ formulario.fechas.errors }}
+                        </div>
+                    {% endif %}
+
+                    {% if formulario.non_field_errors %}
+                        <div class="mh-error">
+                            {{ formulario.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+
+                    <!-- PROYECTO -->
+
+                    <div class="mh-campo">
+
+                        <label for="{{ formulario.proyecto.id_for_label }}">
+                            Proyecto
+                        </label>
+
+                        {{ formulario.proyecto }}
+
+                        {{ formulario.proyecto.errors }}
+
+                    </div>
+
+
+                    <!-- TAREA -->
+
+                    <div class="mh-campo">
+
+                        <label for="{{ formulario.tarea.id_for_label }}">
+                            Tarea
+                        </label>
+
+                        {{ formulario.tarea }}
+
+                        {{ formulario.tarea.errors }}
+
+                    </div>
+
+
+                    <!-- HORAS -->
+
+                    <div class="mh-campo">
+
+                        <label for="{{ formulario.horas.id_for_label }}">
+                            Horas por día
+                        </label>
+
+                        {{ formulario.horas }}
+
+                        {{ formulario.horas.errors }}
+
+                    </div>
+
+
+                    <!-- DESCRIPCIÓN -->
+
+                    <div class="mh-campo">
+
+                        <label for="{{ formulario.descripcion.id_for_label }}">
+                            Descripción
+                            <span class="mh-opcional">
+                                (opcional)
+                            </span>
+                        </label>
+
+                        {{ formulario.descripcion }}
+
+                        {{ formulario.descripcion.errors }}
+
+                    </div>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="mh-total">
+
+                        <span>
+                            Total que se registrará
+                        </span>
+
+                        <strong id="mh-total-horas">
+                            0 h
+                        </strong>
+
+                    </div>
+
+
+                    <!-- GUARDAR -->
+
+                    <button type="submit"
+                            id="mh-guardar"
+                            class="mh-guardar">
+
+                        <i class="bi bi-check-circle"></i>
+                        Guardar horas
+
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <div class="mh-aviso">
+                    Tu usuario todavía no tiene un
+                    perfil de investigador asociado.
+                    No puedes registrar horas hasta
+                    que se configure.
+                </div>
+
+            {% endif %}
+
+        </section>
+
+    </div>
+
+
+    <!-- HISTORIAL -->
+
+    <section class="mh-tarjeta mh-historial">
+
+        <div class="mh-historial-cabecera">
+
+            <h2>
+                <i class="bi bi-list-ul"></i>
+                Registros del mes
+            </h2>
+
+            <span>
+                {{ registros|length }} registros
+            </span>
+
+        </div>
+
+
+        {% if registros %}
+
+            <div class="mh-tabla-contenedor">
+
+                <table class="mh-tabla">
+
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Proyecto</th>
+                            <th>Tarea</th>
+                            <th>Descripción</th>
+                            <th>Horas</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for registro in registros %}
+
+                        <tr>
+
+                            <td>
+                                {{ registro.fecha|date:"d/m/Y" }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ registro.tarea.proyecto.acronimo }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ registro.tarea.nombre }}
+                            </td>
+
+                            <td>
+                                {{ registro.descripcion|default:"—"|truncatechars:75 }}
+                            </td>
+
+                            <td class="mh-columna-horas">
+                                {{ registro.horas|floatformat:2 }} h
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="mh-historial-vacio">
+
+                <i class="bi bi-calendar2-check"></i>
+
+                <p>
+                    Todavía no tienes horas registradas
+                    en este mes.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+
+<!-- DATOS DE LAS TAREAS DISPONIBLES -->
+
+{{ opciones_tareas|json_script:"mh-datos-tareas" }}
+
+
+<!-- JAVASCRIPT DEL CALENDARIO -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const formulario = document.getElementById(
+        "mh-formulario"
+    );
+
+    const botonesDias = document.querySelectorAll(
+        ".mh-dia-seleccionable"
+    );
+
+    const contador = document.getElementById(
+        "mh-resumen-seleccion"
+    );
+
+    const textoSeleccion = document.getElementById(
+        "mh-texto-seleccion"
+    );
+
+    const limpiar = document.getElementById(
+        "mh-limpiar"
+    );
+
+    const datosTareas = JSON.parse(
+        document.getElementById(
+            "mh-datos-tareas"
+        ).textContent
+    );
+
+    // ---------------------------------------
+    // SELECCIÓN DE DÍAS
+    // ---------------------------------------
+
+    const fechasSeleccionadas = new Set();
+
+    const campoFechas = document.getElementById(
+        "id_fechas"
+    );
+
+    const campoHoras = document.getElementById(
+        "id_horas"
+    );
+
+    const totalHoras = document.getElementById(
+        "mh-total-horas"
+    );
+
+    function actualizarSeleccion() {
+
+        const fechas = Array.from(
+            fechasSeleccionadas
+        ).sort();
+
+        if (campoFechas) {
+            campoFechas.value = JSON.stringify(
+                fechas
+            );
+        }
+
+        contador.textContent = fechas.length;
+
+        textoSeleccion.textContent = (
+            fechas.length === 1
+                ? "1 día seleccionado"
+                : fechas.length + " días seleccionados"
+        );
+
+        botonesDias.forEach(function (boton) {
+
+            const seleccionado = (
+                fechasSeleccionadas.has(
+                    boton.dataset.fecha
+                )
+            );
+
+            boton.classList.toggle(
+                "mh-dia-seleccionado",
+                seleccionado
+            );
+
+            boton.setAttribute(
+                "aria-pressed",
+                seleccionado ? "true" : "false"
+            );
+
+        });
+
+        actualizarTotal();
+    }
+
+    function actualizarTotal() {
+
+        if (!totalHoras) {
+            return;
+        }
+
+        const horas = Number(
+            campoHoras ? campoHoras.value : 0
+        ) || 0;
+
+        const total = (
+            fechasSeleccionadas.size * horas
+        );
+
+        totalHoras.textContent = (
+            total.toLocaleString(
+                "es-ES",
+                {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                }
+            ) + " h"
+        );
+    }
+
+    botonesDias.forEach(function (boton) {
+
+        boton.addEventListener(
+            "click",
+            function () {
+
+                const fecha = boton.dataset.fecha;
+
+                if (fechasSeleccionadas.has(fecha)) {
+                    fechasSeleccionadas.delete(fecha);
+                } else {
+                    fechasSeleccionadas.add(fecha);
+                }
+
+                actualizarSeleccion();
+            }
+        );
+
+    });
+
+    limpiar.addEventListener(
+        "click",
+        function () {
+
+            fechasSeleccionadas.clear();
+            actualizarSeleccion();
+
+        }
+    );
+
+    if (campoHoras) {
+        campoHoras.addEventListener(
+            "input",
+            actualizarTotal
+        );
+    }
+
+    // Recuperar días seleccionados si el
+    // servidor devuelve errores de validación.
+
+    if (campoFechas && campoFechas.value) {
+
+        try {
+
+            const iniciales = JSON.parse(
+                campoFechas.value
+            );
+
+            if (Array.isArray(iniciales)) {
+
+                const disponibles = new Set(
+                    Array.from(botonesDias).map(
+                        boton => boton.dataset.fecha
+                    )
+                );
+
+                iniciales.forEach(function (fecha) {
+
+                    if (disponibles.has(fecha)) {
+                        fechasSeleccionadas.add(fecha);
+                    }
+
+                });
+
+            }
+
+        } catch (error) {
+            // Si el dato no es JSON válido,
+            // mantenemos el calendario vacío.
+        }
+
+    }
+
+    actualizarSeleccion();
+
+
+    // ---------------------------------------
+    // TAREAS SEGÚN EL PROYECTO
+    // ---------------------------------------
+
+    const campoProyecto = document.getElementById(
+        "id_proyecto"
+    );
+
+    const campoTarea = document.getElementById(
+        "id_tarea"
+    );
+
+    function actualizarTareas(conservarValor) {
+
+        if (!campoProyecto || !campoTarea) {
+            return;
+        }
+
+        const proyectoId = campoProyecto.value;
+
+        const valorAnterior = (
+            conservarValor ? campoTarea.value : ""
+        );
+
+        campoTarea.replaceChildren();
+
+        campoTarea.add(
+            new Option(
+                "Seleccionar tarea",
+                ""
+            )
+        );
+
+        datosTareas.forEach(function (tarea) {
+
+            if (
+                String(tarea.proyecto_id)
+                === String(proyectoId)
+            ) {
+
+                campoTarea.add(
+                    new Option(
+                        tarea.nombre,
+                        tarea.id
+                    )
+                );
+
+            }
+
+        });
+
+        if (valorAnterior) {
+            campoTarea.value = valorAnterior;
+        }
+
+        campoTarea.disabled = !proyectoId;
+    }
+
+    if (campoProyecto && campoTarea) {
+
+        campoProyecto.addEventListener(
+            "change",
+            function () {
+                actualizarTareas(false);
+            }
+        );
+
+        actualizarTareas(true);
+    }
+
+
+    // ---------------------------------------
+    // VALIDACIÓN ANTES DE ENVIAR
+    // ---------------------------------------
+
+    if (formulario) {
+
+        formulario.addEventListener(
+            "submit",
+            function (evento) {
+
+                if (fechasSeleccionadas.size === 0) {
+
+                    evento.preventDefault();
+
+                    alert(
+                        "Selecciona al menos un día " +
+                        "del calendario."
+                    );
+
+                    return;
+                }
+
+                if (
+                    !campoProyecto.value
+                    || !campoTarea.value
+                    || !campoHoras.value
+                ) {
+
+                    evento.preventDefault();
+
+                    alert(
+                        "Selecciona un proyecto, " +
+                        "una tarea y las horas por día."
+                    );
+
+                    return;
+                }
+
+                const boton = document.getElementById(
+                    "mh-guardar"
+                );
+
+                boton.disabled = true;
+                boton.textContent = "Guardando...";
+
+            }
+        );
+
+    }
+
+});
+</script>
+
+{% endblock %}

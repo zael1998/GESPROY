@@ -39,4 +39,6 @@ urlpatterns = [
 
     # USUARIOS Y AUTENTICACIÓN
     path("usuarios/", include("usuarios.urls")),
+    # HORAS
+    path("horas/", include("horas.urls")),
 ]

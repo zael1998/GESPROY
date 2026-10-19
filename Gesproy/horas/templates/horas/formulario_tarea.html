@@ -1,0 +1,165 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ titulo }} · Gesproy
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/tareas.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="tar-contenedor tar-contenedor-formulario">
+
+    <div class="tar-cabecera">
+        <div>
+            <p class="tar-ruta">
+                {{ proyecto.acronimo }} / Tareas
+            </p>
+
+            <h1>{{ titulo }}</h1>
+
+            <p class="tar-subtitulo">
+                {{ proyecto.nombre }}
+            </p>
+        </div>
+    </div>
+
+    <form method="post" class="tar-formulario">
+
+        {% csrf_token %}
+
+        {% if formulario.non_field_errors %}
+            <div class="tar-mensaje tar-mensaje-error">
+                {{ formulario.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- NOMBRE -->
+
+        <div class="tar-campo">
+            <label for="{{ formulario.nombre.id_for_label }}">
+                Nombre de la tarea *
+            </label>
+
+            {{ formulario.nombre }}
+            {{ formulario.nombre.errors }}
+        </div>
+
+        <!-- DESCRIPCIÓN -->
+
+        <div class="tar-campo">
+            <label for="{{ formulario.descripcion.id_for_label }}">
+                Descripción
+            </label>
+
+            {{ formulario.descripcion }}
+            {{ formulario.descripcion.errors }}
+        </div>
+
+        <!-- FECHAS -->
+
+        <div class="tar-formulario-fila">
+
+            <div class="tar-campo">
+                <label for="{{ formulario.fecha_inicio.id_for_label }}">
+                    Fecha de inicio *
+                </label>
+
+                {{ formulario.fecha_inicio }}
+                {{ formulario.fecha_inicio.errors }}
+            </div>
+
+            <div class="tar-campo">
+                <label for="{{ formulario.fecha_fin.id_for_label }}">
+                    Fecha de fin
+                </label>
+
+                {{ formulario.fecha_fin }}
+                {{ formulario.fecha_fin.errors }}
+            </div>
+
+        </div>
+
+        <!-- HORAS -->
+
+        <div class="tar-campo">
+            <label for="{{ formulario.horas_estimadas.id_for_label }}">
+                Horas previstas *
+            </label>
+
+            {{ formulario.horas_estimadas }}
+
+            <p class="tar-ayuda">
+                Número de horas estimadas para realizar esta tarea.
+            </p>
+
+            {{ formulario.horas_estimadas.errors }}
+        </div>
+
+        <!-- TAREA PADRE -->
+
+        <div class="tar-campo">
+            <label for="{{ formulario.tarea_padre.id_for_label }}">
+                Tarea principal
+            </label>
+
+            {{ formulario.tarea_padre }}
+
+            <p class="tar-ayuda">
+                Déjala vacía para crear una tarea principal.
+                Selecciona otra tarea para crear una subtarea.
+            </p>
+
+            {{ formulario.tarea_padre.errors }}
+        </div>
+
+        <!-- INVESTIGADOR RESPONSABLE -->
+
+        <div class="tar-campo">
+            <label for="{{ formulario.responsable_investigador.id_for_label }}">
+                Investigador responsable
+            </label>
+
+            {{ formulario.responsable_investigador }}
+            {{ formulario.responsable_investigador.errors }}
+
+            <p class="tar-ayuda">
+                Selecciona un investigador asociado al proyecto.
+                Puedes dejarlo vacío si aún no hay responsable.
+            </p>
+        </div>
+
+        <!-- BOTONES -->
+
+        <div class="tar-formulario-acciones">
+
+            <a href="{% url 'horas:tareas_proyecto' proyecto.id %}"
+               class="tar-boton tar-boton-secundario">
+                Cancelar
+            </a>
+
+            <button type="submit"
+                    class="tar-boton tar-boton-principal">
+
+                <i class="bi bi-check-circle"></i>
+
+                {% if modo_edicion %}
+                    Guardar cambios
+                {% else %}
+                    Crear tarea
+                {% endif %}
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,505 @@
+
+/* ==========================================
+   GESPROY - GESTIÓN DE TAREAS
+========================================== */
+
+.tar-contenedor {
+    max-width: 1150px;
+    margin: 35px auto;
+    padding: 0 24px 50px;
+    box-sizing: border-box;
+}
+
+.tar-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.tar-ruta {
+    margin: 0 0 8px;
+    color: #758499;
+    font-size: 12px;
+}
+
+.tar-cabecera h1 {
+    margin: 0 0 8px;
+    color: #263747;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.tar-subtitulo {
+    margin: 0;
+    color: #66788c;
+    font-size: 14px;
+}
+
+.tar-cabecera-acciones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tar-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .2s, color .2s;
+}
+
+.tar-boton-principal {
+    background: #168a9a;
+    color: #fff;
+}
+
+.tar-boton-principal:hover {
+    background: #0f7280;
+    color: #fff;
+    text-decoration: none;
+}
+
+.tar-boton-secundario {
+    background: #fff;
+    color: #526779;
+    border-color: #d7e0e9;
+}
+
+.tar-boton-secundario:hover {
+    background: #f1f5f9;
+    color: #30475c;
+    text-decoration: none;
+}
+
+/* RESUMEN */
+
+.tar-resumen {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.tar-resumen-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #dce4ec;
+    border-radius: 10px;
+}
+
+.tar-resumen-item span {
+    color: #718095;
+    font-size: 12px;
+}
+
+.tar-resumen-item strong {
+    color: #263747;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+/* CABECERA DEL LISTADO */
+
+.tar-seccion-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.tar-seccion-cabecera h2 {
+    margin: 0;
+    color: #263747;
+    font-size: 18px;
+}
+
+.tar-seccion-cabecera > span {
+    color: #718095;
+    font-size: 12px;
+}
+
+/* LISTADO DE TAREAS */
+
+.tar-listado {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tar-tarea {
+    margin-left: calc(var(--tar-nivel, 0) * 18px);
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #dce4ec;
+    border-radius: 10px;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, .025);
+}
+
+.tar-tarea-finalizada {
+    background: #fbfcfd;
+}
+
+.tar-tarea-superior {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.tar-tarea-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.tar-tarea-nombre {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.tar-tarea-nombre h3 {
+    margin: 0;
+    color: #263747;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.tar-icono-principal {
+    color: #365f88;
+    font-size: 17px;
+}
+
+.tar-icono-subtarea {
+    color: #7c3aed;
+    font-size: 17px;
+}
+
+.tar-descripcion {
+    margin: 9px 0 0 26px;
+    color: #66788c;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.tar-metadatos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 22px;
+    margin-top: 13px;
+    color: #718095;
+    font-size: 12px;
+}
+
+.tar-metadatos i {
+    margin-right: 4px;
+}
+
+.tar-tarea-estado {
+    flex-shrink: 0;
+}
+
+.tar-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tar-etiqueta-pendiente {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.tar-etiqueta-finalizada {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+/* HORAS PREVISTAS / REALES */
+
+.tar-horas {
+    margin-top: 18px;
+}
+
+.tar-horas-cabecera {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.tar-horas-cabecera strong {
+    color: #365f88;
+}
+
+.tar-progreso {
+    height: 7px;
+    overflow: hidden;
+    background: #e9eef3;
+    border-radius: 10px;
+}
+
+.tar-progreso-relleno {
+    height: 100%;
+    background: #168a9a;
+    border-radius: 10px;
+}
+
+.tar-progreso-superado {
+    background: #d97706;
+}
+
+/* ACCIONES */
+
+.tar-acciones {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 17px;
+    padding-top: 13px;
+    border-top: 1px solid #edf0f4;
+}
+
+.tar-acciones form {
+    margin: 0;
+}
+
+.tar-accion {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 9px;
+    border: 0;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #526779;
+    font: inherit;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tar-accion:hover {
+    background: #e2e8f0;
+    color: #263747;
+    text-decoration: none;
+}
+
+.tar-accion-finalizar {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.tar-accion-finalizar:hover {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.tar-accion-eliminar {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.tar-accion-eliminar:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* ESTADO VACÍO */
+
+.tar-vacio {
+    padding: 60px 20px;
+    border: 1px solid #dce4ec;
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+}
+
+.tar-vacio > i {
+    color: #93a4b5;
+    font-size: 35px;
+}
+
+.tar-vacio h3 {
+    margin: 15px 0 8px;
+    color: #263747;
+}
+
+.tar-vacio p {
+    margin-bottom: 20px;
+    color: #718095;
+    font-size: 13px;
+}
+
+/* FORMULARIO */
+
+.tar-contenedor-formulario {
+    max-width: 850px;
+}
+
+.tar-formulario {
+    padding: 26px;
+    border: 1px solid #dce4ec;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.tar-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    margin-bottom: 22px;
+}
+
+.tar-campo label {
+    color: #34465a;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tar-input {
+    width: 100%;
+    min-height: 41px;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid #d1dbe5;
+    border-radius: 7px;
+    background: #fff;
+    color: #263747;
+    font: inherit;
+    font-size: 13px;
+}
+
+.tar-input:focus {
+    outline: none;
+    border-color: #168a9a;
+    box-shadow: 0 0 0 3px rgba(22, 138, 154, .10);
+}
+
+textarea.tar-input {
+    min-height: 88px;
+    resize: vertical;
+}
+
+.tar-formulario-fila {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.tar-ayuda {
+    margin: 0;
+    color: #8190a1;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.tar-formulario-acciones {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #edf0f4;
+}
+
+/* MENSAJES */
+
+.tar-mensajes {
+    margin-bottom: 20px;
+}
+
+.tar-mensaje {
+    margin-bottom: 10px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.tar-mensaje-ok {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.tar-mensaje-error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.tar-formulario .errorlist {
+    margin: 0;
+    color: #dc2626;
+    font-size: 12px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 800px) {
+    .tar-resumen {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .tar-contenedor {
+        padding: 0 14px 30px;
+        margin-top: 25px;
+    }
+
+    .tar-cabecera {
+        flex-direction: column;
+    }
+
+    .tar-cabecera h1 {
+        font-size: 22px;
+    }
+
+    .tar-formulario-fila {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .tar-formulario {
+        padding: 18px;
+    }
+
+    .tar-tarea {
+        padding: 15px;
+        margin-left: calc(var(--tar-nivel, 0) * 8px);
+    }
+
+    .tar-tarea-superior {
+        flex-direction: column;
+    }
+
+    .tar-resumen-item {
+        padding: 13px;
+    }
+
+    .tar-resumen-item strong {
+        font-size: 19px;
+    }
+}

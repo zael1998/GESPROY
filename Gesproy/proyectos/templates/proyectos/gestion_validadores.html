@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de validadores · Gesproy{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .validadores-contenedor { max-width: 1080px; margin: 30px auto; padding: 0 18px; }
+    .validadores-cabecera { display:flex; gap:15px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; margin-bottom:20px; }
+    .validadores-cabecera h1 { margin:0 0 8px; font-size:25px; }
+    .validadores-explicacion { color:#64748b; max-width:800px; line-height:1.5; }
+    .validadores-tarjeta { background:white; border:1px solid #d8e0e9; border-radius:12px; overflow:hidden; }
+    .validadores-tabla { width:100%; border-collapse:collapse; }
+    .validadores-tabla th, .validadores-tabla td { padding:14px 15px; border-bottom:1px solid #e7edf3; text-align:left; }
+    .validadores-tabla th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:#64748b; background:#f8fafc; }
+    .validadores-tabla tr:last-child td { border-bottom:none; }
+    .validadores-badge { padding:4px 9px; border-radius:14px; font-size:12px; background:#ecfdf3; color:#087443; font-weight:600; }
+    .validadores-badge.no { background:#f1f5f9; color:#475569; }
+    .validadores-boton { border:1px solid #0690a9; color:#047e95; background:white; border-radius:7px; padding:8px 12px; cursor:pointer; font-weight:600; }
+    .validadores-boton.quitar { border-color:#cbd5e1; color:#475569; }
+    .validadores-boton:disabled { cursor:not-allowed; opacity:.5; }
+    .validadores-volver { display:inline-block; color:#087a95; text-decoration:none; margin-bottom:16px; }
+    @media(max-width:620px) {
+        .validadores-tarjeta { overflow-x:auto; }
+        .validadores-tabla { min-width:650px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="validadores-contenedor">
+    <a class="validadores-volver" href="{% url 'panel_administracion' %}">← Volver a Administración</a>
+    <div class="validadores-cabecera">
+        <div>
+            <h1>Gestión de validadores</h1>
+            <p class="validadores-explicacion">
+                Autoriza a investigadores para validar horas. La autorización no les da
+                acceso a las horas de todo el centro: después deben ser asignados a
+                otros investigadores en la pestaña <strong>Investigadores</strong> de cada proyecto.
+            </p>
+        </div>
+    </div>
+
+    <section class="validadores-tarjeta">
+        <table class="validadores-tabla">
+            <thead>
+                <tr>
+                    <th>Investigador</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
+                    <th>Asignaciones</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for investigador in investigadores %}
+                <tr>
+                    <td>{{ investigador.usuario.get_full_name|default:investigador.usuario.username }}</td>
+                    <td>{{ investigador.usuario.username }}</td>
+                    <td>
+                        {% if investigador.puede_validar_horas %}
+                            <span class="validadores-badge">Autorizado</span>
+                        {% else %}
+                            <span class="validadores-badge no">No autorizado</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ investigador.asignaciones_como_validador }}</td>
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="investigador_id" value="{{ investigador.pk }}">
+                            {% if investigador.puede_validar_horas %}
+                                <input type="hidden" name="accion" value="desactivar">
+                                <button class="validadores-boton quitar" type="submit"
+                                    {% if investigador.asignaciones_como_validador %}disabled
+                                    title="Antes debes retirar sus asignaciones"{% endif %}>
+                                    Desactivar
+                                </button>
+                            {% else %}
+                                <input type="hidden" name="accion" value="activar">
+                                <button class="validadores-boton" type="submit"
+                                    {% if not investigador.usuario.is_active %}disabled
+                                    title="La cuenta está desactivada"{% endif %}>
+                                    Autorizar
+                                </button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5">Todavía no hay perfiles de investigador creados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+{% endblock %}

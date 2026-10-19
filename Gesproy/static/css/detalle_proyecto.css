@@ -594,3 +594,553 @@
         min-width: 600px;
     }
 }
+
+
+/* ==========================================
+   FICHA DE PROYECTO - TAREAS
+========================================== */
+
+/* BOTONES SUPERIORES */
+
+.ficha-acciones-tareas {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* NOMBRE DE LA TAREA PADRE */
+
+.ficha-tarea-secundaria {
+    margin-top: 6px;
+    color: #7c3aed;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.ficha-tarea-secundaria i {
+    margin-right: 5px;
+}
+
+/* ESTADOS */
+
+.ficha-tarea-estado {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ficha-tarea-estado.pendiente {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.ficha-tarea-estado.finalizada {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+/* BOTÓN EDITAR */
+
+.ficha-tarea-editar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 10px;
+    border-radius: 7px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: background-color 0.2s;
+}
+
+.ficha-tarea-editar:hover {
+    background: #dbeafe;
+    color: #1d4ed8;
+    text-decoration: none;
+}
+
+/* ADAPTACIÓN A PANTALLAS PEQUEÑAS */
+
+@media (max-width: 750px) {
+
+    .ficha-acciones-tareas {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .ficha-acciones-tareas .ficha-boton {
+        font-size: 12px;
+    }
+
+}
+
+
+/* ==========================================
+   FICHA DEL PROYECTO - HORAS
+========================================== */
+
+.ficha-horas-subtitulo {
+    margin: 5px 0 0;
+    color: #718096;
+    font-size: 12px;
+}
+
+.ficha-horas-filtros {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.ficha-horas-filtros > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ficha-horas-filtros label {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ficha-horas-filtros input {
+    padding: 9px 11px;
+    border: 1px solid #dce4ec;
+    border-radius: 7px;
+    background: white;
+    color: #263747;
+    font: inherit;
+    font-size: 12px;
+}
+
+.ficha-horas-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 20px;
+    padding: 18px 20px;
+    background: #f0f9fb;
+    border-radius: 9px;
+    color: #176b7e;
+}
+
+.ficha-horas-total > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ficha-horas-total span {
+    font-size: 12px;
+}
+
+.ficha-horas-total strong {
+    font-size: 25px;
+}
+
+.ficha-horas-total > i {
+    font-size: 28px;
+    opacity: .6;
+}
+
+.ficha-horas-grupos {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 20px 20px;
+}
+
+.ficha-horas-grupo {
+    overflow: hidden;
+    border: 1px solid #dce4ec;
+    border-radius: 10px;
+}
+
+.ficha-horas-tarea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f3f7fa;
+}
+
+.ficha-horas-tarea h3 {
+    margin: 0 0 6px;
+    color: #263747;
+    font-size: 15px;
+}
+
+.ficha-horas-tarea h3 i {
+    margin-right: 6px;
+    color: #0891b2;
+}
+
+.ficha-horas-tarea span {
+    color: #7a8998;
+    font-size: 12px;
+}
+
+.ficha-horas-tarea > strong {
+    color: #176b7e;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.ficha-horas-investigador {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #fff;
+    border-top: 1px solid #e5ebf0;
+    border-bottom: 1px solid #e5ebf0;
+    color: #41566b;
+    font-size: 13px;
+}
+
+.ficha-horas-investigador i {
+    margin-right: 6px;
+}
+
+.ficha-horas-investigador strong {
+    color: #176b7e;
+}
+
+.ficha-horas-vacio {
+    padding: 35px 20px;
+    text-align: center;
+}
+
+.ficha-horas-vacio i {
+    display: block;
+    margin-bottom: 10px;
+    color: #94a3b8;
+    font-size: 28px;
+}
+
+@media (max-width: 700px) {
+    .ficha-horas-filtros {
+        padding: 14px;
+    }
+
+    .ficha-horas-total {
+        margin: 14px;
+    }
+
+    .ficha-horas-grupos {
+        padding: 0 14px 14px;
+    }
+
+    .ficha-horas-tarea {
+        padding: 12px;
+    }
+}
+
+
+/* ==========================================
+   GESPROY - PESTAÑA HORAS
+========================================== */
+
+.ficha-horas-subtitulo {
+    margin: 6px 0 0;
+    color: #718096;
+    font-size: 13px;
+}
+
+/* FILTROS */
+
+.ficha-horas-filtros {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ficha-horas-filtros > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.ficha-horas-filtros label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.ficha-horas-filtros input {
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid #d5dee8;
+    border-radius: 7px;
+    background: white;
+    color: #334155;
+    font: inherit;
+    font-size: 13px;
+    box-sizing: border-box;
+}
+
+.ficha-horas-filtros input:focus {
+    outline: none;
+    border-color: #0891b2;
+    box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+}
+
+.ficha-horas-filtros button,
+.ficha-horas-filtros a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 15px;
+    border: 1px solid #d5dee8;
+    border-radius: 7px;
+    background: white;
+    color: #365b7e;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ficha-horas-filtros button:hover,
+.ficha-horas-filtros a:hover {
+    background: #edf7fa;
+    border-color: #a3d5df;
+}
+
+/* TARJETA DEL TOTAL */
+
+.ficha-horas-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px;
+    padding: 20px 24px;
+    border: 1px solid #cce6ed;
+    border-radius: 10px;
+    background: #f0f9fb;
+    color: #176b7e;
+}
+
+.ficha-horas-total > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ficha-horas-total span {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ficha-horas-total strong {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.ficha-horas-total > i {
+    font-size: 30px;
+    opacity: 0.6;
+}
+
+/* GRUPOS DE TAREAS */
+
+.ficha-horas-grupos {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 20px 24px;
+}
+
+.ficha-horas-grupo {
+    overflow: hidden;
+    border: 1px solid #dce4ec;
+    border-radius: 10px;
+    background: white;
+}
+
+.ficha-horas-tarea {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 17px 20px;
+    background: #f1f6fa;
+}
+
+.ficha-horas-tarea h3 {
+    margin: 0 0 5px;
+    font-size: 15px;
+    color: #263747;
+}
+
+.ficha-horas-tarea h3 i {
+    color: #0891b2;
+    margin-right: 6px;
+}
+
+.ficha-horas-tarea span {
+    color: #718096;
+    font-size: 12px;
+}
+
+.ficha-horas-tarea > strong {
+    color: #176b7e;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+/* INVESTIGADORES */
+
+.ficha-horas-investigador {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 20px;
+    background: #fafcff;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 13px;
+}
+
+.ficha-horas-investigador i {
+    margin-right: 6px;
+    color: #64748b;
+}
+
+.ficha-horas-investigador strong {
+    color: #176b7e;
+}
+
+/* TABLAS DE REGISTROS */
+
+.ficha-horas-grupo .ficha-tabla-contenedor {
+    overflow-x: auto;
+}
+
+.ficha-horas-grupo .ficha-tabla {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ficha-horas-grupo .ficha-tabla th {
+    padding: 12px 20px;
+    background: #fafbfc;
+    color: #64748b;
+    font-size: 11px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ficha-horas-grupo .ficha-tabla td {
+    padding: 13px 20px;
+    border-bottom: 1px solid #eef1f5;
+    color: #475569;
+    font-size: 12px;
+}
+
+/* SIN REGISTROS */
+
+.ficha-horas-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 150px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.ficha-horas-vacio i {
+    font-size: 32px;
+    color: #94a3b8;
+}
+
+.ficha-horas-vacio p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+    .ficha-horas-filtros {
+        padding: 14px;
+    }
+
+    .ficha-horas-total {
+        margin: 14px;
+        padding: 16px;
+    }
+
+    .ficha-horas-grupos {
+        padding: 0 14px 14px;
+    }
+
+    .ficha-horas-tarea {
+        padding: 14px;
+    }
+}
+
+
+/* ==========================================
+   REGISTRAR HORAS DESDE CADA TAREA
+========================================== */
+
+.ficha-tarea-imputar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-top: 9px;
+    padding: 6px 10px;
+
+    border: 1px solid #b8e0e7;
+    border-radius: 6px;
+
+    background: #effafb;
+    color: #087c96;
+
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: background-color .15s;
+}
+
+.ficha-tarea-imputar:hover {
+    background: #d9f1f5;
+    color: #075f75;
+    text-decoration: none;
+}
+
+
+

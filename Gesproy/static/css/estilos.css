@@ -1306,3 +1306,13 @@ a.acronimo-proyecto-enlace:focus-visible {
         padding: 0 12px;
     }
 }
+
+
+/* ==========================================
+   NAVEGACIÓN - MIS HORAS
+========================================== */
+
+.gesproy-navegacion .gesproy-enlace:has(> .bi-clock-history) {
+    --nav-color: #0f766e;
+    --nav-bg: #f0fdfa;
+}

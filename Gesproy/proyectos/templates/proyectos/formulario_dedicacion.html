@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ titulo }} · {{ proyecto.acronimo }} · Gesproy{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/detalle_proyecto.css' %}">
+<style>
+    .ficha-dedicacion-formulario { max-width: 740px; margin: 28px auto; }
+    .ficha-dedicacion-campos { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+    .ficha-dedicacion-campo { display: flex; flex-direction: column; gap: 7px; }
+    .ficha-dedicacion-campo label { font-size: 13px; font-weight: 600; color: #365b7e; }
+    .ficha-dedicacion-campo .ficha-input { width: 100%; min-height: 40px; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; box-sizing: border-box; }
+    .ficha-dedicacion-campo .ficha-input:focus { outline: 2px solid #a5d9e4; border-color: #0089a8; }
+    .ficha-dedicacion-campo .ficha-input:disabled { background: #f1f5f9; }
+    .ficha-dedicacion-campo .errorlist { margin: 0; padding-left: 17px; color: #b42318; font-size: 12px; }
+    .ficha-dedicacion-ayuda { color: #64748b; font-size: 12px; }
+    .ficha-dedicacion-botones { display: flex; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
+    @media (max-width: 600px) { .ficha-dedicacion-campos { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ficha-contenedor ficha-dedicacion-formulario">
+    <a href="{% url 'detalle_proyecto' proyecto.id %}?pestana=investigadores"
+       class="ficha-volver"><i class="bi bi-arrow-left"></i> Volver a investigadores</a>
+
+    <div class="ficha-cabecera" style="margin-top:16px;">
+        <div class="ficha-identidad">
+            <h1>{{ titulo }}</h1>
+            <p class="ficha-nombre">{{ proyecto.acronimo }} · {{ proyecto.nombre }}</p>
+        </div>
+    </div>
+
+    <section class="ficha-tarjeta" style="padding:24px;">
+        <form method="post">
+            {% csrf_token %}
+            {{ formulario.non_field_errors }}
+            <div class="ficha-dedicacion-campos">
+                <div class="ficha-dedicacion-campo">
+                    <label for="{{ formulario.investigador.id_for_label }}">Investigador *</label>
+                    {{ formulario.investigador }}
+                    {{ formulario.investigador.errors }}
+                </div>
+                <div class="ficha-dedicacion-campo">
+                    <label for="{{ formulario.porcentaje.id_for_label }}">Dedicación (%) *</label>
+                    {{ formulario.porcentaje }}
+                    {{ formulario.porcentaje.errors }}
+                </div>
+                <div class="ficha-dedicacion-campo">
+                    <label for="{{ formulario.fecha_inicio.id_for_label }}">Fecha de inicio *</label>
+                    {{ formulario.fecha_inicio }}
+                    {{ formulario.fecha_inicio.errors }}
+                </div>
+                <div class="ficha-dedicacion-campo">
+                    <label for="{{ formulario.fecha_fin.id_for_label }}">Fecha de fin (opcional)</label>
+                    {{ formulario.fecha_fin }}
+                    {{ formulario.fecha_fin.errors }}
+                </div>
+                <div class="ficha-dedicacion-campo">
+                    <label for="{{ formulario.validador.id_for_label }}">Validador (opcional)</label>
+                    {{ formulario.validador }}
+                    {{ formulario.validador.errors }}
+                </div>
+            </div>
+            <p class="ficha-dedicacion-ayuda">
+                Administradores e investigadores principales pueden gestionar las dedicaciones
+                de sus proyectos en proceso. Solo se muestran validadores autorizados
+                por Administración. Un investigador no puede validarse a sí mismo.
+            </p>
+            <div class="ficha-dedicacion-botones">
+                <button type="submit" class="ficha-boton ficha-boton-azul">
+                    <i class="bi bi-check-circle"></i>
+                    {% if modo_edicion %}Guardar cambios{% else %}Añadir investigador{% endif %}
+                </button>
+                <a href="{% url 'detalle_proyecto' proyecto.id %}?pestana=investigadores"
+                   class="ficha-boton">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

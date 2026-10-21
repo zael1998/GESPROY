@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Editar horas · Gesproy{% endblock %}
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/horas_registros.css' %}">
+{% endblock %}
+{% block content %}
+<div class="mr-contenedor">
+    <nav class="mr-ruta" aria-label="Ruta de navegación">
+        <a href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">Mis horas</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <span>Editar registro</span>
+    </nav>
+
+    <div class="mr-encabezado">
+        <span class="mr-icono"><i class="bi bi-pencil-square" aria-hidden="true"></i></span>
+        <div>
+            <h1>Editar horas registradas</h1>
+            <p>Corrige las horas o la descripción de una imputación pendiente.</p>
+        </div>
+    </div>
+
+    <section class="mr-card">
+        <header class="mr-card-cabecera">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            Datos del registro
+        </header>
+        <div class="mr-datos">
+            <div><span>Fecha</span><strong>{{ registro.fecha|date:'d/m/Y' }}</strong></div>
+            <div><span>Proyecto</span><strong>{{ registro.tarea.proyecto.acronimo }}</strong></div>
+            <div><span>Tarea</span><strong>{{ registro.tarea.nombre }}</strong></div>
+        </div>
+        <form method="post" class="mr-formulario" novalidate>
+            {% csrf_token %}
+            {% if formulario.non_field_errors %}
+                <div class="mr-error" role="alert">{{ formulario.non_field_errors }}</div>
+            {% endif %}
+            <div class="mr-campo">
+                <label for="{{ formulario.horas.id_for_label }}">Horas trabajadas</label>
+                {{ formulario.horas }}
+                {% if formulario.horas.errors %}<div class="mr-error">{{ formulario.horas.errors }}</div>{% endif %}
+                <small>Se suman las horas de todos tus proyectos. Máximo 24 horas por día.</small>
+            </div>
+            <div class="mr-campo">
+                <label for="{{ formulario.descripcion.id_for_label }}">Descripción del trabajo</label>
+                {{ formulario.descripcion }}
+                {% if formulario.descripcion.errors %}<div class="mr-error">{{ formulario.descripcion.errors }}</div>{% endif %}
+            </div>
+            <div class="mr-aviso"><i class="bi bi-lightbulb" aria-hidden="true"></i>
+                La jornada de {{ jornada_orientativa|floatformat:2 }} h es orientativa; puedes superarla hasta el máximo de 24 h/día.
+            </div>
+            <div class="mr-acciones">
+                <a class="mr-boton mr-boton--secundario" href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">Cancelar</a>
+                <button type="submit" class="mr-boton mr-boton--principal"><i class="bi bi-check2" aria-hidden="true"></i> Guardar cambios</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

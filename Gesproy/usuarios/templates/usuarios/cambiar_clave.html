@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Cambiar clave de acceso · Gesproy{% endblock %}
+
+{% block content %}
+<section class="cuenta-pagina">
+    <div class="cuenta-migas">
+        <a href="{% url 'mis_proyectos' %}">Inicio</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <a href="{% url 'mi_perfil' %}">Mi cuenta</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <strong>Cambiar contraseña</strong>
+    </div>
+
+    <div class="cuenta-titulo">
+        <h1>Cambio de clave de acceso</h1>
+        <p>Modifica la contraseña con la que accedes a Gesproy.</p>
+    </div>
+
+    {% if messages %}
+        {% for mensaje in messages %}
+            <div class="cuenta-aviso {% if 'error' in mensaje.tags %}cuenta-aviso-error{% endif %}" role="status">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                {{ mensaje }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="cuenta-tarjeta">
+        <div class="cuenta-tarjeta-encabezado">
+            <i class="bi bi-shield-lock" aria-hidden="true"></i>
+            <h2>Datos de acceso</h2>
+        </div>
+
+        <form method="post" class="cuenta-formulario" novalidate>
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="cuenta-aviso cuenta-aviso-error" role="alert">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="cuenta-fila cuenta-fila-lectura">
+                <span class="cuenta-etiqueta">Usuario</span>
+                <div class="cuenta-campo">
+                    <div class="cuenta-dato-fijo">{{ request.user.username }}</div>
+                </div>
+            </div>
+
+            <div class="cuenta-fila">
+                <label for="{{ formulario.old_password.id_for_label }}">Clave actual</label>
+                <div class="cuenta-campo">
+                    {{ formulario.old_password }}
+                    {% for error in formulario.old_password.errors %}<p class="cuenta-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="cuenta-fila">
+                <label for="{{ formulario.new_password1.id_for_label }}">Nueva clave</label>
+                <div class="cuenta-campo">
+                    {{ formulario.new_password1 }}
+                    {% for error in formulario.new_password1.errors %}<p class="cuenta-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="cuenta-fila">
+                <label for="{{ formulario.new_password2.id_for_label }}">Repetir nueva clave</label>
+                <div class="cuenta-campo">
+                    {{ formulario.new_password2 }}
+                    {% for error in formulario.new_password2.errors %}<p class="cuenta-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <p class="cuenta-ayuda cuenta-ayuda-clave">
+                Utiliza una contraseña segura. Debes conocer la clave actual para poder modificarla.
+            </p>
+
+            <div class="cuenta-acciones">
+                <a href="{% url 'mi_perfil' %}" class="cuenta-boton cuenta-boton-secundario">
+                    <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                    Datos personales
+                </a>
+                <button type="reset" class="cuenta-boton cuenta-boton-secundario">Restablecer</button>
+                <button type="submit" class="cuenta-boton cuenta-boton-principal">
+                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+                    Actualizar clave
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mis datos personales · Gesproy{% endblock %}
+
+{% block content %}
+<section class="cuenta-pagina">
+    <div class="cuenta-migas">
+        <a href="{% url 'mis_proyectos' %}">Inicio</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <span>Mi cuenta</span>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <strong>Datos personales</strong>
+    </div>
+
+    <div class="cuenta-titulo">
+        <h1>Editar perfil</h1>
+        <p>Actualiza tus datos personales en Gesproy.</p>
+    </div>
+
+    {% if messages %}
+        {% for mensaje in messages %}
+            <div class="cuenta-aviso {% if 'error' in mensaje.tags %}cuenta-aviso-error{% endif %}" role="status">
+                <i class="bi bi-info-circle" aria-hidden="true"></i>
+                {{ mensaje }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="cuenta-tarjeta">
+        <div class="cuenta-tarjeta-encabezado">
+            <i class="bi bi-person-vcard" aria-hidden="true"></i>
+            <h2>Datos personales</h2>
+        </div>
+
+        <form method="post" class="cuenta-formulario" novalidate>
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+                <div class="cuenta-aviso cuenta-aviso-error" role="alert">
+                    {{ formulario.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="cuenta-fila">
+                <label for="{{ formulario.last_name.id_for_label }}">Apellidos</label>
+                <div class="cuenta-campo">
+                    {{ formulario.last_name }}
+                    {% for error in formulario.last_name.errors %}<p class="cuenta-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="cuenta-fila">
+                <label for="{{ formulario.first_name.id_for_label }}">Nombre</label>
+                <div class="cuenta-campo">
+                    {{ formulario.first_name }}
+                    {% for error in formulario.first_name.errors %}<p class="cuenta-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="cuenta-fila">
+                <label for="{{ formulario.email.id_for_label }}">Correo electrónico</label>
+                <div class="cuenta-campo">
+                    {{ formulario.email }}
+                    {% for error in formulario.email.errors %}<p class="cuenta-error">{{ error }}</p>{% endfor %}
+                </div>
+            </div>
+
+            <div class="cuenta-fila cuenta-fila-lectura">
+                <span class="cuenta-etiqueta">Nombre de usuario</span>
+                <div class="cuenta-campo">
+                    <div class="cuenta-dato-fijo">{{ request.user.username }}</div>
+                    <p class="cuenta-ayuda">Tu nombre de usuario se administra por separado.</p>
+                </div>
+            </div>
+
+            <div class="cuenta-fila cuenta-fila-lectura">
+                <span class="cuenta-etiqueta">Tipo de cuenta</span>
+                <div class="cuenta-campo">
+                    {% if request.user.is_superuser %}
+                        <span class="cuenta-rol">Superadministrador</span>
+                    {% elif request.user.is_staff %}
+                        <span class="cuenta-rol">Administrador</span>
+                    {% else %}
+                        <span class="cuenta-rol">Investigador</span>
+                    {% endif %}
+                    <p class="cuenta-ayuda">Por seguridad no puedes cambiar tus propios permisos.</p>
+                </div>
+            </div>
+
+            <div class="cuenta-acciones">
+                <a href="{% url 'mi_cambiar_clave' %}" class="cuenta-boton cuenta-boton-secundario">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                    Cambiar clave
+                </a>
+                <button type="reset" class="cuenta-boton cuenta-boton-secundario">Restablecer</button>
+                <button type="submit" class="cuenta-boton cuenta-boton-principal">
+                    <i class="bi bi-check-circle" aria-hidden="true"></i>
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

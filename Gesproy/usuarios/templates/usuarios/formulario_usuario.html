@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ titulo }} · Gesproy{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/gestion_usuarios.css' %}">{% endblock %}
+{% block content %}
+<section class="gu-pagina gu-estrecha">
+    <div class="gu-migas"><a href="{% url 'panel_administracion' %}">Administración</a><i class="bi bi-chevron-right"></i><a href="{% url 'gestion_usuarios' %}">Usuarios</a><i class="bi bi-chevron-right"></i><strong>{{ titulo }}</strong></div>
+    <div class="gu-cabecera"><div><span class="gu-eyebrow"><i class="bi bi-person-gear"></i> CUENTAS</span><h1>{{ titulo }}</h1><p>{% if es_creacion %}Crea una cuenta y establece su nivel de acceso.{% else %}Edita los datos y permisos de esta cuenta.{% endif %}</p></div></div>
+    <div class="gu-tarjeta">
+        <div class="gu-tarjeta-titulo"><i class="bi bi-person-vcard"></i> Datos de usuario</div>
+        <form method="post" class="gu-formulario" novalidate>
+            {% csrf_token %}
+            {% if formulario.non_field_errors %}<div class="gu-mensaje gu-error" role="alert">{{ formulario.non_field_errors }}</div>{% endif %}
+            {% if es_creacion %}
+            <div class="gu-campo"><label for="{{ formulario.username.id_for_label }}">Nombre de usuario</label>{{ formulario.username }}{{ formulario.username.errors }}</div>
+            {% else %}
+            <div class="gu-campo"><label>Nombre de usuario</label><div class="gu-valor-fijo">{{ objetivo.username }}</div></div>
+            {% endif %}
+            <div class="gu-dos-columnas">
+                <div class="gu-campo"><label for="{{ formulario.first_name.id_for_label }}">Nombre</label>{{ formulario.first_name }}{{ formulario.first_name.errors }}</div>
+                <div class="gu-campo"><label for="{{ formulario.last_name.id_for_label }}">Apellidos</label>{{ formulario.last_name }}{{ formulario.last_name.errors }}</div>
+            </div>
+            <div class="gu-campo"><label for="{{ formulario.email.id_for_label }}">Correo electrónico</label>{{ formulario.email }}{{ formulario.email.errors }}</div>
+            <div class="gu-campo"><label for="{{ formulario.rol_cuenta.id_for_label }}">Rol de la cuenta</label>{{ formulario.rol_cuenta }}{{ formulario.rol_cuenta.errors }}
+                {% if not request.user.is_superuser %}<small>Solo los superadministradores pueden nombrar o retirar administradores.</small>{% endif %}
+            </div>
+            {% if es_creacion %}
+                <div class="gu-separador"></div>
+                <h2 class="gu-form-subtitulo">Contraseña inicial</h2>
+                <div class="gu-campo"><label for="{{ formulario.password1.id_for_label }}">Contraseña</label>{{ formulario.password1 }}{{ formulario.password1.errors }}{% if formulario.password1.help_text %}<div class="gu-ayuda-clave">{{ formulario.password1.help_text|safe }}</div>{% endif %}</div>
+                <div class="gu-campo"><label for="{{ formulario.password2.id_for_label }}">Confirmar contraseña</label>{{ formulario.password2 }}{{ formulario.password2.errors }}</div>
+            {% else %}
+                <div class="gu-campo gu-checkbox-linea"><label for="{{ formulario.is_active.id_for_label }}">{{ formulario.is_active }} <span>Cuenta activa (puede iniciar sesión)</span></label>{{ formulario.is_active.errors }}</div>
+                <p class="gu-nota-interna">Para cambiar la contraseña, usa la acción independiente de restablecimiento; no es necesario conocer la clave anterior.</p>
+            {% endif %}
+            <div class="gu-pie-formulario">
+                <a href="{% url 'gestion_usuarios' %}" class="gu-boton gu-secundario">Cancelar</a>
+                {% if not es_creacion %}<a href="{% url 'cambiar_clave_usuario' objetivo.pk %}" class="gu-boton gu-secundario"><i class="bi bi-key"></i> Cambiar clave</a>{% endif %}
+                <button type="submit" class="gu-boton gu-primario"><i class="bi bi-check-circle"></i> {% if es_creacion %}Crear usuario{% else %}Guardar cambios{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

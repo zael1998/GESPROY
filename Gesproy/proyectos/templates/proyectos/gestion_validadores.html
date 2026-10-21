@@ -37,6 +37,7 @@
                 Autoriza a investigadores para validar horas. La autorización no les da
                 acceso a las horas de todo el centro: después deben ser asignados a
                 otros investigadores en la pestaña <strong>Investigadores</strong> de cada proyecto.
+                <strong>Los administradores no pueden validar horas.</strong>
             </p>
         </div>
     </div>
@@ -79,8 +80,8 @@
                             {% else %}
                                 <input type="hidden" name="accion" value="activar">
                                 <button class="validadores-boton" type="submit"
-                                    {% if not investigador.usuario.is_active %}disabled
-                                    title="La cuenta está desactivada"{% endif %}>
+                                    {% if not investigador.usuario.is_active or investigador.usuario.is_staff or investigador.usuario.rol == 'ADMIN' %}disabled
+                                    title="Solo se autorizan investigadores activos que no sean administradores"{% endif %}>
                                     Autorizar
                                 </button>
                             {% endif %}

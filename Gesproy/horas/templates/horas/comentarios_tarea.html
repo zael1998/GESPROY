@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Comentarios · {{ tarea.nombre }}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/comentarios_tareas.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="cmt-contenedor">
+    <header class="cmt-cabecera">
+        <div>
+            <p class="cmt-ruta">Proyectos / {{ proyecto.acronimo }} / Tareas</p>
+            <h1>Comentarios de la tarea</h1>
+            <p class="cmt-subtitulo">{{ tarea.nombre }}</p>
+        </div>
+        <div class="cmt-acciones-cabecera">
+            <a href="{% url 'horas:tareas_proyecto' proyecto.id %}"
+               class="cmt-boton cmt-boton-secundario">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                Volver a las tareas
+            </a>
+            {% if proyecto.estado == 'PROCESO' and puede_comentar %}
+                <a href="#nuevo-comentario" class="cmt-boton cmt-boton-principal">
+                    <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                    Comentar
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="cmt-mensajes">
+            {% for mensaje in messages %}
+                <p class="cmt-mensaje {% if 'error' in mensaje.tags %}cmt-mensaje-error{% endif %}">
+                    {{ mensaje }}
+                </p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section class="cmt-ficha" aria-label="Información de la tarea">
+        <div>
+            <span class="cmt-etiqueta">{{ proyecto.acronimo }}</span>
+            {% if tarea.tarea_padre %}
+                <span class="cmt-etiqueta">Subtarea de {{ tarea.tarea_padre.nombre }}</span>
+            {% else %}
+                <span class="cmt-etiqueta">Tarea principal</span>
+            {% endif %}
+        </div>
+        <div class="cmt-datos">
+            <span><i class="bi bi-calendar3" aria-hidden="true"></i>
+                {{ tarea.fecha_inicio|date:'d/m/Y' }} –
+                {% if tarea.fecha_fin %}{{ tarea.fecha_fin|date:'d/m/Y' }}{% else %}sin fecha final{% endif %}
+            </span>
+            <span><i class="bi bi-person" aria-hidden="true"></i>
+                {% if tarea.responsable_investigador %}
+                    {{ tarea.responsable_investigador }}
+                {% else %}
+                    Sin responsable
+                {% endif %}
+            </span>
+            <span>
+                {% if tarea.finalizada %}
+                    <i class="bi bi-check-circle" aria-hidden="true"></i> Finalizada
+                {% else %}
+                    <i class="bi bi-clock" aria-hidden="true"></i> Pendiente
+                {% endif %}
+            </span>
+        </div>
+        {% if tarea.descripcion %}
+            <p class="cmt-descripcion">{{ tarea.descripcion|linebreaksbr }}</p>
+        {% endif %}
+        {% if tarea.comentario %}
+            <div class="cmt-comentario-general">
+                <strong>Comentario general de la tarea</strong>
+                <p>{{ tarea.comentario|linebreaksbr }}</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="cmt-panel" aria-labelledby="titulo-comentarios">
+        <div class="cmt-panel-cabecera">
+            <h2 id="titulo-comentarios">Historial de comentarios</h2>
+            <span class="cmt-contador">{{ total_comentarios }}</span>
+        </div>
+
+        {% for comentario in comentarios %}
+            <article class="cmt-entrada">
+                <header class="cmt-entrada-cabecera">
+                    <strong>{{ comentario.autor }}</strong>
+                    <time datetime="{{ comentario.fecha_creacion|date:'c' }}">
+                        {{ comentario.fecha_creacion|date:'d/m/Y H:i' }}
+                    </time>
+                </header>
+                <div class="cmt-contenido">{{ comentario.contenido|linebreaksbr }}</div>
+            </article>
+        {% empty %}
+            <div class="cmt-vacio">
+                <i class="bi bi-chat-square-text" aria-hidden="true"></i>
+                <p>No hay comentarios individuales todavía.</p>
+            </div>
+        {% endfor %}
+    </section>
+
+    {% if puede_comentar %}
+        <section class="cmt-panel" id="nuevo-comentario" aria-labelledby="titulo-nuevo">
+            <div class="cmt-panel-cabecera">
+                <h2 id="titulo-nuevo">Nuevo comentario</h2>
+            </div>
+            <form method="post" class="cmt-formulario">
+                {% csrf_token %}
+                {% if formulario.non_field_errors %}
+                    <div class="cmt-error">{{ formulario.non_field_errors }}</div>
+                {% endif %}
+                <label for="{{ formulario.contenido.id_for_label }}">
+                    {{ formulario.contenido.label }}
+                </label>
+                {{ formulario.contenido }}
+                {% if formulario.contenido.errors %}
+                    <div class="cmt-error">{{ formulario.contenido.errors }}</div>
+                {% endif %}
+                <p class="cmt-ayuda">Máximo 2000 caracteres. El autor y la fecha se registran automáticamente.</p>
+                <button type="submit" class="cmt-boton cmt-boton-principal">
+                    <i class="bi bi-send" aria-hidden="true"></i>
+                    Publicar comentario
+                </button>
+            </form>
+        </section>
+    {% else %}
+        <p class="cmt-solo-lectura">
+            {% if proyecto.estado == 'FINALIZADO' %}
+                Este proyecto está finalizado. Sus comentarios solo se pueden consultar.
+            {% else %}
+                Puedes consultar los comentarios, pero no publicar en esta tarea.
+            {% endif %}
+        </p>
+    {% endif %}
+</div>
+{% endblock %}

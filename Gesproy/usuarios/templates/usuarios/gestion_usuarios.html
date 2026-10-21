@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Gestión de usuarios · Gesproy{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/gestion_usuarios.css' %}">{% endblock %}
+{% block content %}
+<section class="gu-pagina">
+    <div class="gu-migas"><a href="{% url 'panel_administracion' %}">Administración</a><i class="bi bi-chevron-right"></i><strong>Usuarios</strong></div>
+    <div class="gu-cabecera">
+        <div>
+            <span class="gu-eyebrow"><i class="bi bi-people"></i> ADMINISTRACIÓN</span>
+            <h1>Gestión de usuarios</h1>
+            <p>Consulta, crea y administra las cuentas de Gesproy.</p>
+        </div>
+        <a href="{% url 'crear_usuario' %}" class="gu-boton gu-primario"><i class="bi bi-person-plus"></i> Nuevo usuario</a>
+    </div>
+    {% if messages %}{% for mensaje in messages %}
+        <div class="gu-mensaje {% if 'error' in mensaje.tags %}gu-error{% endif %}" role="status">{{ mensaje }}</div>
+    {% endfor %}{% endif %}
+    <div class="gu-tarjeta">
+        <form class="gu-buscador" method="get" role="search">
+            <label for="gu-query" class="gu-sr-only">Buscar usuarios</label>
+            <i class="bi bi-search"></i>
+            <input type="search" id="gu-query" name="q" value="{{ busqueda }}" placeholder="Buscar por nombre, usuario o correo">
+            <button type="submit" class="gu-boton gu-secundario">Buscar</button>
+            {% if busqueda %}<a class="gu-limpiar" href="{% url 'gestion_usuarios' %}">Limpiar</a>{% endif %}
+        </form>
+        <div class="gu-tabla-desplazable">
+            <table class="gu-tabla">
+                <thead><tr><th>Usuario</th><th>Tipo de cuenta</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                {% for cuenta in pagina %}
+                <tr>
+                    <td>
+                        <div class="gu-identidad">
+                            <span class="gu-avatar"><i class="bi bi-person"></i></span>
+                            <span><strong>{{ cuenta.get_full_name|default:cuenta.username }}</strong><small>@{{ cuenta.username }}{% if cuenta.email %} · {{ cuenta.email }}{% endif %}</small></span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if cuenta.is_superuser %}<span class="gu-insignia gu-super"><i class="bi bi-shield-lock"></i> Superadmin</span>
+                        {% elif cuenta.is_staff %}<span class="gu-insignia gu-admin"><i class="bi bi-shield-check"></i> Admin</span>
+                        {% else %}<span class="gu-insignia gu-normal">Investigador</span>{% endif %}
+                    </td>
+                    <td>{% if cuenta.is_active %}<span class="gu-estado gu-activo">Activa</span>{% else %}<span class="gu-estado gu-inactivo">Inactiva</span>{% endif %}</td>
+                    <td>
+                        {% if cuenta.puede_administrarse %}
+                            <div class="gu-acciones-fila">
+                                <a href="{% url 'editar_usuario' cuenta.pk %}" class="gu-accion"><i class="bi bi-pencil-square"></i> Editar</a>
+                                <a href="{% url 'cambiar_clave_usuario' cuenta.pk %}" class="gu-accion"><i class="bi bi-key"></i> Clave</a>
+                            </div>
+                        {% else %}<span class="gu-protegida"><i class="bi bi-lock"></i> Protegida</span>{% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="gu-vacio">No se han encontrado usuarios con esos criterios.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if pagina.paginator.num_pages > 1 %}
+        <div class="gu-paginacion">
+            <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+            <div>
+                {% if pagina.has_previous %}<a href="?q={{ busqueda|urlencode }}&amp;page={{ pagina.previous_page_number }}">Anterior</a>{% endif %}
+                {% if pagina.has_next %}<a href="?q={{ busqueda|urlencode }}&amp;page={{ pagina.next_page_number }}">Siguiente</a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <p class="gu-nota"><i class="bi bi-info-circle"></i> Solo el superadministrador puede conceder o retirar el rol de administrador. Las cuentas técnicas se mantienen fuera de esta pantalla.</p>
+</section>
+{% endblock %}

@@ -1,36 +1,65 @@
-
 from django.urls import path
-from .calendario import mis_horas
-
-from . import views
-
+from . import views, validacion_informes, registros
 
 app_name = "horas"
 
 urlpatterns = [
-
-    # Listado de tareas de un proyecto
-    path("proyecto/<int:proyecto_id>/tareas/", views.tareas_proyecto, name="tareas_proyecto"
+    path(
+        "proyecto/<int:proyecto_id>/tareas/",
+        views.tareas_proyecto,
+        name="tareas_proyecto",
     ),
-
-    # Crear nueva tarea
-    path("proyecto/<int:proyecto_id>/tareas/nueva/",views.crear_tarea,name="crear_tarea"
+    # Nueva vista de Gantt, solo consulta.
+    path(
+        "proyecto/<int:proyecto_id>/tareas/gantt/",
+        views.gantt_proyecto,
+        name="gantt_proyecto",
     ),
-
-    # Editar tarea
-    path("proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/editar/",views.editar_tarea,name="editar_tarea"
+    path(
+        "proyecto/<int:proyecto_id>/tareas/nueva/",
+        views.crear_tarea,
+        name="crear_tarea",
     ),
-
-    # Finalizar tarea
-    path( "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/finalizar/", views.finalizar_tarea, name="finalizar_tarea"
+    # Historial de comentarios de cada tarea y subtarea.
+    path(
+        "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/comentarios/",
+        views.comentarios_tarea,
+        name="comentarios_tarea",
     ),
-
-    # Reabrir tarea
-    path("proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/reabrir/",views.reabrir_tarea, name="reabrir_tarea"),
-
-    # Eliminar tarea
-    path("proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/eliminar/",views.eliminar_tarea,name="eliminar_tarea"),
-    
-    
-    path("mis-horas/",mis_horas,name="mis_horas"),
+    path(
+        "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/editar/",
+        views.editar_tarea,
+        name="editar_tarea",
+    ),
+    path(
+        "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/finalizar/",
+        views.finalizar_tarea,
+        name="finalizar_tarea",
+    ),
+    path(
+        "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/reabrir/",
+        views.reabrir_tarea,
+        name="reabrir_tarea",
+    ),
+    path(
+        "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/eliminar/",
+        views.eliminar_tarea,
+        name="eliminar_tarea",
+    ),
+    # Correcciones de registros del propio investigador.
+    path(
+        "mis-horas/registro/<int:registro_id>/editar/",
+        registros.editar_registro,
+        name="editar_registro",
+    ),
+    path(
+        "mis-horas/registro/<int:registro_id>/eliminar/",
+        registros.eliminar_registro,
+        name="eliminar_registro",
+    ),
+    path("mis-horas/", validacion_informes.mis_horas_seguro, name="mis_horas"),
+    path("", validacion_informes.inicio_horas, name="inicio_horas"),
+    path("validar/", validacion_informes.validar_horas, name="validar_horas"),
+    path("validar/accion/", validacion_informes.accion_validar, name="accion_validar"),
+    path("informe/", validacion_informes.informe_horas, name="informe_horas"),
 ]

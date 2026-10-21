@@ -1,0 +1,285 @@
+/* Gesproy · Diagrama de Gantt (solo lectura)
+   CSS aislado mediante prefijo gan- para evitar conflictos con tareas.css. */
+
+.gan-contenedor {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 30px 22px 65px;
+    color: var(--bs-body-color, #263246);
+}
+
+.gan-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 26px;
+}
+.gan-ruta {
+    margin-bottom: 8px;
+    font-size: .87rem;
+    color: #64748b;
+}
+.gan-cabecera h1 {
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 750;
+    margin: 0 0 5px;
+}
+.gan-subtitulo {
+    margin: 0;
+    color: #64748b;
+}
+.gan-acciones,
+.gan-escalas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+.gan-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 15px;
+    border-radius: 9px;
+    border: 1px solid #cbd5e1;
+    font-size: .91rem;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+.gan-boton:hover { text-decoration: none; }
+.gan-boton-secundario {
+    background: #fff;
+    color: #334155;
+}
+.gan-boton-secundario:hover { background: #f1f5f9; color: #0f172a; }
+.gan-boton-principal { background: #2563eb; color: #fff; border-color: #2563eb; }
+.gan-boton-principal:hover { background: #1d4ed8; color: #fff; }
+
+.gan-panel,
+.gan-vacio {
+    background: #fff;
+    border: 1px solid #dce4ed;
+    border-radius: 13px;
+    box-shadow: 0 5px 20px rgba(15,23,42,.05);
+    overflow: hidden;
+}
+.gan-panel-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 19px 20px;
+}
+.gan-panel-cabecera h2 { margin: 0 0 5px; font-weight: 700; font-size: 1.15rem; }
+.gan-panel-cabecera p { margin: 0; color: #64748b; font-size: .88rem; }
+.gan-escalas { gap: 3px; background: #eef2f7; border-radius: 9px; padding: 4px; }
+.gan-escala {
+    display: block;
+    padding: 7px 11px;
+    border-radius: 7px;
+    font-size: .86rem;
+    text-decoration: none;
+    color: #475569;
+    font-weight: 650;
+}
+.gan-escala:hover { color: #0f172a; background: #e2e8f0; }
+.gan-escala-activa,
+.gan-escala-activa:hover { background: #fff; color: #1d4ed8; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
+.gan-ayuda {
+    padding: 0 20px 15px;
+    margin: 0;
+    font-size: .83rem;
+    color: #64748b;
+}
+
+/* La tabla completa se desplaza en horizontal; la columna de nombres queda fija. */
+.gan-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+    scrollbar-color: #94a3b8 #e2e8f0;
+}
+.gan-scroll:focus-visible { outline: 3px solid #60a5fa; outline-offset: -3px; }
+.gan-grafico { width: max-content; min-width: 100%; }
+.gan-fila { display: flex; width: max-content; min-width: 100%; border-bottom: 1px solid #e9eef5; }
+.gan-fila:last-child { border-bottom: 0; }
+.gan-celda-nombre {
+    box-sizing: border-box;
+    flex: 0 0 290px;
+    width: 290px;
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    padding: 9px 12px;
+    border-right: 1px solid #dbe3ec;
+    background: #fff;
+}
+.gan-fila:nth-child(even) .gan-celda-nombre { background: #f8fafc; }
+.gan-celda-tiempo {
+    box-sizing: border-box;
+    flex: 0 0 var(--gan-tiempo);
+    width: var(--gan-tiempo);
+    position: relative;
+}
+.gan-encabezado { position: sticky; top: 0; z-index: 4; border-bottom: 1px solid #cbd5e1; }
+.gan-encabezado-nombre {
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    font-size: .83rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #334155;
+}
+.gan-encabezado-tiempo { background: #f1f5f9; }
+.gan-meses, .gan-periodos { display: flex; }
+.gan-mes, .gan-periodo {
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    border-right: 1px solid #cbd5e1;
+    color: #334155;
+}
+.gan-mes { padding: 9px 4px; font-weight: 750; font-size: .79rem; min-height: 33px; }
+.gan-periodo {
+    padding: 6px 1px;
+    border-top: 1px solid #dbe3ec;
+    font-size: .70rem;
+    min-height: 27px;
+}
+.gan-nombre-tarea {
+    min-height: 55px;
+    padding-left: calc(12px + var(--gan-nivel) * 13px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+}
+.gan-nombre-contenido {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    min-width: 0;
+    font-weight: 650;
+    font-size: .88rem;
+}
+.gan-icono-tarea { color: #64748b; }
+.gan-icono-subtarea { color: #94a3b8; }
+.gan-enlace-tarea,
+.gan-nombre-solo-lectura {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.gan-enlace-tarea { color: #1d4ed8; text-decoration: none; }
+.gan-enlace-tarea:hover { text-decoration: underline; }
+.gan-nombre-solo-lectura { color: #334155; }
+.gan-responsable {
+    color: #64748b;
+    font-size: .74rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 21px;
+}
+.gan-tiempo-tarea {
+    min-height: 55px;
+    /* Cada línea representa 7 días exactos desde un lunes. */
+    background-image: repeating-linear-gradient(
+        to right,
+        transparent 0,
+        transparent calc(var(--gan-semana) - 1px),
+        #dbe4ee calc(var(--gan-semana) - 1px),
+        #dbe4ee var(--gan-semana)
+    );
+}
+.gan-fila:nth-child(odd) .gan-tiempo-tarea { background-color: #fbfdff; }
+.gan-barra {
+    box-sizing: border-box;
+    position: absolute;
+    top: 18px;
+    height: 19px;
+    min-width: 6px;
+    border-radius: 5px;
+    z-index: 1;
+    cursor: help;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,.12);
+}
+.gan-barra-pendiente { background: #3b82f6; }
+.gan-barra-finalizada { background: #10b981; }
+.gan-barra-subtarea { height: 13px; top: 21px; border-radius: 4px; }
+.gan-marcador {
+    box-sizing: border-box;
+    position: absolute;
+    top: 21px;
+    width: 13px;
+    height: 13px;
+    transform: translateX(-50%) rotate(45deg);
+    border: 2px solid #fff;
+    background: #2563eb;
+    box-shadow: 0 0 0 1px #1d4ed8;
+    z-index: 1;
+    cursor: help;
+}
+.gan-marcador-finalizado { background: #059669; box-shadow: 0 0 0 1px #047857; }
+.gan-texto-sin-fin {
+    position: absolute;
+    top: 40px;
+    transform: translateX(10px);
+    font-size: .68rem;
+    color: #64748b;
+    font-style: italic;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.gan-linea-hoy {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #ef4444;
+    opacity: .75;
+    z-index: 1;
+    pointer-events: none;
+}
+.gan-pie {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+}
+.gan-leyenda { display: flex; gap: 16px; flex-wrap: wrap; }
+.gan-leyenda span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    color: #475569;
+}
+.gan-leyenda-muestra { display: inline-block; width: 13px; height: 9px; border-radius: 3px; }
+.gan-leyenda-pendiente { background: #3b82f6; }
+.gan-leyenda-finalizada { background: #10b981; }
+.gan-leyenda-marcador { background: #2563eb; transform: rotate(45deg); width: 9px; height: 9px; border-radius: 1px; }
+.gan-leyenda-hoy { background: #ef4444; width: 2px; height: 14px; border-radius: 0; }
+.gan-lectura { font-size: .80rem; color: #64748b; }
+.gan-vacio { padding: 65px 25px; text-align: center; }
+.gan-vacio > i { display: block; font-size: 2.5rem; color: #94a3b8; margin-bottom: 10px; }
+.gan-vacio h2 { font-size: 1.2rem; margin-bottom: 8px; }
+.gan-vacio p { color: #64748b; }
+
+@media (max-width: 720px) {
+    .gan-contenedor { padding: 18px 10px 40px; }
+    .gan-celda-nombre { flex-basis: 215px; width: 215px; }
+    .gan-nombre-tarea { padding-left: calc(8px + var(--gan-nivel) * 10px); }
+    .gan-panel-cabecera { padding: 16px 12px; }
+    .gan-ayuda { padding: 0 12px 12px; }
+}

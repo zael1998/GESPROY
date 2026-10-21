@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Horas · Gesproy{% endblock %}
+{# El CSS de Horas se carga una sola vez desde base.html. #}
+{% block content %}
+<div class="gh-container">
+    <div class="gh-header">
+        <div>
+            <h1>Horas</h1>
+            <p>Imputa, revisa y consulta el trabajo de tus proyectos.</p>
+        </div>
+    </div>
+    <section class="gh-grid-cards">
+        <a class="gh-card gh-card-link" href="{% url 'horas:mis_horas' %}">
+            <span class="gh-card-icon">▦</span>
+            <h2>Mis horas</h2>
+            <p>Selecciona días, proyectos y tareas para registrar horas.</p>
+        </a>
+        {% if puede_validar %}
+        <a class="gh-card gh-card-link" href="{% url 'horas:validar_horas' %}">
+            <span class="gh-card-icon">✓</span>
+            <h2>Validar horas</h2>
+            <p>Revisa y aprueba las horas de los investigadores asignados.</p>
+        </a>
+        {% endif %}
+        <a class="gh-card gh-card-link" href="{% url 'horas:informe_horas' %}">
+            <span class="gh-card-icon">▤</span>
+            <h2>Informe</h2>
+            <p>Consulta horas y totales con filtros y vista para impresión.</p>
+        </a>
+    </section>
+</div>
+{% endblock %}

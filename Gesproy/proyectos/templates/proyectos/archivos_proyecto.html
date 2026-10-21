@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Archivos · {{ proyecto.acronimo }} · Gesproy{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/archivos_proyecto.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ap-contenedor">
+    <div class="ap-volver">
+        <a href="{% url 'detalle_proyecto' proyecto.pk %}">
+            <i class="bi bi-arrow-left"></i> Volver a la ficha del proyecto
+        </a>
+    </div>
+
+    <header class="ap-cabecera">
+        <div>
+            <div class="ap-eyebrow"><i class="bi bi-folder2-open"></i> {{ proyecto.acronimo }}</div>
+            <h1>Archivos del proyecto</h1>
+            <p>Documentación privada de <strong>{{ proyecto.nombre }}</strong>.</p>
+        </div>
+        <span class="ap-contador">{{ cantidad_archivos }} archivo{{ cantidad_archivos|pluralize }}</span>
+    </header>
+
+    {% if messages %}
+        {% for mensaje in messages %}
+            <div class="ap-mensaje {% if 'error' in mensaje.tags %}ap-error{% elif 'warning' in mensaje.tags %}ap-aviso{% else %}ap-ok{% endif %}" role="status">
+                {{ mensaje }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if puede_gestionar %}
+        <section class="ap-tarjeta" aria-labelledby="ap-titulo-subir">
+            <div class="ap-tarjeta-cabecera">
+                <div>
+                    <h2 id="ap-titulo-subir"><i class="bi bi-cloud-arrow-up"></i> Subir un archivo</h2>
+                    <p>El documento quedará asociado únicamente a este proyecto.</p>
+                </div>
+            </div>
+            <form method="post" enctype="multipart/form-data" class="ap-formulario">
+                {% csrf_token %}
+                {% if formulario.non_field_errors %}
+                    <div class="ap-mensaje ap-error">{{ formulario.non_field_errors }}</div>
+                {% endif %}
+                <div class="ap-campo">
+                    <label for="{{ formulario.fichero.id_for_label }}">Archivo <span aria-hidden="true">*</span></label>
+                    {{ formulario.fichero }}
+                    {{ formulario.fichero.errors }}
+                    <small>PDF, Office, CSV, TXT, imágenes o ZIP. Máximo 20 MB.</small>
+                </div>
+                <div class="ap-campo">
+                    <label for="{{ formulario.comentario.id_for_label }}">Descripción</label>
+                    {{ formulario.comentario }}
+                    {{ formulario.comentario.errors }}
+                </div>
+                <div class="ap-formulario-acciones">
+                    <button type="submit" class="ap-boton ap-boton-primario">
+                        <i class="bi bi-upload"></i> Guardar archivo
+                    </button>
+                </div>
+            </form>
+        </section>
+    {% else %}
+        <div class="ap-lectura"><i class="bi bi-info-circle"></i> Puedes consultar y descargar los archivos, pero no modificarlos.</div>
+    {% endif %}
+
+    <section class="ap-tarjeta" aria-labelledby="ap-titulo-listado">
+        <div class="ap-tarjeta-cabecera">
+            <div>
+                <h2 id="ap-titulo-listado"><i class="bi bi-files"></i> Documentos guardados</h2>
+                <p>Solo los participantes del proyecto y administradores pueden acceder.</p>
+            </div>
+        </div>
+
+        {% if archivos %}
+            <div class="ap-tabla-scroll">
+                <table class="ap-tabla">
+                    <thead>
+                        <tr>
+                            <th>Archivo</th>
+                            <th>Fecha</th>
+                            <th>Tamaño</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for archivo in archivos %}
+                        <tr>
+                            <td>
+                                <div class="ap-documento">
+                                    <span class="ap-documento-icono"><i class="bi bi-file-earmark-text"></i></span>
+                                    <div>
+                                        <strong>{{ archivo.nombre }}</strong>
+                                        {% if archivo.comentario %}
+                                            <small>{{ archivo.comentario }}</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="ap-nowrap">{{ archivo.fecha_subida|date:"d/m/Y" }}</td>
+                            <td class="ap-nowrap">{{ archivo.tamaño|filesizeformat }}</td>
+                            <td>
+                                <div class="ap-acciones">
+                                    <a class="ap-boton ap-boton-secundario" href="{% url 'descargar_archivo' proyecto.pk archivo.pk %}">
+                                        <i class="bi bi-download"></i> Descargar
+                                    </a>
+                                    {% if puede_gestionar %}
+                                        <form method="post" action="{% url 'eliminar_archivo' proyecto.pk archivo.pk %}"
+                                              onsubmit="return confirm('¿Eliminar definitivamente este archivo?');">
+                                            {% csrf_token %}
+                                            <button class="ap-boton ap-boton-peligro" type="submit">
+                                                <i class="bi bi-trash3"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="ap-vacio">
+                <i class="bi bi-folder2"></i>
+                <h3>Todavía no hay archivos</h3>
+                <p>{% if puede_gestionar %}Utiliza el formulario superior para subir el primero.{% else %}No se han subido documentos a este proyecto.{% endif %}</p>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

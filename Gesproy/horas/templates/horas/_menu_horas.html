@@ -1,0 +1,13 @@
+<style>
+    .gh-tabs { display:flex; gap:3px; border-bottom:1px solid #d4dfeb; margin:0 0 22px; overflow-x:auto; }
+    .gh-tabs a { padding:11px 14px; white-space:nowrap; color:#38546e; font-size:13px; text-decoration:none; border-bottom:2px solid transparent; }
+    .gh-tabs a:hover { border-bottom-color:#0791aa; color:#026f88; }
+</style>
+<nav class="gh-tabs gh-no-print" aria-label="Secciones de horas">
+    <a href="{% url 'horas:inicio_horas' %}">Horas</a>
+    <a href="{% url 'horas:mis_horas' %}">Mis horas</a>
+    {% if puede_validar or request.user.is_staff or request.user.investigador.puede_validar_horas %}
+        <a href="{% url 'horas:validar_horas' %}">Validar horas</a>
+    {% endif %}
+    <a href="{% url 'horas:informe_horas' %}">Informe</a>
+</nav>

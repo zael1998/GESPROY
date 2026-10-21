@@ -1,0 +1,89 @@
+/* Gesproy · Gestión de usuarios — aislado del resto de los módulos. */
+.gu-pagina {
+    width: min(1120px, calc(100% - 36px));
+    margin: 34px auto 65px;
+    color: #16324c;
+    font-family: inherit;
+}
+.gu-estrecha { max-width: 840px; }
+.gu-pagina *, .gu-pagina *::before, .gu-pagina *::after { box-sizing: border-box; }
+.gu-migas { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-bottom: 23px; font-size: 13px; color: #697b8d; }
+.gu-migas a { color: #176c9c; text-decoration: none; }
+.gu-migas a:hover { text-decoration: underline; }
+.gu-migas i { font-size: 10px; }
+.gu-cabecera { display: flex; justify-content: space-between; gap: 22px; align-items: center; margin-bottom: 24px; }
+.gu-cabecera h1 { margin: 6px 0; font-weight: 750; letter-spacing: -.025em; font-size: clamp(23px, 3vw, 30px); color: #17344e; }
+.gu-cabecera p { margin: 0; color: #64778a; line-height: 1.5; }
+.gu-eyebrow { color: #087e94; font-size: 11px; font-weight: 800; letter-spacing: .07em; }
+.gu-eyebrow i { margin-right: 4px; }
+.gu-tarjeta { background: #fff; border: 1px solid #dce5ee; border-radius: 14px; overflow: hidden; box-shadow: 0 7px 22px rgb(22 47 70 / 5%); }
+.gu-tarjeta-titulo { padding: 19px 26px; background: #f2f8fd; border-bottom: 1px solid #dce8f2; color: #1d4a69; font-size: 15px; font-weight: 750; }
+.gu-tarjeta-titulo i { margin-right: 9px; font-size: 18px; vertical-align: middle; }
+.gu-boton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 16px; border-radius: 9px; border: 1px solid #cbd9e5; font: inherit; font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; white-space: nowrap; transition: background .15s ease, border-color .15s ease; }
+.gu-primario { color: #fff; background: #087b9d; border-color: #087b9d; }
+.gu-primario:hover { background: #066b89; border-color: #066b89; color: #fff; }
+.gu-secundario { color: #245271; background: #fff; }
+.gu-secundario:hover { color: #17466c; background: #edf5fb; }
+.gu-buscador { padding: 22px 25px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e9eef3; }
+.gu-buscador > i { color: #8093a3; margin-right: -37px; z-index: 1; padding-left: 13px; }
+.gu-buscador input { width: min(560px, 100%); min-width: 0; height: 43px; padding: 9px 13px 9px 38px; font-size: 13px; border: 1px solid #cad9e6; border-radius: 9px; outline-offset: 2px; }
+.gu-limpiar { color: #51718a; text-decoration: none; font-size: 13px; }
+.gu-limpiar:hover { text-decoration: underline; }
+.gu-tabla-desplazable { width: 100%; overflow-x: auto; }
+.gu-tabla { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13px; }
+.gu-tabla th { background: #fafcff; border-bottom: 1px solid #e5edf3; color: #738596; font-size: 11px; text-transform: uppercase; letter-spacing: .045em; text-align: left; font-weight: 800; }
+.gu-tabla th, .gu-tabla td { padding: 16px 21px; }
+.gu-tabla td { border-bottom: 1px solid #edf1f5; vertical-align: middle; }
+.gu-tabla tr:last-child td { border-bottom: 0; }
+.gu-tabla tbody tr:hover { background: #fbfdff; }
+.gu-identidad { display: flex; align-items: center; gap: 12px; min-width: 175px; }
+.gu-identidad strong { display: block; color: #17344e; font-weight: 700; }
+.gu-identidad small { display: block; margin-top: 3px; color: #7890a2; overflow-wrap: anywhere; }
+.gu-avatar { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; color: #1384a3; background: #e7f5fa; font-size: 17px; }
+.gu-insignia, .gu-estado { display: inline-flex; gap: 5px; align-items: center; padding: 5px 10px; border-radius: 50px; font-size: 11px; font-weight: 750; white-space: nowrap; }
+.gu-super { color: #7255a4; background: #f3eeff; }
+.gu-admin { color: #1e6898; background: #e9f3fd; }
+.gu-normal { color: #556f81; background: #f1f5f8; }
+.gu-activo { color: #14764c; background: #e9f7ee; }
+.gu-inactivo { color: #9e514f; background: #fbefed; }
+.gu-acciones-fila { display: flex; gap: 13px; flex-wrap: nowrap; }
+.gu-accion { color: #087a93; text-decoration: none; font-size: 12px; font-weight: 750; white-space: nowrap; }
+.gu-accion:hover { text-decoration: underline; }
+.gu-accion i { margin-right: 4px; }
+.gu-protegida { color: #94a3b0; white-space: nowrap; font-size: 12px; }
+.gu-vacio { text-align: center; padding: 34px!important; color: #657a8d; }
+.gu-paginacion { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 15px 22px; border-top: 1px solid #e7edf3; color: #63788a; font-size: 12px; }
+.gu-paginacion div { display: flex; gap: 13px; }
+.gu-paginacion a { color: #0b829b; font-weight: 700; text-decoration: none; }
+.gu-nota { display: flex; gap: 8px; align-items: flex-start; margin: 20px 3px; color: #657c8e; font-size: 12px; line-height: 1.6; }
+.gu-mensaje { margin-bottom: 18px; background: #eaf8ef; border: 1px solid #bcdcc9; border-radius: 9px; padding: 13px 16px; color: #246646; font-size: 13px; }
+.gu-mensaje.gu-error { background: #fff0ef; border-color: #efcccb; color: #a74242; }
+.gu-formulario { padding: 26px 29px 29px; display: grid; gap: 20px; }
+.gu-campo { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.gu-campo > label { font-size: 13px; font-weight: 750; color: #27465f; }
+.gu-campo small { font-size: 11px; line-height: 1.5; color: #748899; }
+.gu-input { width: 100%; min-width: 0; padding: 11px 13px; border-radius: 9px; background: #fff; border: 1px solid #cad9e6; color: #183b55; font: inherit; font-size: 14px; }
+.gu-input:focus { outline: 2px solid #94dce9; outline-offset: 1px; border-color: #1595ac; }
+.gu-input[type="checkbox"], .gu-check { width: 17px; height: 17px; padding: 0; accent-color: #0c829c; }
+.gu-dos-columnas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.gu-checkbox-linea label { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.gu-valor-fijo { background: #f5f8fb; border: 1px solid #e2e9f0; border-radius: 9px; padding: 11px 13px; color: #63778b; }
+.gu-formulario .errorlist { color: #ba4141; font-size: 12px; line-height: 1.5; margin: 2px 0; padding-left: 18px; }
+.gu-form-subtitulo { margin: 0; font-size: 15px; color: #244f6b; }
+.gu-separador { height: 1px; background: #e6edf4; margin: 5px 0 0; }
+.gu-ayuda-clave { color: #73889b; font-size: 12px; line-height: 1.5; }
+.gu-ayuda-clave ul { margin: 5px 0 0; padding-left: 18px; }
+.gu-nota-interna { color: #607b8f; background: #f4f9fc; border-radius: 9px; padding: 13px 15px; margin: 0; line-height: 1.55; font-size: 12px; }
+.gu-pie-formulario { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; border-top: 1px solid #e6edf3; padding-top: 22px; margin-top: 3px; }
+.gu-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media(max-width: 700px) {
+    .gu-pagina { margin-top: 20px; width: calc(100% - 24px); }
+    .gu-cabecera { align-items: flex-start; flex-direction: column; }
+    .gu-cabecera > .gu-boton { align-self: stretch; }
+    .gu-dos-columnas { grid-template-columns: 1fr; gap: 20px; }
+    .gu-formulario { padding: 22px 17px; }
+    .gu-buscador { padding: 16px; flex-wrap: wrap; }
+    .gu-buscador input { flex: 1 1 100%; }
+    .gu-pie-formulario { justify-content: stretch; }
+    .gu-pie-formulario .gu-boton { flex: 1 1 100%; }
+}

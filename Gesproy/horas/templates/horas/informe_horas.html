@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Informe de horas · Gesproy{% endblock %}
+{# El CSS de Horas se carga una sola vez desde base.html. #}
+{% block content %}
+<div class="gh-container gh-report">
+    <header class="gh-header">
+        <div>
+            <h1>Informe de horas</h1>
+            <p>Resumen de las horas de trabajo registradas y su validación.</p>
+        </div>
+        <button type="button" class="gh-btn gh-btn-primary gh-no-print" onclick="window.print()">
+            Imprimir o guardar en PDF
+        </button>
+    </header>
+
+    {% if messages %}
+        {% for mensaje in messages %}
+        <div class="gh-notice gh-no-print">{{ mensaje }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="get" class="gh-card gh-filters gh-no-print">
+        <h2>CRITERIOS DEL INFORME</h2>
+        <div class="gh-grid-filters">
+            <label>Desde
+                <input type="date" name="desde" value="{{ desde }}">
+            </label>
+            <label>Hasta
+                <input type="date" name="hasta" value="{{ hasta }}">
+            </label>
+            <label>Proyecto
+                <select name="proyecto">
+                    <option value="">Todos los accesibles</option>
+                    {% for proyecto in proyectos %}
+                    <option value="{{ proyecto.pk }}" {% if proyecto_id == proyecto.pk|stringformat:'s' %}selected{% endif %}>{{ proyecto.acronimo }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Investigador
+                <select name="investigador">
+                    <option value="">Todos los accesibles</option>
+                    {% for investigador in investigadores %}
+                    <option value="{{ investigador.pk }}" {% if investigador_id == investigador.pk|stringformat:'s' %}selected{% endif %}>
+                        {{ investigador.usuario.get_full_name|default:investigador.usuario.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Validación
+                <select name="validacion">
+                    <option value="todas" {% if validacion == 'todas' %}selected{% endif %}>Todas</option>
+                    <option value="validadas" {% if validacion == 'validadas' %}selected{% endif %}>Validadas</option>
+                    <option value="pendientes" {% if validacion == 'pendientes' %}selected{% endif %}>Pendientes</option>
+                </select>
+            </label>
+            <label>Agrupar por
+                <select name="agrupar">
+                    <option value="proyecto" {% if agrupar == 'proyecto' %}selected{% endif %}>Proyecto</option>
+                    <option value="investigador" {% if agrupar == 'investigador' %}selected{% endif %}>Investigador</option>
+                    <option value="tarea" {% if agrupar == 'tarea' %}selected{% endif %}>Tarea</option>
+                </select>
+            </label>
+            <label>Y dentro por
+                <select name="dentro">
+                    <option value="tarea" {% if dentro == 'tarea' %}selected{% endif %}>Tarea</option>
+                    <option value="investigador" {% if dentro == 'investigador' %}selected{% endif %}>Investigador</option>
+                    <option value="proyecto" {% if dentro == 'proyecto' %}selected{% endif %}>Proyecto</option>
+                </select>
+            </label>
+            <label>Orden
+                <select name="orden">
+                    <option value="horas" {% if orden == 'horas' %}selected{% endif %}>Más horas primero</option>
+                    <option value="nombre" {% if orden == 'nombre' %}selected{% endif %}>Alfabético</option>
+                    <option value="recientes" {% if orden == 'recientes' %}selected{% endif %}>Más recientes primero</option>
+                </select>
+            </label>
+            <label>Cada línea
+                <select name="detalle">
+                    <option value="registros" {% if detalle == 'registros' %}selected{% endif %}>Un registro por línea</option>
+                    <option value="resumen" {% if detalle == 'resumen' %}selected{% endif %}>Solo subtotales</option>
+                </select>
+            </label>
+        </div>
+        <div class="gh-actions">
+            <button class="gh-btn gh-btn-primary" type="submit">Generar informe</button>
+            <a class="gh-btn gh-btn-muted" href="{% url 'horas:informe_horas' %}">Quitar filtros</a>
+        </div>
+    </form>
+
+    {% if filtros_invalidos %}
+        <p class="gh-warning">El intervalo de fechas es inválido. Comprueba «Desde» y «Hasta».</p>
+    {% endif %}
+    {% if limitado %}
+        <p class="gh-warning">El detalle se limita a 5.000 registros para proteger el rendimiento. El total general sí incluye todos los registros del filtro; reduce el período para verlos todos.</p>
+    {% endif %}
+
+    <div class="gh-print-header">
+        <strong>GESPROY · INFORME DE HORAS</strong>
+        <small>Fecha de impresión: {{ fecha_impresion|date:'d/m/Y H:i' }}</small>
+        <small>Período: {{ desde }} — {{ hasta }}</small>
+    </div>
+
+    <div class="gh-table-scroll gh-card gh-report-card">
+        <table class="gh-table gh-report-table">
+            <thead>
+                <tr>
+                    <th>PROYECTO / TAREA / INVESTIGADOR</th>
+                    <th>FECHA</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th>VALIDACIÓN</th>
+                    <th class="gh-right">HORAS</th>
+                    {% if puede_reabrir %}<th class="gh-no-print">ACCIÓN</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for grupo in grupos %}
+                <tr class="gh-group-row">
+                    <td><strong>{{ grupo.nombre }}</strong> ({{ grupo.cantidad }} registros)</td>
+                    <td></td><td></td><td></td>
+                    <td class="gh-right"><strong>{{ grupo.total|floatformat:2 }}</strong></td>
+                    {% if puede_reabrir %}<td class="gh-no-print"></td>{% endif %}
+                </tr>
+                    {% for subgrupo in grupo.subgrupos %}
+                    <tr class="gh-subgroup-row">
+                        <td>{{ subgrupo.nombre }} ({{ subgrupo.cantidad }})</td>
+                        <td></td><td></td><td></td>
+                        <td class="gh-right">{{ subgrupo.total|floatformat:2 }}</td>
+                        {% if puede_reabrir %}<td class="gh-no-print"></td>{% endif %}
+                    </tr>
+                        {% if detalle == 'registros' %}
+                            {% for registro in subgrupo.registros %}
+                            <tr>
+                                <td>
+                                    <strong>{{ registro.tarea.proyecto.acronimo }}</strong> · {{ registro.tarea.nombre }}
+                                    <span class="gh-small">{{ registro.investigador.usuario.get_full_name|default:registro.investigador.usuario.username }}</span>
+                                </td>
+                                <td class="gh-nowrap">{{ registro.fecha|date:'d/m/Y' }}</td>
+                                <td>{{ registro.descripcion|default:'—' }}</td>
+                                <td class="gh-nowrap">
+                                    {% if registro.validado %}
+                                        <span class="gh-ok">Validado</span>
+                                        <span class="gh-small">{{ registro.fecha_validacion|date:'d/m/Y' }}</span>
+                                        <span class="gh-small">{{ registro.validado_por.username }}</span>
+                                    {% else %}
+                                        <span class="gh-pending">Pendiente</span>
+                                    {% endif %}
+                                </td>
+                                <td class="gh-right gh-nowrap">{{ registro.horas|floatformat:2 }}</td>
+                                {% if puede_reabrir %}
+                                <td class="gh-no-print">
+                                    {% if registro.validado %}
+                                    <details class="gh-details">
+                                        <summary>Reabrir</summary>
+                                        <form action="{% url 'horas:accion_validar' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="accion" value="reabrir">
+                                            <input type="hidden" name="registro_id" value="{{ registro.pk }}">
+                                            <input type="text" name="motivo" placeholder="Motivo obligatorio" required maxlength="500">
+                                            <button type="submit" class="gh-btn gh-btn-small"
+                                                onclick="return confirm('¿Reabrir este registro? Dejará de estar validado.');">Confirmar</button>
+                                        </form>
+                                    </details>
+                                    {% endif %}
+                                </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                {% empty %}
+                <tr>
+                    <td colspan="{% if puede_reabrir %}6{% else %}5{% endif %}" class="gh-empty-cell">
+                        No hay registros que coincidan con los filtros.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4"><strong>Total · {{ total_registros }} registros</strong></td>
+                    <td class="gh-right"><strong>{{ total_horas|floatformat:2 }}</strong></td>
+                    {% if puede_reabrir %}<td class="gh-no-print"></td>{% endif %}
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="gh-signatures">
+        <p>Firma del validador: ________________________________________</p>
+    </div>
+</div>
+{% endblock %}

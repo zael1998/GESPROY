@@ -1,0 +1,657 @@
+/* ======================================================
+   GESPROY - MÓDULO DE HORAS
+   Validación de horas e informes
+   ====================================================== */
+
+/* 1. ESTRUCTURA GENERAL */
+
+.gh-container {
+    width: 100%;
+    max-width: 1380px;
+    margin: 30px auto 72px;
+    padding: 0 26px;
+    box-sizing: border-box;
+    color: #18324d;
+}
+
+/* 2. CABECERAS */
+
+.gh-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin: 0 0 24px;
+}
+
+.gh-header h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #18334d;
+}
+
+.gh-header p {
+    color: #64748b;
+    font-size: 13px;
+    margin: 8px 0 0;
+}
+
+/* 3. ETIQUETAS Y PESTAÑAS */
+
+.gh-number {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: #476176;
+    background: #e7edf3;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.gh-tabs {
+    display: flex;
+    gap: 3px;
+    border-bottom: 1px solid #d4dfeb;
+    margin: 0 0 22px;
+    overflow-x: auto;
+}
+
+.gh-tabs a {
+    padding: 11px 14px;
+    white-space: nowrap;
+    color: #38546e;
+    font-size: 13px;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+}
+
+.gh-tabs a:hover {
+    border-bottom-color: #0791aa;
+    color: #026f88;
+}
+
+/* 4. MENSAJES Y AVISOS */
+
+.gh-help {
+    border-left: 3px solid #0a92ac;
+    background: #f1f8fb;
+    padding: 14px 17px;
+    margin: 18px 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.gh-warning {
+    margin: 14px 0;
+    padding: 12px 15px;
+    border: 1px solid #f5d5ad;
+    background: #fff9ed;
+    color: #805414;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+.gh-notice {
+    margin: 12px 0;
+    padding: 12px 15px;
+    border: 1px solid #d4e3e9;
+    background: #f4fbfe;
+    border-radius: 7px;
+    font-size: 13px;
+}
+
+/* 5. TARJETAS */
+
+.gh-card {
+    border: 1px solid #d5e0eb;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    box-shadow: 0 3px 14px rgba(20, 53, 77, 0.035);
+}
+
+.gh-grid-cards {
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 16px;
+}
+
+.gh-card-link {
+    padding: 30px 26px;
+    text-decoration: none;
+    color: #1b3d54;
+    display: block;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 12px;
+    transition: background-color .12s ease, box-shadow .12s ease;
+}
+
+.gh-card-link:hover {
+    border-color: #0791aa;
+    background: #fbfdff;
+}
+
+.gh-card-link h2 {
+    font-size: 17px;
+    margin: 8px 0;
+}
+
+.gh-card-link p {
+    color: #61738a;
+    font-size: 13px;
+}
+
+.gh-card-icon {
+    font-size: 29px;
+    color: #058dac;
+}
+
+/* 6. RESUMEN POR MESES */
+
+.gh-month-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 14px;
+    background: #f7fafc;
+    border-bottom: 1px solid #d6e2ec;
+}
+
+.gh-month-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 13px;
+    font-size: 12px;
+}
+
+.gh-month-title strong {
+    letter-spacing: .08em;
+    font-size: 11px;
+    color: #2f526f;
+}
+
+/* 7. TABLAS */
+
+.gh-table-scroll {
+    overflow-x: auto;
+}
+
+.gh-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.gh-table th {
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: .045em;
+    text-align: left;
+    background: #f6f9fc;
+    color: #455f76;
+    border-bottom: 1px solid #d8e1eb;
+    padding: 13px 14px;
+}
+
+.gh-table td {
+    border-bottom: 1px solid #e2e9f0;
+    padding: 11px 12px;
+    vertical-align: middle;
+}
+
+.gh-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.gh-table a {
+    color: #04788e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.gh-table a:hover {
+    text-decoration: underline;
+}
+
+.gh-right {
+    text-align: right !important;
+}
+
+.gh-nowrap {
+    white-space: nowrap;
+}
+
+/* 8. BOTONES */
+
+.gh-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 13px;
+    background: white;
+    border: 1px solid #cbd7e3;
+    border-radius: 5px;
+    color: #16465e;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.gh-btn:hover {
+    background: #f1f8fa;
+}
+
+.gh-btn-primary {
+    background: #088fa9;
+    border-color: #088fa9;
+    color: white;
+}
+
+.gh-btn-primary:hover {
+    background: #087991;
+    color: white;
+}
+
+.gh-btn-muted {
+    background: #f6f9fb;
+    color: #40566c;
+}
+
+.gh-btn-small {
+    padding: 6px 8px;
+}
+
+/* 9. BARRA DE HERRAMIENTAS */
+
+.gh-toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0 18px;
+    font-size: 13px;
+    flex-wrap: wrap;
+}
+
+.gh-toolbar select {
+    min-width: 220px;
+    padding: 9px 10px;
+    border: 1px solid #ced9e6;
+    border-radius: 5px;
+    background: white;
+}
+
+/* 10. ESTADOS VACÍOS */
+
+.gh-empty {
+    padding: 30px;
+    text-align: center;
+    background: white;
+    border: 1px solid #d5e0eb;
+    border-radius: 8px;
+}
+
+.gh-empty h2 {
+    font-size: 18px;
+}
+
+.gh-empty p {
+    color: #60748b;
+}
+
+/* 11. FILTROS DEL INFORME */
+
+.gh-filters {
+    padding: 0 14px 17px;
+}
+
+.gh-filters h2 {
+    font-size: 11px;
+    letter-spacing: .1em;
+    color: #526c82;
+    margin: 0 -14px 15px;
+    padding: 13px;
+    background: #f6f8fb;
+    border-bottom: 1px solid #d9e2ed;
+}
+
+.gh-grid-filters {
+    display: grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap: 13px;
+}
+
+.gh-grid-filters label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #3a5a77;
+    font-size: 12px;
+}
+
+.gh-grid-filters input, .gh-grid-filters select {
+    padding: 10px 9px;
+    min-width: 0;
+    border: 1px solid #d0dce7;
+    border-radius: 5px;
+    background: white;
+    color: #203e56;
+    font-size: 12px;
+}
+
+.gh-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+}
+
+/* 12. ESTILOS DEL INFORME */
+
+.gh-report-card {
+    padding: 0;
+}
+
+.gh-group-row {
+    background: #eaf3f8;
+    font-weight: 700;
+}
+
+.gh-subgroup-row {
+    background: #f6f9fc;
+    font-weight: 600;
+}
+
+.gh-subgroup-row td:first-child {
+    padding-left: 25px;
+}
+
+.gh-report-table td:first-child {
+    min-width: 160px;
+}
+
+.gh-report-table tfoot td {
+    padding: 13px 12px;
+    font-weight: 700;
+    background: #f2f7fa;
+}
+
+/* 13. TEXTOS Y ESTADOS */
+
+.gh-small {
+    font-size: 11px;
+    color: #718195;
+    display: block;
+    margin-top: 3px;
+}
+
+.gh-ok {
+    font-weight: 700;
+    color: #138056;
+}
+
+.gh-pending {
+    font-weight: 700;
+    color: #a66c12;
+}
+
+.gh-details summary {
+    color: #08748d;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.gh-details input {
+    padding: 5px 7px;
+    border: 1px solid #cad6df;
+    max-width: 155px;
+    font-size: 12px;
+    margin: 5px 0;
+}
+
+.gh-empty-cell {
+    color: #75869b;
+    padding: 22px 12px !important;
+    text-align: center;
+}
+
+/* 14. IMPRESIÓN */
+
+.gh-print-header {
+    display: none;
+}
+
+.gh-signatures {
+    text-align: right;
+    margin: 24px 2px;
+    font-size: 12px;
+    color: #65788b;
+}
+
+/* 15. RESPONSIVE E IMPRESIÓN */
+
+/* 13. NAVEGACIÓN SECUNDARIA DE HORAS */
+
+.gesproy-subnav {
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #dbe5ee;
+}
+
+.gesproy-subnav-contenido {
+    width: 100%;
+    max-width: 1380px;
+    margin: 0 auto;
+    padding: 0 26px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    overflow-x: auto;
+}
+
+.gesproy-subnav-titulo {
+    flex: none;
+    margin-right: 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: #64748b;
+}
+
+.gesproy-subnav-enlace {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex: none;
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 14px 16px;
+    color: #43627a;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 3px solid transparent;
+    transition: color .12s, background-color .12s;
+}
+
+.gesproy-subnav-enlace:hover,
+.gesproy-subnav-enlace.activo {
+    color: #007f9b;
+    background: #f4fbfe;
+    border-bottom-color: #0b93ad;
+}
+
+/* 14. AJUSTES DE ALINEACIÓN Y ACCESIBILIDAD */
+
+.gh-container * {
+    box-sizing: border-box;
+}
+
+.gh-header h1,
+.gh-empty h2 {
+    line-height: 1.25;
+}
+
+.gh-table {
+    background: #fff;
+}
+
+.gh-table-scroll {
+    max-width: 100%;
+}
+
+.gh-table td,
+.gh-table th {
+    line-height: 1.55;
+}
+
+.gh-btn:focus-visible,
+.gh-container input:focus-visible,
+.gh-container select:focus-visible,
+.gh-container a:focus-visible {
+    outline: 3px solid #72bfd2;
+    outline-offset: 2px;
+}
+
+.gh-grid-filters input,
+.gh-grid-filters select {
+    width: 100%;
+}
+
+.gh-grid-filters label {
+    font-weight: 600;
+}
+
+.gh-actions {
+    padding-top: 6px;
+}
+
+.gh-report {
+    min-height: 400px;
+}
+
+.gh-month-title {
+    min-width: 0;
+}
+
+.gh-report-table tfoot {
+    border-top: 2px solid #d5e0eb;
+}
+
+/* 15. DISEÑO ADAPTABLE */
+
+@media (max-width: 960px) {
+    .gh-grid-filters {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+
+    .gh-grid-cards {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+    }
+}
+
+/* 15. RESPONSIVE E IMPRESIÓN */
+
+@media (max-width: 600px) {
+    .gh-container {
+        padding: 0 12px;
+    }
+
+    .gesproy-subnav-contenido {
+        padding: 0 12px;
+    }
+
+    .gesproy-subnav-titulo {
+        display: none;
+    }
+
+    .gh-grid-filters,.gh-grid-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .gh-header h1 {
+        font-size: 23px;
+    }
+}
+
+/* 15. RESPONSIVE E IMPRESIÓN */
+
+/* 16. IMPRESIÓN Y EXPORTACIÓN A PDF */
+
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    body {
+        background: white !important;
+        font-size: 10px;
+    }
+
+    body > header, body > nav, body > footer, .gh-no-print {
+        display: none !important;
+    }
+
+    .gh-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .gh-header {
+        display: none;
+    }
+
+    .gh-print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 0 16px;
+        font-size: 11px;
+    }
+
+    .gh-report-card {
+        border: 0;
+        overflow: visible;
+    }
+
+    .gh-table-scroll {
+        overflow: visible;
+    }
+
+    .gh-table {
+        font-size: 9px;
+    }
+
+    .gh-table th, .gh-table td {
+        padding: 6px 7px;
+    }
+
+    .gh-report-table {
+        width: 100%;
+    }
+
+    .gh-report-table tr {
+        break-inside: avoid;
+    }
+
+    .gh-group-row {
+        background: #eff4f8 !important;
+    }
+
+    .gh-subgroup-row {
+        background: #f8fafb !important;
+    }
+
+    .gh-signatures {
+        margin-top: 38px;
+    }
+}

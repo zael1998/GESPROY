@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Diagrama de Gantt · {{ proyecto.acronimo }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/gantt.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="gan-contenedor">
+    <header class="gan-cabecera">
+        <div class="gan-cabecera-texto">
+            <p class="gan-ruta">Proyectos / {{ proyecto.acronimo }} / Tareas</p>
+            <h1>Diagrama de Gantt</h1>
+            <p class="gan-subtitulo">{{ proyecto.nombre }}</p>
+        </div>
+        <div class="gan-acciones">
+            <a href="{% url 'horas:tareas_proyecto' proyecto.id %}"
+               class="gan-boton gan-boton-secundario">
+                <i class="bi bi-arrow-left"></i> Volver a tareas
+            </a>
+            {% if puede_gestionar %}
+                <a href="{% url 'horas:crear_tarea' proyecto.id %}"
+                   class="gan-boton gan-boton-principal">
+                    <i class="bi bi-plus-circle"></i> Nueva tarea
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    {% if tareas %}
+        <section class="gan-panel" aria-label="Cronograma de tareas y subtareas">
+            <div class="gan-panel-cabecera">
+                <div>
+                    <h2>Cronograma</h2>
+                    <p>
+                        {{ gantt_inicio|date:"d/m/Y" }} — {{ gantt_fin|date:"d/m/Y" }}
+                        · {{ tareas|length }} tarea{{ tareas|length|pluralize }}
+                    </p>
+                </div>
+                <nav class="gan-escalas" aria-label="Escala del cronograma">
+                    <a href="?escala=dia"
+                       class="gan-escala {% if escala == 'dia' %}gan-escala-activa{% endif %}"
+                       {% if escala == 'dia' %}aria-current="page"{% endif %}>
+                        Día
+                    </a>
+                    <a href="?escala=semana"
+                       class="gan-escala {% if escala == 'semana' %}gan-escala-activa{% endif %}"
+                       {% if escala == 'semana' %}aria-current="page"{% endif %}>
+                        Semana
+                    </a>
+                    <a href="?escala=mes"
+                       class="gan-escala {% if escala == 'mes' %}gan-escala-activa{% endif %}"
+                       {% if escala == 'mes' %}aria-current="page"{% endif %}>
+                        Mes
+                    </a>
+                </nav>
+            </div>
+
+            <p class="gan-ayuda">
+                <i class="bi bi-arrows-expand"></i>
+                Desplázate horizontalmente para explorar otras fechas.
+                Coloca el cursor sobre una barra o marcador para ver sus detalles.
+                {% if puede_gestionar %}
+                    Puedes editar una tarea pulsando su nombre.
+                {% endif %}
+            </p>
+
+            <div class="gan-scroll" role="region" aria-label="Tabla y diagrama de Gantt" tabindex="0">
+                <div class="gan-grafico" style="--gan-tiempo: {{ gantt_ancho }}px; --gan-semana: {{ gantt_semanal }}px;">
+                    <div class="gan-fila gan-encabezado">
+                        <div class="gan-celda-nombre gan-encabezado-nombre">
+                            Tarea / Responsable
+                        </div>
+                        <div class="gan-celda-tiempo gan-encabezado-tiempo">
+                            <div class="gan-meses">
+                                {% for mes in meses %}
+                                    <div class="gan-mes" style="width: {{ mes.ancho }}px;">
+                                        {{ mes.etiqueta }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="gan-periodos">
+                                {% for periodo in periodos %}
+                                    <div class="gan-periodo" style="width: {{ periodo.ancho }}px;">
+                                        {{ periodo.etiqueta }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% for tarea in tareas %}
+                        <div class="gan-fila {% if tarea.finalizada %}gan-fila-finalizada{% endif %}">
+                            <div class="gan-celda-nombre gan-nombre-tarea" style="--gan-nivel: {{ tarea.nivel }};">
+                                <div class="gan-nombre-contenido">
+                                    {% if tarea.nivel > 0 %}
+                                        <i class="bi bi-arrow-return-right gan-icono-subtarea" aria-hidden="true"></i>
+                                    {% else %}
+                                        <i class="bi bi-list-task gan-icono-tarea" aria-hidden="true"></i>
+                                    {% endif %}
+
+                                    {% if puede_gestionar %}
+                                        <a class="gan-enlace-tarea"
+                                           href="{% url 'horas:editar_tarea' proyecto.id tarea.id %}"
+                                           title="Editar {{ tarea.nombre }}">
+                                            {{ tarea.nombre }}
+                                        </a>
+                                    {% else %}
+                                        <span class="gan-nombre-solo-lectura">{{ tarea.nombre }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="gan-responsable">
+                                    {{ tarea.gantt_responsable }}
+                                </div>
+                            </div>
+
+                            <div class="gan-celda-tiempo gan-tiempo-tarea">
+                                {% if mostrar_hoy %}
+                                    <span class="gan-linea-hoy"
+                                          style="left: {{ hoy_izquierda|stringformat:'.1f' }}px;"
+                                          aria-hidden="true"></span>
+                                {% endif %}
+
+                                {% if tarea.gantt_sin_fin %}
+                                    <span class="gan-marcador {% if tarea.finalizada %}gan-marcador-finalizado{% endif %}"
+                                          style="left: {{ tarea.gantt_izquierda }}px;"
+                                          title="{{ tarea.gantt_titulo }}"
+                                          aria-label="{{ tarea.gantt_titulo }}"></span>
+                                    <span class="gan-texto-sin-fin"
+                                          style="left: {{ tarea.gantt_izquierda }}px;">
+                                        sin fecha final
+                                    </span>
+                                {% else %}
+                                    <div class="gan-barra {% if tarea.finalizada %}gan-barra-finalizada{% else %}gan-barra-pendiente{% endif %} {% if tarea.nivel > 0 %}gan-barra-subtarea{% endif %}"
+                                         style="left: {{ tarea.gantt_izquierda }}px; width: {{ tarea.gantt_ancho }}px;"
+                                         title="{{ tarea.gantt_titulo }}"
+                                         aria-label="{{ tarea.gantt_titulo }}"></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="gan-pie">
+                <div class="gan-leyenda">
+                    <span><i class="gan-leyenda-muestra gan-leyenda-pendiente"></i>Pendiente</span>
+                    <span><i class="gan-leyenda-muestra gan-leyenda-finalizada"></i>Finalizada</span>
+                    <span><i class="gan-leyenda-muestra gan-leyenda-marcador"></i>Sin fecha final</span>
+                    {% if mostrar_hoy %}
+                        <span><i class="gan-leyenda-muestra gan-leyenda-hoy"></i>Hoy</span>
+                    {% endif %}
+                </div>
+                {% if proyecto.estado == 'FINALIZADO' %}
+                    <span class="gan-lectura">Proyecto finalizado · Solo consulta</span>
+                {% endif %}
+            </div>
+        </section>
+    {% else %}
+        <section class="gan-vacio">
+            <i class="bi bi-bar-chart-steps" aria-hidden="true"></i>
+            <h2>Este proyecto todavía no tiene tareas</h2>
+            <p>Cuando se creen tareas con fecha de inicio, aparecerán aquí.</p>
+            {% if puede_gestionar %}
+                <a href="{% url 'horas:crear_tarea' proyecto.id %}"
+                   class="gan-boton gan-boton-principal">Crear primera tarea</a>
+            {% endif %}
+        </section>
+    {% endif %}
+</div>
+{% endblock %}

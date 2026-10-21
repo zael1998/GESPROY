@@ -1,0 +1,324 @@
+/* 1. FECHA Y USUARIO EN LA CABECERA SUPERIOR */
+
+.gesproy-cabecera .gesproy-ancho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+}
+
+.cuenta-cabecera-derecha {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 18px;
+    min-width: 0;
+}
+
+.cuenta-fecha-actual {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: #5a7089;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.cuenta-fecha-actual .bi {
+    color: #32789d;
+    font-size: 16px;
+}
+
+.cuenta-usuario-cabecera {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 1 auto;
+    max-width: 50%;
+    gap: 0;
+    border: 1px solid #cbd9e8;
+    border-radius: 12px;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(27, 54, 84, 0.06);
+}
+
+.cuenta-usuario-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 42px;
+    align-self: stretch;
+    min-height: 42px;
+    background: #edf4ff;
+    color: #2764a2;
+    font-size: 22px;
+    text-decoration: none;
+    transition: background-color .2s;
+}
+
+.cuenta-usuario-icono:hover,
+.cuenta-usuario-icono:focus-visible {
+    background: #daeaff;
+    color: #15529a;
+    text-decoration: none;
+}
+
+.cuenta-usuario-nombre {
+    display: block;
+    min-width: 0;
+    padding: 12px 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d506f;
+    text-decoration: none;
+}
+
+.cuenta-usuario-nombre:hover,
+.cuenta-usuario-nombre:focus-visible {
+    background: #f3f8ff;
+    color: #1468a4;
+    text-decoration: none;
+}
+
+/* 2. CONTENEDOR DE MI CUENTA */
+
+.cuenta-pagina {
+    box-sizing: border-box;
+    width: calc(100% - 44px);
+    max-width: 1040px;
+    margin: 32px auto 70px;
+    color: #19324b;
+    font-size: 14px;
+}
+
+.cuenta-migas {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.cuenta-migas a {
+    color: #3d7095;
+    text-decoration: none;
+}
+
+.cuenta-migas a:hover { text-decoration: underline; }
+.cuenta-migas i { font-size: 10px; }
+.cuenta-migas strong { color: #233f5c; }
+
+.cuenta-titulo { margin-bottom: 24px; }
+
+.cuenta-titulo h1 {
+    margin: 0 0 8px;
+    color: #19324b;
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.cuenta-titulo p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* 3. TARJETA Y FORMULARIO */
+
+.cuenta-tarjeta {
+    border: 1px solid #dae5f0;
+    border-radius: 14px;
+    padding: 20px 22px 24px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(30, 57, 93, 0.035);
+}
+
+.cuenta-tarjeta-encabezado {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #ebf4ff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.cuenta-tarjeta-encabezado i { font-size: 25px; color: #1c72bf; }
+
+.cuenta-tarjeta-encabezado h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1b3552;
+}
+
+.cuenta-formulario { padding: 0 10px; }
+
+.cuenta-fila {
+    display: grid;
+    grid-template-columns: minmax(140px, 220px) minmax(0, 1fr);
+    align-items: start;
+    gap: 26px;
+    padding: 12px 0;
+}
+
+.cuenta-fila > label,
+.cuenta-fila > .cuenta-etiqueta {
+    padding-top: 12px;
+    color: #2c4055;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.cuenta-campo { min-width: 0; }
+
+.cuenta-input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #cbd7e5;
+    border-radius: 8px;
+    padding: 10px 13px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #20354a;
+    background: white;
+    outline: none;
+    transition: box-shadow .2s, border-color .2s;
+}
+
+.cuenta-input:focus {
+    border-color: #2b86cb;
+    box-shadow: 0 0 0 3px rgba(43, 134, 203, .13);
+}
+
+.cuenta-dato-fijo {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 13px;
+    border: 1px solid #dce4ee;
+    border-radius: 8px;
+    background: #f3f6fa;
+    color: #52667c;
+}
+
+.cuenta-ayuda {
+    margin: 7px 0 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #64748b;
+}
+
+.cuenta-ayuda-clave { margin: 16px 0 0; }
+
+.cuenta-rol {
+    display: inline-block;
+    margin-top: 9px;
+    padding: 6px 11px;
+    border-radius: 9px;
+    background: #eaf2fc;
+    color: #275e91;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* 4. ERRORES Y CONFIRMACIONES */
+
+.cuenta-error { margin: 6px 0 0; color: #b42332; font-size: 12px; }
+
+.cuenta-aviso {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 14px 0;
+    padding: 12px 15px;
+    border: 1px solid #a9d8c9;
+    border-radius: 8px;
+    background: #effaf6;
+    color: #146a4b;
+    font-size: 13px;
+}
+
+.cuenta-aviso-error {
+    border-color: #f1c2c9;
+    background: #fff2f3;
+    color: #9a2639;
+}
+
+/* 5. BOTONES */
+
+.cuenta-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #e6ecf2;
+    margin-top: 25px;
+    padding-top: 22px;
+}
+
+.cuenta-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 1px solid #b5c6d9;
+    border-radius: 8px;
+    background: white;
+    color: #385778;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cuenta-boton:hover { background: #f1f6fb; text-decoration: none; }
+.cuenta-boton-principal { background: #087fa9; border-color: #087fa9; color: white; }
+.cuenta-boton-principal:hover { background: #086985; color: white; }
+
+/* 6. RESPONSIVE */
+
+@media (max-width: 640px) {
+    .gesproy-cabecera .gesproy-ancho { align-items: flex-start; }
+    .gesproy-marca { font-size: 20px; }
+    .cuenta-cabecera-derecha { gap: 8px; flex-wrap: wrap; }
+    .cuenta-fecha-actual { font-size: 11px; }
+    .cuenta-usuario-cabecera { max-width: 100%; }
+    .cuenta-usuario-icono { flex-basis: 36px; min-height: 38px; }
+    .cuenta-usuario-nombre { padding: 11px 9px; font-size: 12px; }
+    .cuenta-pagina { width: calc(100% - 24px); margin: 22px auto 45px; }
+    .cuenta-tarjeta { padding: 12px; }
+    .cuenta-formulario { padding: 0 4px; }
+    .cuenta-fila { grid-template-columns: 1fr; gap: 6px; padding: 11px 0; }
+    .cuenta-fila > label, .cuenta-fila > .cuenta-etiqueta { padding-top: 0; }
+    .cuenta-acciones { justify-content: stretch; }
+    .cuenta-boton { flex: 1 1 140px; }
+}
+
+/* Los investigadores ven su identidad pero no pueden autoeditarla. */
+.cuenta-usuario-solo-lectura,
+.cuenta-usuario-solo-lectura:hover,
+.cuenta-usuario-solo-lectura:focus {
+    cursor: default;
+    text-decoration: none;
+}
+span.cuenta-usuario-icono.cuenta-usuario-solo-lectura:hover { background: #f0f6fc; color: #476d83; }

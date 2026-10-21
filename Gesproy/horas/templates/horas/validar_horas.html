@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Validar horas · Gesproy{% endblock %}
+{# El CSS de Horas se carga una sola vez desde base.html. #}
+{% block content %}
+<div class="gh-container">
+    <header class="gh-header">
+        <div>
+            <h1>Validar horas <span class="gh-number">{{ numero_total }}</span></h1>
+            <p>Revisa los registros de horas de los investigadores bajo tu responsabilidad.</p>
+        </div>
+    </header>
+
+
+    <div class="gh-help">
+        <strong>Al validar, el parte queda cerrado:</strong> se registra tu usuario y la
+        fecha de aprobación. El investigador ya no podrá modificar ni borrar esas
+        horas. Si hay un error, avisa antes de validar; solo un administrador
+        puede reabrir un registro validado.
+    </div>
+
+    {% if messages %}
+        {% for mensaje in messages %}
+        <div class="gh-notice">{{ mensaje }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="get" class="gh-toolbar gh-no-print">
+        <label for="proyecto-filtro">Proyecto</label>
+        <select name="proyecto" id="proyecto-filtro">
+            <option value="">Todos los proyectos asignados</option>
+            {% for proyecto in proyectos %}
+            <option value="{{ proyecto.pk }}" {% if proyecto_id == proyecto.pk|stringformat:'s' %}selected{% endif %}>
+                {{ proyecto.acronimo }} — {{ proyecto.nombre }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="gh-btn">Filtrar</button>
+        <a href="{% url 'horas:validar_horas' %}" class="gh-btn gh-btn-muted">Restablecer</a>
+    </form>
+
+    {% if limitado %}
+        <p class="gh-warning">Hay más de 2.500 registros pendientes. Usa el filtro de proyecto para revisarlos por partes.</p>
+    {% endif %}
+
+    {% for grupo in grupos %}
+    <section class="gh-card gh-month">
+        <div class="gh-month-head">
+            <div class="gh-month-title">
+                <strong>{{ grupo.nombre|upper }}</strong>
+                <span>{{ grupo.mes_fecha|date:'F Y'|capfirst }}</span>
+                <span>{{ grupo.total|floatformat:2 }} h</span>
+                <span class="gh-number">{{ grupo.cantidad }}</span>
+            </div>
+            <form method="post" action="{% url 'horas:accion_validar' %}" class="gh-no-print">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="mes">
+                <input type="hidden" name="investigador_id" value="{{ grupo.investigador.pk }}">
+                <input type="hidden" name="anio" value="{{ grupo.anio }}">
+                <input type="hidden" name="mes" value="{{ grupo.mes }}">
+                {% if proyecto_id %}<input type="hidden" name="proyecto_id" value="{{ proyecto_id }}">{% endif %}
+                <button class="gh-btn gh-btn-primary" type="submit"
+                    onclick="return confirm('¿Validar todos los registros pendientes de este investigador durante este mes{% if proyecto_id %} y proyecto{% endif %}?');">
+                    Validar el mes
+                </button>
+            </form>
+        </div>
+        <div class="gh-table-scroll">
+            <table class="gh-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th><th>Proyecto</th><th>Tarea</th>
+                        <th>Descripción</th><th class="gh-right">Horas</th>
+                        <th class="gh-right gh-no-print">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in grupo.registros %}
+                    <tr>
+                        <td class="gh-nowrap">{{ registro.fecha|date:'d/m/Y' }}</td>
+                        <td>
+                            <a href="{% url 'detalle_proyecto' registro.tarea.proyecto_id %}?pestana=horas">
+                                {{ registro.tarea.proyecto.acronimo }}
+                            </a>
+                        </td>
+                        <td>{{ registro.tarea.nombre }}</td>
+                        <td>{{ registro.descripcion|default:'—' }}</td>
+                        <td class="gh-right gh-nowrap">{{ registro.horas|floatformat:2 }} h</td>
+                        <td class="gh-right gh-no-print">
+                            <form action="{% url 'horas:accion_validar' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="accion" value="individual">
+                                <input type="hidden" name="registro_id" value="{{ registro.pk }}">
+                                <button class="gh-btn gh-btn-small" type="submit"
+                                    onclick="return confirm('¿Validar estas horas?');">Validar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    {% empty %}
+    <div class="gh-empty">
+        <h2>No tienes registros pendientes</h2>
+        <p>Puede que ya estén validados, que no haya horas registradas o que los investigadores no estén asignados a tu usuario como validador.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

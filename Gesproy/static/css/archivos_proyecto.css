@@ -1,0 +1,67 @@
+/* Gesproy · Gestión privada de archivos de cada proyecto */
+.ap-contenedor {
+    width: min(1140px, calc(100% - 36px));
+    margin: 28px auto 70px;
+    color: #20334c;
+}
+.ap-volver { margin-bottom: 18px; }
+.ap-volver a { color: #087b9d; text-decoration: none; font-weight: 600; font-size: .9rem; }
+.ap-volver a:hover { text-decoration: underline; }
+.ap-cabecera {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 20px; flex-wrap: wrap; margin: 0 0 22px;
+}
+.ap-eyebrow { color: #087f9a; font-size: .84rem; font-weight: 700; margin-bottom: 6px; }
+.ap-cabecera h1 { font-size: clamp(1.5rem, 2.4vw, 2rem); margin: 0 0 7px; line-height: 1.25; }
+.ap-cabecera p { color: #64748b; margin: 0; }
+.ap-contador { border: 1px solid #d8e5ef; background: #f0f8fb; border-radius: 999px; padding: 8px 14px; font-size: .83rem; color: #37617b; font-weight: 700; }
+.ap-tarjeta {
+    border-radius: 15px; overflow: hidden; background: #fff;
+    border: 1px solid #dce5ee; box-shadow: 0 5px 25px rgba(20, 44, 69, .05);
+    margin: 20px 0;
+}
+.ap-tarjeta-cabecera { padding: 21px 25px; border-bottom: 1px solid #e5ecf3; background: #f7fafc; }
+.ap-tarjeta-cabecera h2 { margin: 0 0 4px; font-size: 1.05rem; }
+.ap-tarjeta-cabecera h2 i { margin-right: 7px; color: #078ca5; }
+.ap-tarjeta-cabecera p { color: #64748b; font-size: .87rem; margin: 0; }
+.ap-formulario { padding: 24px 25px; max-width: 800px; }
+.ap-campo { margin-bottom: 20px; }
+.ap-campo label { display: block; font-weight: 650; font-size: .89rem; margin: 0 0 8px; }
+.ap-input { display: block; width: 100%; box-sizing: border-box; padding: 11px 13px; border: 1px solid #cbd8e5; border-radius: 9px; color: #21384f; background: #fff; font: inherit; }
+.ap-input:focus { border-color: #0c95b5; outline: 3px solid rgba(11, 153, 190, .12); }
+.ap-campo small { color: #657587; display: block; margin-top: 7px; line-height: 1.4; }
+.ap-campo ul.errorlist { color: #a62a35; padding-left: 17px; }
+.ap-formulario-acciones { display: flex; justify-content: flex-end; }
+.ap-boton { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 13px; white-space: nowrap; border-radius: 8px; font-weight: 650; font-size: .85rem; cursor: pointer; text-decoration: none; border: 1px solid transparent; font-family: inherit; }
+.ap-boton-primario { background: #087eaa; color: #fff; }
+.ap-boton-primario:hover { background: #066a90; color: #fff; }
+.ap-boton-secundario { color: #116c91; background: #eef7fa; border-color: #c7e1eb; }
+.ap-boton-secundario:hover { background: #e2f2f7; color: #075576; }
+.ap-boton-peligro { color: #b03543; background: #fff; border-color: #ebccd2; }
+.ap-boton-peligro:hover { color: #8a2632; background: #fff4f5; }
+.ap-tabla-scroll { overflow-x: auto; }
+.ap-tabla { width: 100%; border-collapse: collapse; text-align: left; }
+.ap-tabla th { background: #fbfcfe; font-size: .77rem; text-transform: uppercase; letter-spacing: .04em; color: #718096; font-weight: 700; }
+.ap-tabla th, .ap-tabla td { padding: 16px 20px; border-bottom: 1px solid #edf1f6; vertical-align: middle; }
+.ap-tabla tr:last-child td { border-bottom: none; }
+.ap-documento { display: flex; gap: 11px; align-items: flex-start; min-width: 240px; }
+.ap-documento-icono { background: #ebf5fb; color: #0a81a4; border-radius: 10px; padding: 10px 12px; }
+.ap-documento strong { overflow-wrap: anywhere; font-size: .91rem; display: block; }
+.ap-documento small { margin-top: 5px; display: block; color: #687789; overflow-wrap: anywhere; }
+.ap-nowrap { white-space: nowrap; font-size: .87rem; color: #617185; }
+.ap-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ap-acciones form { margin: 0; }
+.ap-vacio { text-align: center; padding: 42px 20px; color: #6b7c8e; }
+.ap-vacio i { display: block; font-size: 2.1rem; color: #90a8ba; margin-bottom: 10px; }
+.ap-vacio h3 { margin: 0 0 5px; font-size: 1rem; color: #2b3b50; }
+.ap-vacio p { margin: 0; }
+.ap-mensaje { padding: 12px 16px; border-radius: 9px; margin: 13px 0; border: 1px solid #cce7d8; background: #ecfcf3; color: #236347; }
+.ap-error { background: #fff1f3; border-color: #f1cbd1; color: #9a2638; }
+.ap-aviso, .ap-lectura { background: #fffaf0; border: 1px solid #f5e6b9; color: #886924; padding: 12px 16px; border-radius: 9px; }
+@media (max-width: 620px) {
+    .ap-contenedor { width: min(100% - 24px, 1140px); margin-top: 17px; }
+    .ap-formulario, .ap-tarjeta-cabecera { padding: 19px 17px; }
+    .ap-tabla th, .ap-tabla td { padding: 11px 13px; }
+    .ap-acciones { flex-direction: column; align-items: stretch; }
+    .ap-acciones .ap-boton { width: 100%; }
+}

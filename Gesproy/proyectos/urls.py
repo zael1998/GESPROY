@@ -1,7 +1,18 @@
 from django.urls import path
 from . import views
+from . import archivos as vistas_archivos
+from usuarios import perfil as vistas_perfil
+from usuarios import gestion as vistas_usuarios
 
 urlpatterns = [
+    # Archivos privados: solo se muestran desde la ficha de cada proyecto.
+    path("proyecto/<int:proyecto_id>/archivos/", vistas_archivos.archivos_proyecto, name="archivos_proyecto"),
+    path("proyecto/<int:proyecto_id>/archivos/<int:archivo_id>/descargar/", vistas_archivos.descargar_archivo, name="descargar_archivo"),
+    path("proyecto/<int:proyecto_id>/archivos/<int:archivo_id>/eliminar/", vistas_archivos.eliminar_archivo, name="eliminar_archivo"),
+
+    # Mi cuenta: accesible por todos los usuarios autenticados.
+    path("mi-cuenta/", vistas_perfil.editar_perfil, name="mi_perfil"),
+    path("mi-cuenta/cambiar-clave/", vistas_perfil.cambiar_clave, name="mi_cambiar_clave"),
     path("", views.inicio, name="inicio"),
     path("proyecto/<int:id>/", views.detalle_proyecto, name="detalle_proyecto"),
     path("proyecto/nuevo/", views.crear_proyecto, name="crear_proyecto"),
@@ -56,4 +67,8 @@ urlpatterns = [
     path("proyecto/<int:id>/investigadores/anadir/",views.anadir_investigador_proyecto,name="anadir_investigador_proyecto"),
     path("proyecto/<int:id>/investigadores/<int:dedicacion_id>/editar/",views.editar_investigador_proyecto,name="editar_investigador_proyecto"),
     path("proyecto/<int:id>/investigadores/<int:dedicacion_id>/eliminar/",views.eliminar_investigador_proyecto,name="eliminar_investigador_proyecto"),
+    path("administracion/usuarios/", vistas_usuarios.gestion_usuarios, name="gestion_usuarios"),
+    path("administracion/usuarios/nuevo/", vistas_usuarios.crear_usuario, name="crear_usuario"),
+    path("administracion/usuarios/<int:usuario_id>/editar/", vistas_usuarios.editar_usuario, name="editar_usuario"),
+    path("administracion/usuarios/<int:usuario_id>/clave/", vistas_usuarios.cambiar_clave_usuario, name="cambiar_clave_usuario"),
 ]

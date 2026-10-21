@@ -229,3 +229,25 @@ class TareaForm(forms.ModelForm):
                     )
 
         return datos
+    
+from .models import Tarea, ComentarioTarea
+
+# ... Todo tu TareaForm actual permanece igual ...
+
+
+class ComentarioTareaForm(forms.ModelForm):
+
+    class Meta:
+        model = ComentarioTarea
+
+        fields = ["contenido"]
+
+        widgets = {
+            "contenido": forms.Textarea(
+                attrs={
+                    "class": "tar-input",
+                    "rows": 4,
+                    "placeholder": "Escribe tu comentario...",
+                }
+            ),
+        }

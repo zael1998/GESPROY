@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Eliminar horas · Gesproy{% endblock %}
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/horas_registros.css' %}">
+{% endblock %}
+{% block content %}
+<div class="mr-contenedor">
+    <nav class="mr-ruta" aria-label="Ruta de navegación">
+        <a href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">Mis horas</a>
+        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+        <span>Eliminar registro</span>
+    </nav>
+    <div class="mr-encabezado">
+        <span class="mr-icono mr-icono--peligro"><i class="bi bi-trash3" aria-hidden="true"></i></span>
+        <div>
+            <h1>Eliminar horas registradas</h1>
+            <p>Comprueba los datos antes de confirmar la eliminación.</p>
+        </div>
+    </div>
+    <section class="mr-card">
+        <header class="mr-card-cabecera mr-card-cabecera--peligro">
+            <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+            Confirmación necesaria
+        </header>
+        <div class="mr-datos">
+            <div><span>Fecha</span><strong>{{ registro.fecha|date:'d/m/Y' }}</strong></div>
+            <div><span>Proyecto</span><strong>{{ registro.tarea.proyecto.acronimo }}</strong></div>
+            <div><span>Tarea</span><strong>{{ registro.tarea.nombre }}</strong></div>
+            <div><span>Horas</span><strong>{{ registro.horas|floatformat:2 }} h</strong></div>
+        </div>
+        <div class="mr-formulario">
+            <p>¿Quieres eliminar definitivamente este registro pendiente? Esta acción no se puede deshacer.</p>
+            <form method="post" class="mr-acciones">
+                {% csrf_token %}
+                <a class="mr-boton mr-boton--secundario" href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">Cancelar</a>
+                <button type="submit" class="mr-boton mr-boton--peligro"><i class="bi bi-trash3" aria-hidden="true"></i> Sí, eliminar</button>
+            </form>
+        </div>
+    </section>
+</div>
+{% endblock %}

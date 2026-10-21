@@ -234,6 +234,12 @@
 
         </a>
 
+                {% if puede_ver_archivos %}
+        <a href="{% url 'archivos_proyecto' proyecto.pk %}" class="ficha-pestana">
+            <i class="bi bi-folder2-open"></i> Archivos
+        </a>
+        {% endif %}
+
         <!-- SOCIOS -->
         <a href="?pestana=socios"
 

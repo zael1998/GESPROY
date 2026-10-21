@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Restablecer contraseña · Gesproy{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/gestion_usuarios.css' %}">{% endblock %}
+{% block content %}
+<section class="gu-pagina gu-estrecha">
+    <div class="gu-migas"><a href="{% url 'panel_administracion' %}">Administración</a><i class="bi bi-chevron-right"></i><a href="{% url 'gestion_usuarios' %}">Usuarios</a><i class="bi bi-chevron-right"></i><strong>Restablecer contraseña</strong></div>
+    <div class="gu-cabecera"><div><span class="gu-eyebrow"><i class="bi bi-key"></i> SEGURIDAD</span><h1>Restablecer contraseña</h1><p>Asigna una nueva clave a la cuenta seleccionada.</p></div></div>
+    <div class="gu-tarjeta">
+        <div class="gu-tarjeta-titulo"><i class="bi bi-shield-lock"></i> Contraseña de {{ objetivo.get_full_name|default:objetivo.username }}</div>
+        <form method="post" class="gu-formulario" novalidate>
+            {% csrf_token %}
+            {% if formulario.non_field_errors %}<div class="gu-mensaje gu-error" role="alert">{{ formulario.non_field_errors }}</div>{% endif %}
+            <div class="gu-campo"><label>Usuario</label><div class="gu-valor-fijo">{{ objetivo.username }}</div></div>
+            <div class="gu-campo"><label for="{{ formulario.new_password1.id_for_label }}">Nueva contraseña</label>{{ formulario.new_password1 }}{{ formulario.new_password1.errors }}{% if formulario.new_password1.help_text %}<div class="gu-ayuda-clave">{{ formulario.new_password1.help_text|safe }}</div>{% endif %}</div>
+            <div class="gu-campo"><label for="{{ formulario.new_password2.id_for_label }}">Repetir contraseña</label>{{ formulario.new_password2 }}{{ formulario.new_password2.errors }}</div>
+            <p class="gu-nota-interna"><i class="bi bi-info-circle"></i> El administrador no necesita conocer la contraseña anterior. Comunica la nueva clave al usuario por un canal seguro; no la envíes en texto plano por correo.</p>
+            <div class="gu-pie-formulario"><a href="{% url 'gestion_usuarios' %}" class="gu-boton gu-secundario">Cancelar</a><button class="gu-boton gu-primario" type="submit"><i class="bi bi-check-circle"></i> Restablecer contraseña</button></div>
+        </form>
+    </div>
+</section>
+{% endblock %}

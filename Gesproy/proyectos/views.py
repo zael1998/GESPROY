@@ -81,8 +81,56 @@ def inicio(request):
     return redirect(settings.LOGIN_URL)
 
 
+# ==========================================
+# PERMISOS Y VISIBILIDAD DE PROYECTOS
+# ==========================================
+
+def proyectos_visibles_para(usuario, consulta):
+    """El listado, la búsqueda y el detalle aplican la misma regla de acceso."""
+    if usuario.is_staff:
+        return consulta
+
+    filtro = Q(estado__in=("PROCESO", "FINALIZADO"))
+    investigador_id = Investigador.objects.filter(
+        usuario=usuario
+    ).values_list("pk", flat=True).first()
+    if investigador_id is not None:
+        proyectos_asociados = Dedicacion.objects.filter(
+            investigador_id=investigador_id
+        ).values("proyecto_id")
+        filtro |= Q(investigador_principal_id=investigador_id)
+        filtro |= Q(pk__in=proyectos_asociados)
+    return consulta.filter(filtro).distinct()
+
+
+def comprobar_permiso_edicion(request, proyecto):
+    """Comprueba permisos de modificación, independientemente de la interfaz."""
+    usuario = request.user
+    if usuario.is_staff:
+        return
+    investigador_id = Investigador.objects.filter(
+        usuario=usuario
+    ).values_list("pk", flat=True).first()
+    if investigador_id is None:
+        raise PermissionDenied("No tienes permisos de edición sobre este proyecto.")
+
+    if proyecto.estado in ("DEFINICION", "SOLICITADO", "NEGOCIACION"):
+        asociado = (proyecto.investigador_principal_id == investigador_id
+                    or Dedicacion.objects.filter(
+                        proyecto=proyecto, investigador_id=investigador_id
+                    ).exists())
+        if asociado:
+            return
+    elif proyecto.estado in ("PROCESO", "FINALIZADO"):
+        if proyecto.investigador_principal_id == investigador_id:
+            return
+    raise PermissionDenied("No tienes permisos de edición sobre este proyecto.")
+
+
+@login_required
 def lista_proyectos(request):
     proyectos = Proyecto.objects.all()
+    proyectos = proyectos_visibles_para(request.user, proyectos)
 
     return render(
         request,
@@ -93,8 +141,10 @@ def lista_proyectos(request):
 
 # PROYECTOS SOLICITADOS
 
+@login_required
 def proyectos_solicitados(request):
     proyectos = Proyecto.objects.filter(estado="SOLICITADO")
+    proyectos = proyectos_visibles_para(request.user, proyectos)
 
     return render(
         request,
@@ -105,8 +155,10 @@ def proyectos_solicitados(request):
 
 # PROYECTOS EN NEGOCIACIÓN
 
+@login_required
 def proyectos_en_negociacion(request):
     proyectos = Proyecto.objects.filter(estado="NEGOCIACION")
+    proyectos = proyectos_visibles_para(request.user, proyectos)
 
     return render(
         request,
@@ -117,8 +169,10 @@ def proyectos_en_negociacion(request):
 
 # PROYECTOS EN PROCESO
 
+@login_required
 def proyectos_en_proceso(request):
     proyectos = Proyecto.objects.filter(estado="PROCESO")
+    proyectos = proyectos_visibles_para(request.user, proyectos)
     hoy = timezone.localdate()
 
     for proyecto in proyectos:
@@ -178,8 +232,10 @@ def proyectos_en_proceso(request):
 
 # PROYECTOS FINALIZADOS
 
+@login_required
 def proyectos_finalizados(request):
     proyectos = Proyecto.objects.filter(estado="FINALIZADO")
+    proyectos = proyectos_visibles_para(request.user, proyectos)
 
     return render(
         request,
@@ -190,8 +246,10 @@ def proyectos_finalizados(request):
 
 # PROYECTOS DENEGADOS
 
+@login_required
 def proyectos_denegados(request):
     proyectos = Proyecto.objects.filter(estado="DENEGADO")
+    proyectos = proyectos_visibles_para(request.user, proyectos)
 
     return render(
         request,
@@ -202,8 +260,10 @@ def proyectos_denegados(request):
 
 # PROYECTOS EN DEFINICIÓN
 
+@login_required
 def proyectos_en_definicion(request):
     proyectos = Proyecto.objects.filter(estado="DEFINICION")
+    proyectos = proyectos_visibles_para(request.user, proyectos)
 
     return render(
         request,
@@ -694,6 +754,7 @@ def detalle_proyecto(request, id):
             "fecha_hasta": fecha_hasta,
             "puede_imputar_horas": puede_imputar_horas,
             "puede_gestionar_investigadores": puede_gestionar_investigadores,
+            "puede_ver_archivos": (request.user.is_staff or request.user.is_superuser or asociado),
         }
     )
 
@@ -757,6 +818,9 @@ class DedicacionProyectoForm(forms.ModelForm):
             Investigador.objects.filter(
                 puede_validar_horas=True,
                 usuario__is_active=True,
+                usuario__is_staff=False,
+            ).exclude(
+                usuario__rol="ADMIN",
             )
             .select_related("usuario")
             .order_by("usuario__last_name", "usuario__first_name", "pk")
@@ -950,6 +1014,7 @@ def eliminar_investigador_proyecto(request, id, dedicacion_id):
 
 # CREAR PROYECTO
 
+@staff_member_required
 def crear_proyecto(request):
 
     if request.method == "POST":
@@ -972,12 +1037,15 @@ def crear_proyecto(request):
 
 # EDITAR PROYECTO EN DEFINICIÓN
 
+@login_required
 def editar_proyecto_definicion(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="DEFINICION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = EditarProyectoDefinicionForm(
         request.POST or None,
@@ -1001,12 +1069,15 @@ def editar_proyecto_definicion(request, id):
 
 # PASAR PROYECTO A SOLICITADO
 
+@login_required
 def solicitar_proyecto(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="DEFINICION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = SolicitarProyectoForm(
         request.POST or None,
@@ -1034,12 +1105,15 @@ def solicitar_proyecto(request, id):
 
 # FINALIZAR PROYECTO EN DEFINICIÓN
 
+@login_required
 def finalizar_proyecto_definicion(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="DEFINICION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = FinalizarProyectoDefinicionForm(
         request.POST or None,
@@ -1067,6 +1141,7 @@ def finalizar_proyecto_definicion(request, id):
 
 # BORRAR PROYECTO EN DEFINICIÓN
 
+@staff_member_required
 def borrar_proyecto_definicion(request, id):
     proyecto = get_object_or_404(
         Proyecto,
@@ -1100,12 +1175,15 @@ def borrar_proyecto_definicion(request, id):
 
 # EDITAR PROYECTO SOLICITADO
 
+@login_required
 def editar_proyecto_solicitado(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="SOLICITADO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = EditarProyectoSolicitadoForm(
         request.POST or None,
@@ -1129,12 +1207,15 @@ def editar_proyecto_solicitado(request, id):
 
 # CAMBIAR PROYECTO A NEGOCIACIÓN
 
+@login_required
 def negociar_proyecto(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="SOLICITADO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = NegociarProyectoForm(
         request.POST or None,
@@ -1162,12 +1243,15 @@ def negociar_proyecto(request, id):
 
 # CAMBIAR PROYECTO A PROCESO
 
+@login_required
 def pasar_proyecto_a_proceso(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="SOLICITADO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = PasarProyectoAProcesoForm(
         request.POST or None,
@@ -1195,12 +1279,15 @@ def pasar_proyecto_a_proceso(request, id):
 
 # CAMBIAR PROYECTO A DENEGADO
 
+@login_required
 def denegar_proyecto(request, id):
     proyecto = get_object_or_404(
         Proyecto,
         id=id,
         estado="SOLICITADO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = PasarProyectoADenegadoForm(
         request.POST or None,
@@ -1228,6 +1315,7 @@ def denegar_proyecto(request, id):
 
 # BORRAR PROYECTO SOLICITADO
 
+@staff_member_required
 def borrar_proyecto_solicitado(request, id):
     proyecto = get_object_or_404(
         Proyecto,
@@ -1261,6 +1349,7 @@ def borrar_proyecto_solicitado(request, id):
 
 # DEVOLVER PROYECTO SOLICITADO A DEFINICIÓN
 
+@login_required
 @require_POST
 def volver_proyecto_a_definicion(request, id):
     proyecto = get_object_or_404(
@@ -1268,6 +1357,8 @@ def volver_proyecto_a_definicion(request, id):
         id=id,
         estado="SOLICITADO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     proyecto.estado = "DEFINICION"
     proyecto.save(update_fields=["estado"])
@@ -1279,6 +1370,7 @@ def volver_proyecto_a_definicion(request, id):
 # EDITAR PROYECTO EN NEGOCIACIÓN
 # ==========================================
 
+@login_required
 def editar_proyecto_negociacion(request, id):
 
     proyecto = get_object_or_404(
@@ -1286,6 +1378,8 @@ def editar_proyecto_negociacion(request, id):
         id=id,
         estado="NEGOCIACION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = EditarProyectoNegociacionForm(
         request.POST or None,
@@ -1313,6 +1407,7 @@ def editar_proyecto_negociacion(request, id):
 # PASAR DE NEGOCIACIÓN A PROCESO
 # ==========================================
 
+@login_required
 def pasar_negociacion_a_proceso(request, id):
 
     proyecto = get_object_or_404(
@@ -1320,6 +1415,8 @@ def pasar_negociacion_a_proceso(request, id):
         id=id,
         estado="NEGOCIACION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = PasarProyectoAProcesoForm(
         request.POST or None,
@@ -1350,6 +1447,7 @@ def pasar_negociacion_a_proceso(request, id):
 # PASAR DE NEGOCIACIÓN A DENEGADO
 # ==========================================
 
+@login_required
 def denegar_proyecto_negociacion(request, id):
 
     proyecto = get_object_or_404(
@@ -1357,6 +1455,8 @@ def denegar_proyecto_negociacion(request, id):
         id=id,
         estado="NEGOCIACION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = PasarProyectoADenegadoForm(
         request.POST or None,
@@ -1387,6 +1487,7 @@ def denegar_proyecto_negociacion(request, id):
 # BORRAR PROYECTO EN NEGOCIACIÓN
 # ==========================================
 
+@staff_member_required
 def borrar_proyecto_negociacion(request, id):
 
     proyecto = get_object_or_404(
@@ -1424,6 +1525,7 @@ def borrar_proyecto_negociacion(request, id):
 # VOLVER DE NEGOCIACIÓN A SOLICITADO
 # ==========================================
 
+@login_required
 @require_POST
 def volver_negociacion_a_solicitado(request, id):
 
@@ -1432,6 +1534,8 @@ def volver_negociacion_a_solicitado(request, id):
         id=id,
         estado="NEGOCIACION"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     proyecto.estado = "SOLICITADO"
 
@@ -1444,6 +1548,7 @@ def volver_negociacion_a_solicitado(request, id):
 # EDITAR PROYECTO EN PROCESO
 # ==========================================
 
+@login_required
 def editar_proyecto_proceso(request, id):
 
     proyecto = get_object_or_404(
@@ -1451,6 +1556,8 @@ def editar_proyecto_proceso(request, id):
         id=id,
         estado="PROCESO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     formulario = EditarProyectoProcesoForm(
         request.POST or None,
@@ -1477,6 +1584,7 @@ def editar_proyecto_proceso(request, id):
 # FINALIZAR PROYECTO EN PROCESO
 # ==========================================
 
+@login_required
 def finalizar_proyecto_proceso(request, id):
 
     proyecto = get_object_or_404(
@@ -1485,6 +1593,8 @@ def finalizar_proyecto_proceso(request, id):
         estado="PROCESO"
     )
 
+    comprobar_permiso_edicion(request, proyecto)
+
     formulario = FinalizarProyectoDefinicionForm(
         request.POST or None,
         instance=proyecto
@@ -1492,6 +1602,10 @@ def finalizar_proyecto_proceso(request, id):
 
     if request.method == "POST" and formulario.is_valid():
 
+
+        if Tarea.objects.filter(proyecto=proyecto, finalizada=False).exists():
+            messages.error(request, "No puedes finalizar el proyecto mientras tenga tareas pendientes.")
+            return redirect("detalle_proyecto", id=proyecto.pk)
         proyecto = formulario.save(commit=False)
 
         proyecto.estado = "FINALIZADO"
@@ -1514,6 +1628,7 @@ def finalizar_proyecto_proceso(request, id):
 # BORRAR PROYECTO EN PROCESO
 # ==========================================
 
+@staff_member_required
 def borrar_proyecto_proceso(request, id):
 
     proyecto = get_object_or_404(
@@ -1549,6 +1664,7 @@ def borrar_proyecto_proceso(request, id):
 # VOLVER AL ESTADO ANTERIOR DESDE PROCESO
 # ==========================================
 
+@login_required
 def volver_estado_anterior_proceso(request, id):
 
     proyecto = get_object_or_404(
@@ -1556,6 +1672,8 @@ def volver_estado_anterior_proceso(request, id):
         id=id,
         estado="PROCESO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     if request.method == "POST":
 
@@ -1596,6 +1714,7 @@ def volver_estado_anterior_proceso(request, id):
 # REACTIVAR PROYECTO FINALIZADO
 # ==========================================
 
+@login_required
 def reactivar_proyecto_finalizado(request, id):
 
     proyecto = get_object_or_404(
@@ -1603,6 +1722,8 @@ def reactivar_proyecto_finalizado(request, id):
         id=id,
         estado="FINALIZADO"
     )
+
+    comprobar_permiso_edicion(request, proyecto)
 
     if request.method == "POST":
 
@@ -1624,6 +1745,7 @@ def reactivar_proyecto_finalizado(request, id):
 # BORRAR PROYECTO FINALIZADO
 # ==========================================
 
+@staff_member_required
 def borrar_proyecto_finalizado(request, id):
 
     proyecto = get_object_or_404(
@@ -1661,6 +1783,7 @@ def borrar_proyecto_finalizado(request, id):
 # ==========================================
 
 
+@staff_member_required
 def copiar_proyecto_denegado(request, id):
 
     proyecto = get_object_or_404(
@@ -1711,6 +1834,7 @@ def copiar_proyecto_denegado(request, id):
 # BORRAR PROYECTO DENEGADO
 # ==========================================
 
+@staff_member_required
 def borrar_proyecto_denegado(request, id):
 
     proyecto = get_object_or_404(
@@ -1748,6 +1872,7 @@ def borrar_proyecto_denegado(request, id):
 # VOLVER DE DENEGADO A UN ESTADO ANTERIOR
 # ==========================================
 
+@staff_member_required
 def volver_estado_anterior_denegado(request, id):
 
     proyecto = get_object_or_404(
@@ -1806,7 +1931,12 @@ def gestion_validadores(request):
         accion = request.POST.get("accion")
 
         if accion == "activar":
-            if not investigador.usuario.is_active:
+            if investigador.usuario.is_staff or investigador.usuario.rol == "ADMIN":
+                messages.error(
+                    request,
+                    "Los administradores no pueden ser validadores de horas.",
+                )
+            elif not investigador.usuario.is_active:
                 messages.error(
                     request,
                     "No puedes activar un validador con la cuenta deshabilitada.",
@@ -2058,6 +2188,7 @@ def gestion_areas(request):
 # BÚSQUEDA AVANZADA DE PROYECTOS
 # ==========================================
 
+@login_required
 def buscar_proyectos(request):
 
     formulario = BuscarProyectosForm(request.GET or None)
@@ -2075,6 +2206,8 @@ def buscar_proyectos(request):
             "tipo_participacion",
             "investigador_principal__usuario"
         ).all()
+
+        proyectos = proyectos_visibles_para(request.user, proyectos)
 
         # ACRÓNIMO
         if datos.get("usar_acronimo"):
@@ -3348,25 +3481,3 @@ def importar_calendario_laboral(request):
     return redirect(
         f"{reverse('calendario_laboral')}?anio={anio}"
     )
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -49,11 +49,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    
 
     # APLICACIONES DE GESPROY
     "usuarios",
     "proyectos",
     "horas",
+    "api_movil",
 
 ]
 
@@ -225,3 +227,19 @@ LOGIN_REDIRECT_URL = "mis_proyectos"
 
 # DESPUÉS DE CERRAR SESIÓN
 LOGOUT_REDIRECT_URL = "login"
+
+# ==========================================
+# DESARROLLO API MÓVIL
+# ==========================================
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# GitHub Codespaces, cuando Django también
+# se ejecuta dentro del mismo Codespace.
+if os.environ.get("CODESPACE_NAME"):
+    CSRF_TRUSTED_ORIGINS.append(
+        f"https://{os.environ['CODESPACE_NAME']}-5173.app.github.dev"
+    )

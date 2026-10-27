@@ -1,0 +1,649 @@
+
+/* ==========================================
+   GESPROY - ESTUDIO ECONÓMICO
+========================================== */
+
+/* CONTENEDOR PRINCIPAL */
+
+.eco-contenedor {
+    max-width: 1120px;
+    margin: 28px auto 50px;
+    padding: 0 20px;
+    color: #243047;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   CABECERA
+========================================== */
+
+.eco-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.eco-cabecera h1,
+.eco-formulario h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 8px 0;
+}
+
+.eco-descripcion {
+    color: #64748b;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin: 6px 0;
+}
+
+.eco-volver {
+    display: inline-block;
+    font-size: 0.87rem;
+    font-weight: 500;
+    color: #2563eb;
+    text-decoration: none;
+    margin-bottom: 8px;
+}
+
+.eco-volver:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   PRESUPUESTOS
+========================================== */
+
+.eco-resumen {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 18px 0 22px;
+}
+
+.eco-resumen > div {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.eco-resumen small {
+    display: block;
+    color: #64748b;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+}
+
+.eco-resumen strong {
+    display: block;
+    color: #1e293b;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+/* ==========================================
+   FASES DEL ESTUDIO
+========================================== */
+
+.eco-fases {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0 24px;
+}
+
+.eco-fase {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 10px 16px;
+    border-radius: 9px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.eco-fase:hover {
+    background: #e2e8f0;
+}
+
+.eco-fase small {
+    font-size: 0.73rem;
+    opacity: 0.75;
+}
+
+.eco-fase.eco-activa {
+    color: #ffffff;
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.eco-fase.eco-activa:hover {
+    background: #1d4ed8;
+}
+
+/* ==========================================
+   PANELES
+========================================== */
+
+.eco-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 14px 0;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+.eco-panel h2 {
+    color: #1e293b;
+    font-size: 1.08rem;
+    font-weight: 650;
+    margin: 0;
+}
+
+.eco-linea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.eco-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    background: #e0f2fe;
+    color: #075985;
+    border-radius: 40px;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ==========================================
+   BOTONES
+========================================== */
+
+.eco-botones {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.eco-botones form {
+    margin: 0;
+}
+
+.eco-boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    padding: 9px 14px;
+    font: inherit;
+    font-size: 0.86rem;
+    font-weight: 500;
+    line-height: 1.3;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.eco-primario {
+    color: #ffffff;
+    background: #2563eb;
+    border-color: #2563eb;
+}
+
+.eco-primario:hover {
+    color: #ffffff;
+    background: #1d4ed8;
+}
+
+.eco-secundario {
+    color: #334155;
+    background: #ffffff;
+}
+
+.eco-secundario:hover {
+    color: #334155;
+    background: #f1f5f9;
+}
+
+.eco-peligro {
+    color: #b91c1c;
+    background: #ffffff;
+    border-color: #fecaca;
+}
+
+.eco-peligro:hover {
+    color: #991b1b;
+    background: #fef2f2;
+}
+
+/* ==========================================
+   TABLAS DE PARTIDAS
+========================================== */
+
+.eco-tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.eco-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+}
+
+.eco-tabla th {
+    text-align: left;
+    color: #64748b;
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.eco-tabla th,
+.eco-tabla td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.eco-tabla tbody tr:hover {
+    background: #f8fafc;
+}
+
+.eco-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.eco-importe {
+    text-align: right;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.eco-acciones {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.eco-acciones a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.eco-acciones a:hover {
+    text-decoration: underline;
+}
+
+.eco-acciones form {
+    margin: 0;
+}
+
+.eco-acciones button {
+    background: transparent;
+    border: none;
+    color: #dc2626;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.86rem;
+    padding: 0;
+}
+
+.eco-acciones button:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   TOTALES ECONÓMICOS
+========================================== */
+
+.eco-totales > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin: 10px 0;
+}
+
+.eco-totales > div strong {
+    color: #1e293b;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.eco-totales > div:last-child {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 14px;
+    margin-top: 16px;
+    font-weight: 700;
+}
+
+/* ==========================================
+   FORMULARIOS
+========================================== */
+
+.eco-formulario {
+    max-width: 720px;
+    margin: 24px auto;
+}
+
+.eco-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 16px 0;
+}
+
+.eco-campo label {
+    color: #334155;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.eco-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    color: #1e293b;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font: inherit;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.eco-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+textarea.eco-input {
+    min-height: 95px;
+    resize: vertical;
+}
+
+.eco-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.eco-checkbox input {
+    width: 16px;
+    height: 16px;
+    accent-color: #2563eb;
+}
+
+/* ==========================================
+   MENSAJES Y ESTADOS VACÍOS
+========================================== */
+
+.eco-vacio {
+    text-align: center;
+    padding: 36px 20px;
+}
+
+.eco-vacio h2 {
+    margin-bottom: 12px;
+}
+
+.eco-error {
+    color: #b91c1c;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.eco-aviso {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 12px 0;
+    font-size: 0.88rem;
+}
+
+/* ==========================================
+   ADMINISTRACIÓN DE CATEGORÍAS
+========================================== */
+
+.eco-admin-subcategorias {
+    margin-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.eco-admin-subcategoria {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.eco-admin-subcategoria strong {
+    font-size: 0.88rem;
+    color: #334155;
+    font-weight: 500;
+}
+
+.eco-admin-subcategoria .eco-botones {
+    margin-top: 0;
+}
+
+.eco-admin-anadir {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 18px;
+    padding: 8px 12px;
+    color: #2563eb;
+    font-size: 0.86rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 7px;
+    background: #eff6ff;
+}
+
+.eco-admin-anadir:hover {
+    background: #dbeafe;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .eco-contenedor {
+        margin-top: 18px;
+        padding: 0 14px;
+    }
+
+    .eco-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .eco-resumen {
+        grid-template-columns: 1fr;
+    }
+
+    .eco-panel {
+        padding: 16px;
+    }
+
+    .eco-fases {
+        gap: 6px;
+    }
+
+    .eco-fase {
+        padding: 9px 12px;
+        font-size: 0.82rem;
+    }
+
+    .eco-totales > div {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .eco-admin-subcategoria {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .eco-admin-subcategoria .eco-botones {
+        margin-top: 0;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .eco-resumen strong {
+        font-size: 1.2rem;
+    }
+
+    .eco-botones {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .eco-botones > a,
+    .eco-botones > form,
+    .eco-botones > form > button {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .eco-acciones {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* ==========================================
+   COMPARATIVA ECONÓMICA
+========================================== */
+
+.eco-comp-acceso {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0 22px;
+}
+
+.eco-comp-fases {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0 24px;
+}
+
+.eco-comp-fase {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.eco-comp-fase small {
+    color: #64748b;
+    font-size: 0.8rem;
+}
+
+.eco-comp-fase strong {
+    color: #1e293b;
+    font-size: 1.05rem;
+}
+
+.eco-comp-fase span {
+    font-size: 0.78rem;
+    color: #2563eb;
+}
+
+.eco-tabla-comparativa {
+    min-width: 900px;
+    margin-top: 16px;
+}
+
+.eco-tabla-comparativa th {
+    vertical-align: bottom;
+    white-space: normal;
+    min-width: 110px;
+}
+
+.eco-tabla-comparativa th:first-child {
+    min-width: 190px;
+}
+
+.eco-comp-numero {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.eco-comp-variacion {
+    white-space: nowrap;
+}
+
+.eco-comp-variacion strong {
+    display: block;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.eco-comp-variacion small {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.76rem;
+    color: #64748b;
+}
+
+.eco-comp-total {
+    background: #eff6ff;
+    font-weight: 700;
+}
+
+.eco-comp-nota {
+    margin: 22px 0;
+}
+
+@media (max-width: 700px) {
+    .eco-comp-fases {
+        grid-template-columns: 1fr;
+    }
+
+    .eco-comp-acceso {
+        justify-content: flex-start;
+    }
+}
+

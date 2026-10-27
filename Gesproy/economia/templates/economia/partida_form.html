@@ -1,0 +1,112 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{% if es_edicion %}Editar{% else %}Nueva{% endif %}
+partida económica
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/estudio_economico.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<main class="eco-contenedor">
+
+    <a
+        class="eco-volver"
+        href="{% url 'economia:estudio' proyecto.id %}?fase={{ estudio.fase }}"
+    >
+        ← Volver al estudio económico
+    </a>
+
+
+    <section class="eco-panel eco-formulario">
+
+        <h1>
+            {% if es_edicion %}
+                Editar partida
+            {% else %}
+                Nueva partida económica
+            {% endif %}
+        </h1>
+
+        <p class="eco-descripcion">
+            {{ proyecto.acronimo }}
+            · {{ estudio.get_fase_display }}
+            · Versión {{ estudio.version }}
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+
+                <div class="eco-error">
+                    {{ formulario.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+
+            {% for campo in formulario %}
+
+                <div class="eco-campo">
+
+                    <label for="{{ campo.id_for_label }}">
+                        {{ campo.label }}
+                    </label>
+
+                    {{ campo }}
+
+                    {% if campo.help_text %}
+                        <small class="eco-descripcion">
+                            {{ campo.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% for error in campo.errors %}
+
+                        <p class="eco-error">
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+
+            <div class="eco-botones">
+
+                <button
+                    type="submit"
+                    class="eco-boton eco-primario"
+                >
+                    Guardar partida
+                </button>
+
+                <a
+                    href="{% url 'economia:estudio' proyecto.id %}?fase={{ estudio.fase }}"
+                    class="eco-boton eco-secundario"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+{% endblock %}

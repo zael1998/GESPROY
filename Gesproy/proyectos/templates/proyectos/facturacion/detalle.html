@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Facturación · {{ proyecto.acronimo }}{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/facturacion.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="fac-contenedor">
+    <header class="fac-cabecera">
+        <div>
+            <p class="fac-ruta">{{ proyecto.acronimo }} / Facturación</p>
+            <h1><i class="bi bi-receipt-cutoff"></i> Ingresos y gastos</h1>
+            <p class="fac-muted">{{ proyecto.nombre }} · {{ proyecto.get_estado_display }}</p>
+        </div>
+        <div class="fac-acciones">
+            {% if request.user.is_staff or request.user.is_superuser %}
+                <a class="fac-boton fac-secundario" href="{% url 'facturacion_proyectos' %}">Todos los proyectos</a>
+            {% endif %}
+            <a class="fac-boton fac-secundario" href="{% url 'detalle_proyecto' proyecto.pk %}">
+                <i class="bi bi-arrow-left"></i> Volver al proyecto
+            </a>
+        </div>
+    </header>
+
+    {% for mensaje in messages %}
+        <div class="fac-aviso {% if 'error' in mensaje.tags %}fac-error{% endif %}">{{ mensaje }}</div>
+    {% endfor %}
+
+    <section class="fac-resumen">
+        <div class="fac-cifra"><small>Ingresos registrados</small><strong>{{ total_ingresos|floatformat:2 }} €</strong></div>
+        <div class="fac-cifra"><small>Gastos registrados</small><strong>{{ total_gastos|floatformat:2 }} €</strong></div>
+        <div class="fac-cifra"><small>Balance (ingresos − gastos)</small><strong>{{ saldo|floatformat:2 }} €</strong></div>
+    </section>
+
+    {% if not puede_editar %}
+        <div class="fac-aviso"><i class="bi bi-eye"></i> Vista de solo lectura. No tienes permiso para modificar movimientos en este proyecto.</div>
+    {% endif %}
+
+    <section class="fac-panel">
+        <div class="fac-panel-cabecera">
+            <div><h2>Ingresos</h2><p class="fac-muted">Entradas de dinero registradas en el proyecto.</p></div>
+            {% if puede_editar %}
+                <a class="fac-boton fac-primario" href="{% url 'facturacion_nuevo_ingreso' proyecto.pk %}">
+                    <i class="bi bi-plus-lg"></i> Nuevo ingreso
+                </a>
+            {% endif %}
+        </div>
+        <div class="fac-scroll">
+            <table class="fac-tabla">
+                <thead><tr><th>Fecha</th><th>Concepto</th><th class="fac-num">Importe</th>{% if puede_editar %}<th>Acciones</th>{% endif %}</tr></thead>
+                <tbody>
+                    {% for movimiento in ingresos %}
+                        <tr>
+                            <td>{{ movimiento.fecha|date:"d/m/Y" }}</td>
+                            <td>{{ movimiento.concepto }}</td>
+                            <td class="fac-num">{{ movimiento.importe|floatformat:2 }} €</td>
+                            {% if puede_editar %}<td><a href="{% url 'facturacion_editar_movimiento' proyecto.pk movimiento.pk %}">Editar</a></td>{% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr><td class="fac-vacio" colspan="{% if puede_editar %}4{% else %}3{% endif %}">Todavía no se han registrado ingresos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="fac-panel">
+        <div class="fac-panel-cabecera">
+            <div><h2>Gastos</h2><p class="fac-muted">Salidas de dinero registradas en el proyecto.</p></div>
+            {% if puede_editar %}
+                <a class="fac-boton fac-primario" href="{% url 'facturacion_nuevo_gasto' proyecto.pk %}">
+                    <i class="bi bi-plus-lg"></i> Nuevo gasto
+                </a>
+            {% endif %}
+        </div>
+        <div class="fac-scroll">
+            <table class="fac-tabla">
+                <thead><tr><th>Fecha</th><th>Concepto</th><th class="fac-num">Importe</th>{% if puede_editar %}<th>Acciones</th>{% endif %}</tr></thead>
+                <tbody>
+                    {% for movimiento in gastos %}
+                        <tr>
+                            <td>{{ movimiento.fecha|date:"d/m/Y" }}</td>
+                            <td>{{ movimiento.concepto }}</td>
+                            <td class="fac-num">{{ movimiento.importe|floatformat:2 }} €</td>
+                            {% if puede_editar %}<td><a href="{% url 'facturacion_editar_movimiento' proyecto.pk movimiento.pk %}">Editar</a></td>{% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr><td class="fac-vacio" colspan="{% if puede_editar %}4{% else %}3{% endif %}">Todavía no se han registrado gastos.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% if sin_clasificar %}
+        <section class="fac-panel">
+            <h2>Registros sin clasificar</h2>
+            <p class="fac-muted">Hay movimientos antiguos con un tipo diferente de INGRESO/GASTO. Se muestran para revisión y no se incluyen en los totales.</p>
+            <div class="fac-scroll">
+                <table class="fac-tabla">
+                    <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo guardado</th><th class="fac-num">Importe</th></tr></thead>
+                    <tbody>
+                        {% for movimiento in sin_clasificar %}
+                        <tr><td>{{ movimiento.fecha|date:"d/m/Y" }}</td><td>{{ movimiento.concepto }}</td><td>{{ movimiento.tipo_movimiento }}</td><td class="fac-num">{{ movimiento.importe|floatformat:2 }} €</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
+</main>
+{% endblock %}

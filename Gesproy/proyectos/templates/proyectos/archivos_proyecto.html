@@ -1,136 +1,242 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Archivos · {{ proyecto.acronimo }} · Gesproy{% endblock %}
-
+{% block title %}Documentos · {{ proyecto.acronimo }} · Gesproy{% endblock %}
 {% block extra_css %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/archivos_proyecto.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="ap-contenedor">
-    <div class="ap-volver">
-        <a href="{% url 'detalle_proyecto' proyecto.pk %}">
-            <i class="bi bi-arrow-left"></i> Volver a la ficha del proyecto
-        </a>
-    </div>
+<main class="ap-contenedor">
+    <a href="{% url 'detalle_proyecto' proyecto.pk %}" class="ap-volver">
+        <i class="bi bi-arrow-left"></i> Volver a la ficha del proyecto
+    </a>
 
     <header class="ap-cabecera">
         <div>
-            <div class="ap-eyebrow"><i class="bi bi-folder2-open"></i> {{ proyecto.acronimo }}</div>
+            <p class="ap-eyebrow">{{ proyecto.acronimo }} / Documentos</p>
             <h1>Archivos del proyecto</h1>
-            <p>Documentación privada de <strong>{{ proyecto.nombre }}</strong>.</p>
+            <p>{{ proyecto.nombre }}</p>
         </div>
-        <span class="ap-contador">{{ cantidad_archivos }} archivo{{ cantidad_archivos|pluralize }}</span>
+        <div class="ap-capacidad">
+            <span>Almacenamiento utilizado</span>
+            <strong>{{ ocupado|filesizeformat }} / 100 MiB</strong>
+            <small>Máximo 2 MiB por archivo</small>
+        </div>
     </header>
 
-    {% if messages %}
-        {% for mensaje in messages %}
-            <div class="ap-mensaje {% if 'error' in mensaje.tags %}ap-error{% elif 'warning' in mensaje.tags %}ap-aviso{% else %}ap-ok{% endif %}" role="status">
-                {{ mensaje }}
-            </div>
+    {% for mensaje in messages %}
+        <div class="ap-mensaje {% if 'error' in mensaje.tags %}ap-error{% endif %}" role="status">
+            {{ mensaje }}
+        </div>
+    {% endfor %}
+
+    <nav class="ap-migas" aria-label="Ruta de carpetas">
+        <a href="{% url 'archivos_proyecto' proyecto.pk %}">
+            <i class="bi bi-house-door"></i> Raíz
+        </a>
+        {% for mig in migas %}
+            <span>/</span>
+            <a href="{% url 'archivos_proyecto' proyecto.pk %}?carpeta={{ mig.pk }}">
+                {{ mig.nombre }}
+            </a>
         {% endfor %}
+    </nav>
+
+    {% if actual %}
+        <a class="ap-subir-nivel" href="{% url 'archivos_proyecto' proyecto.pk %}{% if padre %}?carpeta={{ padre.pk }}{% endif %}">
+            <i class="bi bi-arrow-up"></i> Subir un nivel
+        </a>
     {% endif %}
 
     {% if puede_gestionar %}
-        <section class="ap-tarjeta" aria-labelledby="ap-titulo-subir">
-            <div class="ap-tarjeta-cabecera">
-                <div>
-                    <h2 id="ap-titulo-subir"><i class="bi bi-cloud-arrow-up"></i> Subir un archivo</h2>
-                    <p>El documento quedará asociado únicamente a este proyecto.</p>
-                </div>
-            </div>
-            <form method="post" enctype="multipart/form-data" class="ap-formulario">
+    <section class="ap-panel ap-panel-formularios">
+        <div class="ap-form-caja">
+            <h2><i class="bi bi-cloud-arrow-up"></i> Subir archivo</h2>
+            <p>Guarda el archivo en la carpeta actual.</p>
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% if formulario.non_field_errors %}
-                    <div class="ap-mensaje ap-error">{{ formulario.non_field_errors }}</div>
-                {% endif %}
+                <input type="hidden" name="carpeta_actual" value="{{ actual.pk|default:'' }}">
+                {{ formulario.non_field_errors }}
                 <div class="ap-campo">
-                    <label for="{{ formulario.fichero.id_for_label }}">Archivo <span aria-hidden="true">*</span></label>
+                    <label for="{{ formulario.fichero.id_for_label }}">Archivo (hasta 2 MiB)</label>
                     {{ formulario.fichero }}
                     {{ formulario.fichero.errors }}
-                    <small>PDF, Office, CSV, TXT, imágenes o ZIP. Máximo 20 MB.</small>
                 </div>
                 <div class="ap-campo">
-                    <label for="{{ formulario.comentario.id_for_label }}">Descripción</label>
+                    <label for="{{ formulario.comentario.id_for_label }}">Comentario</label>
                     {{ formulario.comentario }}
                     {{ formulario.comentario.errors }}
                 </div>
-                <div class="ap-formulario-acciones">
-                    <button type="submit" class="ap-boton ap-boton-primario">
-                        <i class="bi bi-upload"></i> Guardar archivo
-                    </button>
-                </div>
+                <label class="ap-check">{{ formulario.descomprimir_zip }} Descomprimir ZIP y crear sus carpetas</label>
+                {{ formulario.descomprimir_zip.errors }}
+                <button class="ap-boton ap-primario" type="submit">Subir archivo</button>
             </form>
-        </section>
+        </div>
+        <div class="ap-form-caja">
+            <h2><i class="bi bi-folder-plus"></i> Nueva carpeta</h2>
+            <p>Las subcarpetas pueden contener otras carpetas.</p>
+            <form method="post" action="{% url 'crear_carpeta_proyecto' proyecto.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="crear">
+                <input type="hidden" name="carpeta_actual" value="{{ actual.pk|default:'' }}">
+                <div class="ap-campo">
+                    <label for="nombre-carpeta">Nombre de la carpeta</label>
+                    <input required maxlength="100" id="nombre-carpeta" class="ap-input" name="nombre" placeholder="Ej. Documentación técnica">
+                </div>
+                <button class="ap-boton ap-secundario" type="submit">Crear carpeta</button>
+            </form>
+        </div>
+    </section>
     {% else %}
-        <div class="ap-lectura"><i class="bi bi-info-circle"></i> Puedes consultar y descargar los archivos, pero no modificarlos.</div>
+    <p class="ap-info"><i class="bi bi-info-circle"></i> Esta carpeta está en modo lectura para tu usuario.</p>
     {% endif %}
 
-    <section class="ap-tarjeta" aria-labelledby="ap-titulo-listado">
-        <div class="ap-tarjeta-cabecera">
-            <div>
-                <h2 id="ap-titulo-listado"><i class="bi bi-files"></i> Documentos guardados</h2>
-                <p>Solo los participantes del proyecto y administradores pueden acceder.</p>
+    <section class="ap-panel">
+        <div class="ap-titulo-lista">
+            <h2><i class="bi bi-folder2-open"></i> Carpetas</h2>
+            <span>{{ carpetas|length }} en este nivel</span>
+        </div>
+        {% for carpeta in carpetas %}
+        <div class="ap-elemento">
+            <div class="ap-descripcion">
+                <a class="ap-abrir" href="{% url 'archivos_proyecto' proyecto.pk %}?carpeta={{ carpeta.pk }}">
+                    <i class="bi bi-folder-fill"></i> {{ carpeta.nombre }}
+                </a>
+                {% if not carpeta.visible %}<span class="ap-oculto">Oculta</span>{% endif %}
+                {% if carpeta.comentario %}<small>{{ carpeta.comentario }}</small>{% endif %}
+            </div>
+            {% if puede_gestionar %}
+            <div class="ap-acciones">
+                <details>
+                    <summary>Editar</summary>
+                    <div class="ap-menu">
+                        <form method="post" action="{% url 'gestionar_carpeta_proyecto' proyecto.pk carpeta.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="accion" value="renombrar">
+                            <label>Nuevo nombre</label>
+                            <input class="ap-input" name="nombre" maxlength="100" required value="{{ carpeta.nombre }}">
+                            <button type="submit" class="ap-boton ap-secundario">Renombrar</button>
+                        </form>
+                        <form method="post" action="{% url 'gestionar_carpeta_proyecto' proyecto.pk carpeta.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="accion" value="comentario">
+                            <label>Comentario</label>
+                            <textarea class="ap-input" name="comentario" maxlength="5000" rows="2">{{ carpeta.comentario }}</textarea>
+                            <button type="submit" class="ap-boton ap-secundario">Guardar comentario</button>
+                        </form>
+                    </div>
+                </details>
+                <details>
+                    <summary>Mover</summary>
+                    <form class="ap-menu" method="post" action="{% url 'gestionar_carpeta_proyecto' proyecto.pk carpeta.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="mover">
+                        <label>Carpeta de destino</label>
+                        <select name="destino" class="ap-input">
+                            <option value="">Raíz del proyecto</option>
+                            {% for opcion in opciones_destino %}
+                                <option value="{{ opcion.pk }}">{{ opcion.etiqueta }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="ap-boton ap-secundario">Mover carpeta</button>
+                    </form>
+                </details>
+                {% if privilegiado %}
+                <form method="post" action="{% url 'gestionar_carpeta_proyecto' proyecto.pk carpeta.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="visibilidad">
+                    <button class="ap-boton ap-secundario" type="submit">
+                        {% if carpeta.visible %}<i class="bi bi-eye-slash"></i> Ocultar{% else %}<i class="bi bi-eye"></i> Mostrar{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+                <form method="post" action="{% url 'gestionar_carpeta_proyecto' proyecto.pk carpeta.pk %}" onsubmit="return confirm('¿Eliminar la carpeta y TODO su contenido, incluidas las subcarpetas? Esta operación no se puede deshacer.');">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="eliminar">
+                    <input type="hidden" name="confirmar" value="SI">
+                    <button class="ap-boton ap-peligro" type="submit"><i class="bi bi-trash"></i> Eliminar</button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="ap-vacio">No hay subcarpetas en este nivel.</p>
+        {% endfor %}
+    </section>
+
+    <section class="ap-panel">
+        <div class="ap-titulo-lista">
+            <h2><i class="bi bi-files"></i> Archivos</h2>
+            <span>{{ cantidad_archivos }} en este nivel</span>
+        </div>
+        {% for archivo in archivos %}
+        <div class="ap-elemento">
+            <div class="ap-descripcion">
+                <span class="ap-documento"><i class="bi bi-file-earmark-text"></i> {{ archivo.nombre }}</span>
+                {% if not archivo.visible %}<span class="ap-oculto">Oculto</span>{% endif %}
+                <small>{{ archivo.tamaño|filesizeformat }} · {{ archivo.fecha_subida|date:"d/m/Y" }}</small>
+                {% if archivo.comentario %}<small>{{ archivo.comentario|linebreaksbr }}</small>{% endif %}
+            </div>
+            <div class="ap-acciones">
+                <a class="ap-boton ap-secundario" href="{% url 'descargar_archivo' proyecto.pk archivo.pk %}">
+                    <i class="bi bi-download"></i> Descargar
+                </a>
+                {% if puede_gestionar %}
+                <details>
+                    <summary>Editar</summary>
+                    <div class="ap-menu">
+                        <form method="post" action="{% url 'gestionar_archivo_proyecto' proyecto.pk archivo.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="accion" value="renombrar">
+                            <label>Nuevo nombre</label>
+                            <input class="ap-input" name="nombre" maxlength="100" required value="{{ archivo.nombre }}">
+                            <button class="ap-boton ap-secundario" type="submit">Renombrar</button>
+                        </form>
+                        <form method="post" action="{% url 'gestionar_archivo_proyecto' proyecto.pk archivo.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="accion" value="comentario">
+                            <label>Comentario</label>
+                            <textarea name="comentario" maxlength="5000" rows="2" class="ap-input">{{ archivo.comentario }}</textarea>
+                            <button class="ap-boton ap-secundario" type="submit">Guardar comentario</button>
+                        </form>
+                    </div>
+                </details>
+                <details>
+                    <summary>Mover</summary>
+                    <form method="post" action="{% url 'gestionar_archivo_proyecto' proyecto.pk archivo.pk %}" class="ap-menu">
+                        {% csrf_token %}
+                        <input type="hidden" name="accion" value="mover">
+                        <label>Carpeta de destino</label>
+                        <select name="destino" class="ap-input">
+                            <option value="">Raíz del proyecto</option>
+                            {% for opcion in opciones_destino %}
+                            <option value="{{ opcion.pk }}">{{ opcion.etiqueta }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="ap-boton ap-secundario">Mover archivo</button>
+                    </form>
+                </details>
+                {% if privilegiado %}
+                <form method="post" action="{% url 'gestionar_archivo_proyecto' proyecto.pk archivo.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="accion" value="visibilidad">
+                    <button class="ap-boton ap-secundario" type="submit">
+                        {% if archivo.visible %}<i class="bi bi-eye-slash"></i> Ocultar{% else %}<i class="bi bi-eye"></i> Mostrar{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+                <form method="post" action="{% url 'eliminar_archivo' proyecto.pk archivo.pk %}" onsubmit="return confirm('¿Eliminar definitivamente este archivo?');">
+                    {% csrf_token %}
+                    <button class="ap-boton ap-peligro" type="submit"><i class="bi bi-trash"></i> Eliminar</button>
+                </form>
+                {% endif %}
             </div>
         </div>
-
-        {% if archivos %}
-            <div class="ap-tabla-scroll">
-                <table class="ap-tabla">
-                    <thead>
-                        <tr>
-                            <th>Archivo</th>
-                            <th>Fecha</th>
-                            <th>Tamaño</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for archivo in archivos %}
-                        <tr>
-                            <td>
-                                <div class="ap-documento">
-                                    <span class="ap-documento-icono"><i class="bi bi-file-earmark-text"></i></span>
-                                    <div>
-                                        <strong>{{ archivo.nombre }}</strong>
-                                        {% if archivo.comentario %}
-                                            <small>{{ archivo.comentario }}</small>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="ap-nowrap">{{ archivo.fecha_subida|date:"d/m/Y" }}</td>
-                            <td class="ap-nowrap">{{ archivo.tamaño|filesizeformat }}</td>
-                            <td>
-                                <div class="ap-acciones">
-                                    <a class="ap-boton ap-boton-secundario" href="{% url 'descargar_archivo' proyecto.pk archivo.pk %}">
-                                        <i class="bi bi-download"></i> Descargar
-                                    </a>
-                                    {% if puede_gestionar %}
-                                        <form method="post" action="{% url 'eliminar_archivo' proyecto.pk archivo.pk %}"
-                                              onsubmit="return confirm('¿Eliminar definitivamente este archivo?');">
-                                            {% csrf_token %}
-                                            <button class="ap-boton ap-boton-peligro" type="submit">
-                                                <i class="bi bi-trash3"></i> Eliminar
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <div class="ap-vacio">
-                <i class="bi bi-folder2"></i>
-                <h3>Todavía no hay archivos</h3>
-                <p>{% if puede_gestionar %}Utiliza el formulario superior para subir el primero.{% else %}No se han subido documentos a este proyecto.{% endif %}</p>
-            </div>
-        {% endif %}
+        {% empty %}
+        <p class="ap-vacio">No hay archivos en esta carpeta.</p>
+        {% endfor %}
     </section>
-</div>
+</main>
 {% endblock %}

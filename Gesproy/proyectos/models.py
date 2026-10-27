@@ -294,6 +294,7 @@ class Dedicacion(models.Model):
         return f"{self.investigador} - {self.proyecto.nombre}"
 
 
+
 class Carpeta(models.Model):
 
     nombre = models.CharField(max_length=100)
@@ -310,8 +311,20 @@ class Carpeta(models.Model):
         on_delete=models.PROTECT
     )
 
+    # Indica si la carpeta es visible
+    visible = models.BooleanField(
+        default=True
+    )
+
+    # Comentario o descripción de la carpeta
+    comentario = models.TextField(
+        blank=True,
+        default=""
+    )
+
     def __str__(self):
         return self.nombre
+
 
 
 class Archivo(models.Model):
@@ -326,7 +339,7 @@ class Archivo(models.Model):
 
     tamaño = models.PositiveIntegerField()
 
-    comentario = models.TextField()
+    comentario = models.TextField(blank=True, default="")
 
     visible = models.BooleanField(default=True)
 

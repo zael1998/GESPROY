@@ -10,6 +10,8 @@
 
 {% block extra_css %}
 
+{{ block.super }}
+
 <link rel="stylesheet"
 
       href="{% static 'css/detalle_proyecto.css' %}">
@@ -256,6 +258,23 @@
             </span>
 
         </a>
+
+        <!-- ESTUDIO ECONÓMICO -->
+        <a href="{% url 'economia:estudio' proyecto.id %}"
+           class="ficha-pestana">
+            <i class="bi bi-cash-stack"></i>
+            Estudio económico
+        </a>
+
+        <!-- FACTURACIÓN: ADMINISTRADORES Y RESPONSABLE -->
+        {% if puede_ver_facturas %}
+        <a href="{% url 'facturacion_detalle' proyecto.pk %}"
+           class="ficha-pestana">
+            <i class="bi bi-receipt"></i>
+            Facturas
+        </a>
+        {% endif %}
+
 
         <!-- TAREAS Y HORAS: SOLO EN PROCESO O FINALIZADO -->
     {% if proyecto.estado == 'PROCESO' or proyecto.estado == 'FINALIZADO' %}
@@ -702,18 +721,92 @@
 
     </div>
 
-    <!-- COMENTARIO -->
-    <section class="ficha-tarjeta ficha-comentario">
+   <!-- COMENTARIO DEL PROYECTO -->
 
-        <h2>Comentario</h2>
+<section class="ficha-tarjeta ficha-comentario"
+         style="padding-bottom: 28px;">
 
-        <div class="ficha-comentario-texto">
+    <h2>Comentario del proyecto</h2>
 
-            {{ proyecto.comentario|default:"Sin comentarios."|linebreaksbr }}
+    <div class="ficha-comentario-texto">
 
-        </div>
+        {{ proyecto.comentario|default:"Sin comentarios."|linebreaksbr }}
 
-    </section>
+    </div>
+
+    {% if puede_editar_comentario %}
+
+        <details style="margin-top: 14px; margin-bottom: 8px; margin-left: 12px;">
+
+            <summary
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    width: fit-content;
+                    padding: 6px 11px;
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: #2563eb;
+                    background-color: #eff6ff;
+                    border: 1px solid #dbeafe;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    list-style: none;
+                ">
+
+                <i class="bi bi-pencil-square"></i>
+                Editar comentario
+
+            </summary>
+
+            <form
+                method="post"
+                action="{% url 'editar_comentario_proyecto' proyecto.id %}"
+                style="margin-top: 16px;"
+            >
+
+                {% csrf_token %}
+
+                <textarea
+                    id="comentario-proyecto"
+                    name="comentario"
+                    rows="3"
+                    maxlength="5000"
+                    style="
+                        display: block;
+                        width: 100%;
+                        max-width: 650px;
+                        box-sizing: border-box;
+                        padding: 10px 12px;
+                        border: 1px solid #cbd5e1;
+                        border-radius: 7px;
+                        font: inherit;
+                        font-size: 14px;
+                        resize: vertical;
+                    "
+                >{{ proyecto.comentario|default_if_none:"" }}</textarea>
+
+                <button
+                    type="submit"
+                    class="ficha-boton ficha-boton-azul"
+                    style="
+                        margin-top: 12px;
+                        padding: 7px 14px;
+                        font-size: 13px;
+                    "
+                >
+                    <i class="bi bi-check-lg"></i>
+                    Guardar cambios
+                </button>
+
+            </form>
+
+        </details>
+
+    {% endif %}
+
+</section>
 
     <!-- ======================================
          PESTAÑA: INVESTIGADORES

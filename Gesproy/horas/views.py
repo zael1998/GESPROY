@@ -1105,3 +1105,126 @@ def comentarios_tarea(request, proyecto_id, tarea_id):
             "formulario": formulario,
         },
     )
+
+# ==========================================
+# EDITAR COMENTARIO DE UNA TAREA
+# ==========================================
+
+@login_required
+@require_POST
+def editar_comentario_tarea(
+    request,
+    proyecto_id,
+    tarea_id,
+    comentario_id
+):
+
+    proyecto = obtener_proyecto_tareas(proyecto_id)
+    tarea = obtener_tarea(proyecto, tarea_id)
+
+    comentario = get_object_or_404(
+        ComentarioTarea,
+        pk=comentario_id,
+        tarea=tarea,
+    )
+
+    # El usuario debe tener permiso para comentar.
+    if not puede_comentar_tarea(
+        request.user,
+        proyecto,
+        tarea
+    ):
+        raise PermissionDenied(
+            "No tienes permiso para modificar comentarios."
+        )
+
+    # Solo el autor puede modificar su comentario.
+    if comentario.autor_id != request.user.pk:
+        raise PermissionDenied(
+            "No puedes editar comentarios de otro usuario."
+        )
+
+    formulario = ComentarioTareaForm(request.POST)
+
+    if formulario.is_valid():
+
+        comentario.contenido = (
+            formulario.cleaned_data["contenido"]
+        )
+
+        comentario.save(
+            update_fields=["contenido"]
+        )
+
+        messages.success(
+            request,
+            "Comentario actualizado correctamente."
+        )
+
+    else:
+
+        messages.error(
+            request,
+            "No se ha podido actualizar el comentario: "
+            + "; ".join(
+                error
+                for errores in formulario.errors.values()
+                for error in errores
+            )
+        )
+
+    return redirect(
+        "horas:comentarios_tarea",
+        proyecto_id=proyecto.pk,
+        tarea_id=tarea.pk,
+    )
+
+
+# ==========================================
+# ELIMINAR COMENTARIO DE UNA TAREA
+# ==========================================
+
+@login_required
+@require_POST
+def eliminar_comentario_tarea(
+    request,
+    proyecto_id,
+    tarea_id,
+    comentario_id
+):
+
+    proyecto = obtener_proyecto_tareas(proyecto_id)
+    tarea = obtener_tarea(proyecto, tarea_id)
+
+    comentario = get_object_or_404(
+        ComentarioTarea,
+        pk=comentario_id,
+        tarea=tarea,
+    )
+
+    if not puede_comentar_tarea(
+        request.user,
+        proyecto,
+        tarea
+    ):
+        raise PermissionDenied(
+            "No tienes permiso para eliminar comentarios."
+        )
+
+    if comentario.autor_id != request.user.pk:
+        raise PermissionDenied(
+            "No puedes eliminar comentarios de otro usuario."
+        )
+
+    comentario.delete()
+
+    messages.success(
+        request,
+        "Comentario eliminado correctamente."
+    )
+
+    return redirect(
+        "horas:comentarios_tarea",
+        proyecto_id=proyecto.pk,
+        tarea_id=tarea.pk,
+    )

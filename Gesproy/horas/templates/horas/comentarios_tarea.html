@@ -1,142 +1,414 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Comentarios · {{ tarea.nombre }}{% endblock %}
+{% block title %}
+Comentarios · {{ tarea.nombre }}
+{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/comentarios_tareas.css' %}">
+
+<link rel="stylesheet"
+      href="{% static 'css/comentarios_tareas.css' %}">
+
+<style>
+    .cmt-opciones {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+    }
+
+    .cmt-opcion-editar {
+        margin-top: 8px;
+    }
+
+    .cmt-opcion-editar summary {
+        cursor: pointer;
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    .cmt-opcion-editar summary:hover {
+        text-decoration: underline;
+    }
+
+    .cmt-form-editar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .cmt-textarea-editar {
+        width: 100%;
+        min-height: 110px;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font: inherit;
+        box-sizing: border-box;
+        resize: vertical;
+    }
+
+    .cmt-boton-eliminar {
+        border: 1px solid #dc2626;
+        border-radius: 8px;
+        padding: 9px 14px;
+        color: #dc2626;
+        background: transparent;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .cmt-boton-eliminar:hover {
+        background: #fef2f2;
+    }
+</style>
 {% endblock %}
 
+
 {% block content %}
+
 <div class="cmt-contenedor">
+
+    <!-- ===================================
+         CABECERA
+    ==================================== -->
+
     <header class="cmt-cabecera">
+
         <div>
-            <p class="cmt-ruta">Proyectos / {{ proyecto.acronimo }} / Tareas</p>
+            <p class="cmt-ruta">
+                Proyectos / {{ proyecto.acronimo }} / Tareas
+            </p>
+
             <h1>Comentarios de la tarea</h1>
-            <p class="cmt-subtitulo">{{ tarea.nombre }}</p>
+
+            <p class="cmt-subtitulo">
+                {{ tarea.nombre }}
+            </p>
         </div>
+
         <div class="cmt-acciones-cabecera">
+
             <a href="{% url 'horas:tareas_proyecto' proyecto.id %}"
                class="cmt-boton cmt-boton-secundario">
-                <i class="bi bi-arrow-left" aria-hidden="true"></i>
                 Volver a las tareas
             </a>
-            {% if proyecto.estado == 'PROCESO' and puede_comentar %}
-                <a href="#nuevo-comentario" class="cmt-boton cmt-boton-principal">
-                    <i class="bi bi-chat-dots" aria-hidden="true"></i>
-                    Comentar
+
+            {% if puede_comentar %}
+                <a href="#nuevo-comentario"
+                   class="cmt-boton cmt-boton-principal">
+                    Añadir comentario
                 </a>
             {% endif %}
+
         </div>
+
     </header>
 
+
+    <!-- ===================================
+         MENSAJES
+    ==================================== -->
+
     {% if messages %}
+
         <div class="cmt-mensajes">
+
             {% for mensaje in messages %}
-                <p class="cmt-mensaje {% if 'error' in mensaje.tags %}cmt-mensaje-error{% endif %}">
+
+                <p class="cmt-mensaje
+                    {% if 'error' in mensaje.tags %}
+                        cmt-mensaje-error
+                    {% endif %}
+                ">
                     {{ mensaje }}
                 </p>
+
             {% endfor %}
+
         </div>
+
     {% endif %}
 
-    <section class="cmt-ficha" aria-label="Información de la tarea">
+
+    <!-- ===================================
+         INFORMACIÓN DE LA TAREA
+    ==================================== -->
+
+    <section class="cmt-ficha">
+
         <div>
-            <span class="cmt-etiqueta">{{ proyecto.acronimo }}</span>
-            {% if tarea.tarea_padre %}
-                <span class="cmt-etiqueta">Subtarea de {{ tarea.tarea_padre.nombre }}</span>
-            {% else %}
-                <span class="cmt-etiqueta">Tarea principal</span>
-            {% endif %}
-        </div>
-        <div class="cmt-datos">
-            <span><i class="bi bi-calendar3" aria-hidden="true"></i>
-                {{ tarea.fecha_inicio|date:'d/m/Y' }} –
-                {% if tarea.fecha_fin %}{{ tarea.fecha_fin|date:'d/m/Y' }}{% else %}sin fecha final{% endif %}
+
+            <span class="cmt-etiqueta">
+                {{ proyecto.acronimo }}
             </span>
-            <span><i class="bi bi-person" aria-hidden="true"></i>
-                {% if tarea.responsable_investigador %}
-                    {{ tarea.responsable_investigador }}
+
+            {% if tarea.tarea_padre %}
+
+                <span class="cmt-etiqueta">
+                    Subtarea de {{ tarea.tarea_padre.nombre }}
+                </span>
+
+            {% else %}
+
+                <span class="cmt-etiqueta">
+                    Tarea principal
+                </span>
+
+            {% endif %}
+
+        </div>
+
+        <div class="cmt-datos">
+
+            <span>
+                Inicio:
+                {{ tarea.fecha_inicio|date:"d/m/Y" }}
+            </span>
+
+            <span>
+                Fin:
+                {% if tarea.fecha_fin %}
+                    {{ tarea.fecha_fin|date:"d/m/Y" }}
                 {% else %}
-                    Sin responsable
+                    Sin fecha final
                 {% endif %}
             </span>
+
             <span>
                 {% if tarea.finalizada %}
-                    <i class="bi bi-check-circle" aria-hidden="true"></i> Finalizada
+                    Tarea finalizada
                 {% else %}
-                    <i class="bi bi-clock" aria-hidden="true"></i> Pendiente
+                    Tarea pendiente
                 {% endif %}
             </span>
+
         </div>
+
         {% if tarea.descripcion %}
-            <p class="cmt-descripcion">{{ tarea.descripcion|linebreaksbr }}</p>
+
+            <p class="cmt-descripcion">
+                {{ tarea.descripcion|linebreaksbr }}
+            </p>
+
         {% endif %}
+
         {% if tarea.comentario %}
+
             <div class="cmt-comentario-general">
-                <strong>Comentario general de la tarea</strong>
-                <p>{{ tarea.comentario|linebreaksbr }}</p>
+
+                <strong>
+                    Comentario general de la tarea
+                </strong>
+
+                <p>
+                    {{ tarea.comentario|linebreaksbr }}
+                </p>
+
             </div>
+
         {% endif %}
+
     </section>
 
-    <section class="cmt-panel" aria-labelledby="titulo-comentarios">
+
+    <!-- ===================================
+         HISTORIAL DE COMENTARIOS
+    ==================================== -->
+
+    <section class="cmt-panel">
+
         <div class="cmt-panel-cabecera">
-            <h2 id="titulo-comentarios">Historial de comentarios</h2>
-            <span class="cmt-contador">{{ total_comentarios }}</span>
+
+            <h2>Historial de comentarios</h2>
+
+            <span class="cmt-contador">
+                {{ total_comentarios }}
+            </span>
+
         </div>
 
         {% for comentario in comentarios %}
+
             <article class="cmt-entrada">
+
                 <header class="cmt-entrada-cabecera">
-                    <strong>{{ comentario.autor }}</strong>
+
+                    <strong>
+                        {{ comentario.autor }}
+                    </strong>
+
                     <time datetime="{{ comentario.fecha_creacion|date:'c' }}">
-                        {{ comentario.fecha_creacion|date:'d/m/Y H:i' }}
+                        {{ comentario.fecha_creacion|date:"d/m/Y H:i" }}
                     </time>
+
                 </header>
-                <div class="cmt-contenido">{{ comentario.contenido|linebreaksbr }}</div>
+
+                <div class="cmt-contenido">
+                    {{ comentario.contenido|linebreaksbr }}
+                </div>
+
+
+                <!-- =======================
+                     EDITAR Y ELIMINAR
+                ======================== -->
+
+                {% if puede_comentar and comentario.autor_id == request.user.id %}
+
+                    <div class="cmt-opciones">
+
+                        <!-- EDITAR -->
+
+                        <details class="cmt-opcion-editar">
+
+                            <summary>
+                                Editar comentario
+                            </summary>
+
+                            <form method="post"
+                                  class="cmt-form-editar"
+                                  action="{% url 'horas:editar_comentario_tarea' proyecto.id tarea.id comentario.id %}">
+
+                                {% csrf_token %}
+
+                                <label for="editar-{{ comentario.id }}">
+                                    Contenido del comentario
+                                </label>
+
+                                <textarea
+                                    id="editar-{{ comentario.id }}"
+                                    name="contenido"
+                                    class="cmt-textarea-editar"
+                                    maxlength="2000"
+                                    required>{{ comentario.contenido }}</textarea>
+
+                                <div>
+                                    <button type="submit"
+                                            class="cmt-boton cmt-boton-principal">
+                                        Guardar cambios
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </details>
+
+
+                        <!-- ELIMINAR -->
+
+                        <form method="post"
+                              action="{% url 'horas:eliminar_comentario_tarea' proyecto.id tarea.id comentario.id %}"
+                              onsubmit="return confirm('¿Seguro que quieres eliminar este comentario? Esta acción no se puede deshacer.');">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="cmt-boton-eliminar">
+                                Eliminar comentario
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
             </article>
+
         {% empty %}
+
             <div class="cmt-vacio">
-                <i class="bi bi-chat-square-text" aria-hidden="true"></i>
-                <p>No hay comentarios individuales todavía.</p>
+
+                <p>
+                    Todavía no hay comentarios en esta tarea.
+                </p>
+
             </div>
+
         {% endfor %}
+
     </section>
 
+
+    <!-- ===================================
+         NUEVO COMENTARIO
+    ==================================== -->
+
     {% if puede_comentar %}
-        <section class="cmt-panel" id="nuevo-comentario" aria-labelledby="titulo-nuevo">
+
+        <section class="cmt-panel"
+                 id="nuevo-comentario">
+
             <div class="cmt-panel-cabecera">
-                <h2 id="titulo-nuevo">Nuevo comentario</h2>
+
+                <h2>Nuevo comentario</h2>
+
             </div>
-            <form method="post" class="cmt-formulario">
+
+            <form method="post"
+                  class="cmt-formulario">
+
                 {% csrf_token %}
+
                 {% if formulario.non_field_errors %}
-                    <div class="cmt-error">{{ formulario.non_field_errors }}</div>
+                    <div class="cmt-error">
+                        {{ formulario.non_field_errors }}
+                    </div>
                 {% endif %}
+
                 <label for="{{ formulario.contenido.id_for_label }}">
                     {{ formulario.contenido.label }}
                 </label>
+
                 {{ formulario.contenido }}
+
                 {% if formulario.contenido.errors %}
-                    <div class="cmt-error">{{ formulario.contenido.errors }}</div>
+
+                    <div class="cmt-error">
+                        {{ formulario.contenido.errors }}
+                    </div>
+
                 {% endif %}
-                <p class="cmt-ayuda">Máximo 2000 caracteres. El autor y la fecha se registran automáticamente.</p>
-                <button type="submit" class="cmt-boton cmt-boton-principal">
-                    <i class="bi bi-send" aria-hidden="true"></i>
+
+                <p class="cmt-ayuda">
+                    Máximo 2000 caracteres.
+                    El autor y la fecha se registran automáticamente.
+                </p>
+
+                <button type="submit"
+                        class="cmt-boton cmt-boton-principal">
                     Publicar comentario
                 </button>
+
             </form>
+
         </section>
+
     {% else %}
+
         <p class="cmt-solo-lectura">
-            {% if proyecto.estado == 'FINALIZADO' %}
-                Este proyecto está finalizado. Sus comentarios solo se pueden consultar.
+
+            {% if proyecto.estado == "FINALIZADO" %}
+
+                Este proyecto está finalizado.
+                Sus comentarios solo pueden consultarse.
+
             {% else %}
-                Puedes consultar los comentarios, pero no publicar en esta tarea.
+
+                Puedes consultar los comentarios,
+                pero no publicarlos ni modificarlos.
+
             {% endif %}
+
         </p>
+
     {% endif %}
+
 </div>
+
 {% endblock %}

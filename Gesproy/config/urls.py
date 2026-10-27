@@ -43,4 +43,6 @@ urlpatterns = [
     path("horas/", include("horas.urls")),
     
     path("api/", include("api_movil.urls")),
+    path("economia/",include("economia.urls"),
+),
 ]

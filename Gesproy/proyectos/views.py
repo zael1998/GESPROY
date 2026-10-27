@@ -127,6 +127,57 @@ def comprobar_permiso_edicion(request, proyecto):
     raise PermissionDenied("No tienes permisos de edición sobre este proyecto.")
 
 
+# ==========================================
+# PERMISOS PARA EDITAR COMENTARIOS
+# ==========================================
+
+def puede_editar_comentario_proyecto(usuario, proyecto):
+
+    if not usuario.is_authenticated:
+        return False
+
+    # Los proyectos finalizados y denegados
+    # solamente permiten consultar el comentario.
+    estados_editables = (
+        "DEFINICION",
+        "SOLICITADO",
+        "NEGOCIACION",
+        "PROCESO",
+    )
+
+    if proyecto.estado not in estados_editables:
+        return False
+
+    if usuario.is_staff:
+        return True
+
+    investigador = Investigador.objects.filter(
+        usuario=usuario
+    ).first()
+
+    if investigador is None:
+        return False
+
+    # El investigador principal puede editar.
+    if proyecto.investigador_principal_id == investigador.pk:
+        return True
+
+    # En las etapas iniciales pueden editar
+    # también los investigadores asociados.
+    if proyecto.estado in (
+        "DEFINICION",
+        "SOLICITADO",
+        "NEGOCIACION",
+    ):
+        return Dedicacion.objects.filter(
+            proyecto=proyecto,
+            investigador=investigador,
+        ).exists()
+
+    return False
+
+
+
 @login_required
 def lista_proyectos(request):
     proyectos = Proyecto.objects.all()
@@ -376,7 +427,8 @@ def detalle_proyecto(request, id):
             )
         )
     )
-        # --------------------------------------
+
+    # --------------------------------------
     # PERMISOS PARA IMPUTAR HORAS
     # --------------------------------------
 
@@ -400,7 +452,7 @@ def detalle_proyecto(request, id):
                 proyecto=proyecto
             ).select_related(
                 "tarea_padre",
-                "responsable_investigador__usuario"             
+                "responsable_investigador__usuario"
             ).order_by(
                 "fecha_inicio",
                 "pk"
@@ -714,6 +766,10 @@ def detalle_proyecto(request, id):
 
     puede_editar = request.user.is_staff
 
+    puede_editar_comentario = puede_editar_comentario_proyecto(
+        request.user, proyecto
+    )
+
     puede_gestionar_investigadores = (
         proyecto.estado == "PROCESO"
         and (
@@ -742,6 +798,7 @@ def detalle_proyecto(request, id):
             "denegaciones": denegaciones,
             "nombres_lineas": nombres_lineas,
             "puede_editar": puede_editar,
+            "puede_editar_comentario": puede_editar_comentario,
             "total_investigadores": len(investigadores),
             "total_socios": len(socios),
             "total_denegaciones": len(denegaciones),
@@ -754,12 +811,93 @@ def detalle_proyecto(request, id):
             "fecha_hasta": fecha_hasta,
             "puede_imputar_horas": puede_imputar_horas,
             "puede_gestionar_investigadores": puede_gestionar_investigadores,
-            "puede_ver_archivos": (request.user.is_staff or request.user.is_superuser or asociado),
+            # Facturación: administradores y responsable en proceso/finalizado.
+            "puede_ver_facturas": (
+                request.user.is_authenticated
+                and request.user.is_active
+                and proyecto.estado in ("PROCESO", "FINALIZADO")
+                and (
+                    request.user.is_staff
+                    or request.user.is_superuser
+                    or (
+                        investigador_actual is not None
+                        and proyecto.investigador_principal_id == investigador_actual.pk
+                    )
+                )
+            ),
+            # Archivos: se conserva el permiso del gestor documental.
+            "puede_ver_archivos": (
+                request.user.is_authenticated
+                and request.user.is_active
+                and (
+                    request.user.is_staff
+                    or request.user.is_superuser
+                    or asociado
+                    or (
+                        investigador_actual is not None
+                        and proyecto.estado in ("PROCESO", "FINALIZADO")
+                    )
+                )
+            ),
         }
     )
 
+# ==========================================
+# EDITAR COMENTARIO DEL PROYECTO
+# ==========================================
 
+@login_required
+@require_POST
+def editar_comentario_proyecto(request, id):
 
+    proyecto = get_object_or_404(
+        Proyecto,
+        pk=id
+    )
+
+    if not puede_editar_comentario_proyecto(
+        request.user,
+        proyecto,
+    ):
+        raise PermissionDenied(
+            "No tienes permiso para editar "
+            "el comentario de este proyecto."
+        )
+
+    nuevo_comentario = request.POST.get(
+        "comentario",
+        ""
+    ).strip()
+
+    if len(nuevo_comentario) > 5000:
+
+        messages.error(
+            request,
+            "El comentario no puede superar "
+            "los 5000 caracteres."
+        )
+
+        return redirect(
+            "detalle_proyecto",
+            id=proyecto.pk,
+        )
+
+    # Modificamos únicamente el comentario.
+    proyecto.comentario = nuevo_comentario
+
+    proyecto.save(
+        update_fields=["comentario"]
+    )
+
+    messages.success(
+        request,
+        "Comentario actualizado correctamente."
+    )
+
+    return redirect(
+        "detalle_proyecto",
+        id=proyecto.pk,
+    )
 
 # ==========================================
 # GESTIÓN DE INVESTIGADORES EN PROYECTOS

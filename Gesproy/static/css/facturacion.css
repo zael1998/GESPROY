@@ -1,0 +1,52 @@
+/* Gesproy · Facturación: movimientos reales por proyecto. */
+.fac-contenedor {
+    width: min(1200px, calc(100% - 36px));
+    margin: 30px auto 70px;
+    color: #23354a;
+}
+.fac-contenedor-form { max-width: 740px; }
+.fac-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
+.fac-ruta { color: #087e9d; font-size: .86rem; font-weight: 650; margin: 0 0 7px; }
+.fac-cabecera h1 { font-size: clamp(1.4rem, 2.5vw, 2rem); margin: 0 0 7px; font-weight: 700; }
+.fac-cabecera h1 i { color: #0c85a8; margin-right: 7px; }
+.fac-muted { color: #6b7c8d; font-size: .88rem; margin: 4px 0; }
+.fac-panel { background: #fff; border: 1px solid #dee6ee; border-radius: 13px; padding: 22px; margin-bottom: 18px; box-shadow: 0 3px 16px rgba(30, 60, 85, .045); }
+.fac-panel h2 { font-size: 1.22rem; margin: 0 0 7px; }
+.fac-panel-cabecera { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.fac-acciones { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.fac-boton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: .89rem; font-weight: 650; padding: 10px 14px; border: 1px solid transparent; border-radius: 8px; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.fac-primario { background: #087eaa; color: white; }
+.fac-primario:hover { background: #066b8f; color: white; }
+.fac-secundario { background: #eff7fa; color: #166c8d; border-color: #d5e8ed; }
+.fac-secundario:hover { color: #065879; background: #e6f3f7; }
+.fac-resumen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+.fac-cifra { background: white; border: 1px solid #dee6ee; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.fac-cifra small { color: #67768a; font-size: .85rem; }
+.fac-cifra strong { font-size: clamp(1.2rem, 2.1vw, 1.65rem); font-weight: 750; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fac-scroll { overflow-x: auto; }
+.fac-tabla { width: 100%; border-collapse: collapse; min-width: 540px; font-size: .91rem; }
+.fac-tabla th { text-align: left; padding: 12px 14px; background: #f4f7fb; color: #465b72; border-bottom: 1px solid #e1e8ef; font-weight: 650; }
+.fac-tabla td { padding: 13px 14px; border-bottom: 1px solid #edf1f6; vertical-align: middle; }
+.fac-tabla tr:last-child td { border-bottom: none; }
+.fac-tabla td small { display: block; margin-top: 3px; }
+.fac-num { text-align: right !important; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.fac-vacio { text-align: center; padding: 28px 14px !important; color: #65778b; }
+.fac-etiqueta { display: inline-block; border-radius: 20px; background: #eff6ff; color: #1d5f9d; padding: 5px 9px; font-size: .77rem; white-space: nowrap; }
+.fac-aviso { background: #eef7ff; border: 1px solid #c6e4f5; color: #315778; border-radius: 9px; padding: 13px 16px; margin-bottom: 20px; }
+.fac-error { border-color: #efc7c7; background: #fff2f2; color: #9a2d2d; }
+.fac-buscar label { display: block; font-size: .87rem; font-weight: 650; margin-bottom: 9px; }
+.fac-buscar-fila { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 19px; }
+.fac-input { box-sizing: border-box; min-width: 0; width: 100%; border: 1px solid #cbd7e3; border-radius: 8px; background: #fff; color: #26384b; padding: 11px 12px; font: inherit; }
+.fac-buscar-fila .fac-input { flex: 1; min-width: 200px; }
+.fac-input:focus { outline: 2px solid #c3e8fb; border-color: #0b85b1; }
+.fac-formulario { display: flex; flex-direction: column; gap: 21px; }
+.fac-campo { display: flex; flex-direction: column; gap: 7px; }
+.fac-campo label { font-weight: 650; font-size: .9rem; }
+.fac-campo .errorlist { color: #af3333; margin: 2px 0; padding-left: 18px; }
+.fac-paginacion { display: flex; justify-content: center; align-items: center; gap: 16px; padding-top: 21px; }
+.fac-paginacion a { color: #146d95; font-weight: 650; }
+@media (max-width: 760px) {
+    .fac-contenedor { width: calc(100% - 24px); margin-top: 18px; }
+    .fac-resumen { grid-template-columns: 1fr; }
+    .fac-panel { padding: 14px; }
+}

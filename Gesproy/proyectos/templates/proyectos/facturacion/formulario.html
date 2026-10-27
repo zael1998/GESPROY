@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if editando %}Editar{% else %}Añadir{% endif %} {{ tipo_nombre }} · Facturación{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/facturacion.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="fac-contenedor fac-contenedor-form">
+    <header class="fac-cabecera">
+        <div>
+            <p class="fac-ruta">{{ proyecto.acronimo }} / Facturación</p>
+            <h1>{% if editando %}Editar{% else %}Registrar{% endif %} {{ tipo_nombre }}</h1>
+            <p class="fac-muted">{{ proyecto.nombre }}</p>
+        </div>
+    </header>
+
+    <section class="fac-panel">
+        <form method="post" class="fac-formulario">
+            {% csrf_token %}
+            {% if formulario.non_field_errors %}
+                <div class="fac-aviso fac-error">{{ formulario.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="fac-campo">
+                <label for="{{ formulario.concepto.id_for_label }}">{{ formulario.concepto.label }} *</label>
+                {{ formulario.concepto }}
+                {{ formulario.concepto.errors }}
+            </div>
+            <div class="fac-campo">
+                <label for="{{ formulario.fecha.id_for_label }}">{{ formulario.fecha.label }} *</label>
+                {{ formulario.fecha }}
+                {{ formulario.fecha.errors }}
+            </div>
+            <div class="fac-campo">
+                <label for="{{ formulario.importe.id_for_label }}">{{ formulario.importe.label }} *</label>
+                {{ formulario.importe }}
+                {{ formulario.importe.errors }}
+                <small class="fac-muted">Registra una cantidad positiva. El tipo (ingreso o gasto) se asigna automáticamente.</small>
+            </div>
+            <div class="fac-acciones">
+                <button class="fac-boton fac-primario" type="submit"><i class="bi bi-save"></i> Guardar</button>
+                <a class="fac-boton fac-secundario" href="{% url 'facturacion_detalle' proyecto.pk %}">Cancelar</a>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,467 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Comparativa económica · {{ proyecto.acronimo }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/estudio_economico.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<main class="eco-contenedor">
+
+    <!-- CABECERA -->
+
+    <header class="eco-cabecera">
+
+        <div>
+
+            <a
+                href="{% url 'economia:estudio' proyecto.id %}"
+                class="eco-volver"
+            >
+                ← Volver al estudio económico
+            </a>
+
+            <p class="eco-descripcion">
+                {{ proyecto.acronimo }} · {{ proyecto.nombre }}
+            </p>
+
+            <h1>Comparativa económica</h1>
+
+            <p class="eco-descripcion">
+                Evolución del presupuesto entre
+                Inicio, Negociación y Replanteo.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- INFORMACIÓN DE LAS VERSIONES -->
+
+    <section class="eco-comp-fases">
+
+        <div class="eco-comp-fase">
+
+            <small>Inicio</small>
+
+            {% if versiones.INICIO %}
+
+                <strong>
+                    Versión {{ versiones.INICIO.version }}
+                </strong>
+
+                <span>
+                    {{ versiones.INICIO.get_estado_display }}
+                </span>
+
+            {% else %}
+
+                <strong>Sin estudio</strong>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="eco-comp-fase">
+
+            <small>Negociación</small>
+
+            {% if versiones.NEGOCIACION %}
+
+                <strong>
+                    Versión {{ versiones.NEGOCIACION.version }}
+                </strong>
+
+                <span>
+                    {{ versiones.NEGOCIACION.get_estado_display }}
+                </span>
+
+            {% else %}
+
+                <strong>Sin estudio</strong>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="eco-comp-fase">
+
+            <small>Replanteo</small>
+
+            {% if versiones.REPLANTEO %}
+
+                <strong>
+                    Versión {{ versiones.REPLANTEO.version }}
+                </strong>
+
+                <span>
+                    {{ versiones.REPLANTEO.get_estado_display }}
+                </span>
+
+            {% else %}
+
+                <strong>Sin estudio</strong>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    {% if hay_estudios %}
+
+        <!-- TABLAS POR TIPO -->
+
+        {% for grupo in grupos %}
+
+            <section class="eco-panel">
+
+                <h2>{{ grupo.titulo }}</h2>
+
+                {% if grupo.filas %}
+
+                    <div class="eco-tabla-contenedor">
+
+                        <table class="eco-tabla eco-tabla-comparativa">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Concepto</th>
+
+                                    <th>Inicio</th>
+
+                                    <th>Negociación</th>
+
+                                    <th>Replanteo</th>
+
+                                    <th>
+                                        Diferencia
+                                        Inicio → Negociación
+                                    </th>
+
+                                    <th>
+                                        Diferencia
+                                        Negociación → Replanteo
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for fila in grupo.filas %}
+
+                                    <tr>
+
+                                        <td>
+                                            <strong>{{ fila.nombre }}</strong>
+                                        </td>
+
+
+                                        <!-- IMPORTE DE INICIO -->
+
+                                        <td class="eco-comp-numero">
+
+                                            {% if fila.inicio != None %}
+
+                                                {{ fila.inicio|floatformat:2 }} €
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <!-- IMPORTE DE NEGOCIACIÓN -->
+
+                                        <td class="eco-comp-numero">
+
+                                            {% if fila.negociacion != None %}
+
+                                                {{ fila.negociacion|floatformat:2 }} €
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <!-- IMPORTE DE REPLANTEO -->
+
+                                        <td class="eco-comp-numero">
+
+                                            {% if fila.replanteo != None %}
+
+                                                {{ fila.replanteo|floatformat:2 }} €
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <!-- DIFERENCIA 1 -->
+
+                                        <td class="eco-comp-variacion">
+
+                                            {% if fila.diferencia_inicio_negociacion.disponible %}
+
+                                                <strong>
+                                                    {{ fila.diferencia_inicio_negociacion.importe|floatformat:2 }} €
+                                                </strong>
+
+                                                <small>
+
+                                                    {% if fila.diferencia_inicio_negociacion.porcentaje != None %}
+
+                                                        {{ fila.diferencia_inicio_negociacion.porcentaje|floatformat:2 }} %
+
+                                                    {% else %}
+
+                                                        Porcentaje no calculable
+
+                                                    {% endif %}
+
+                                                </small>
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </td>
+
+
+                                        <!-- DIFERENCIA 2 -->
+
+                                        <td class="eco-comp-variacion">
+
+                                            {% if fila.diferencia_negociacion_replanteo.disponible %}
+
+                                                <strong>
+                                                    {{ fila.diferencia_negociacion_replanteo.importe|floatformat:2 }} €
+                                                </strong>
+
+                                                <small>
+
+                                                    {% if fila.diferencia_negociacion_replanteo.porcentaje != None %}
+
+                                                        {{ fila.diferencia_negociacion_replanteo.porcentaje|floatformat:2 }} %
+
+                                                    {% else %}
+
+                                                        Porcentaje no calculable
+
+                                                    {% endif %}
+
+                                                </small>
+
+                                            {% else %}
+
+                                                —
+
+                                            {% endif %}
+
+                                        </td>
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                {% else %}
+
+                    <p class="eco-descripcion">
+                        No hay partidas registradas
+                        en esta categoría.
+                    </p>
+
+                {% endif %}
+
+            </section>
+
+        {% endfor %}
+
+
+        <!-- RESUMEN GENERAL -->
+
+        <section class="eco-panel">
+
+            <h2>Resumen general</h2>
+
+            <div class="eco-tabla-contenedor">
+
+                <table class="eco-tabla eco-tabla-comparativa">
+
+                    <thead>
+
+                        <tr>
+                            <th>Concepto</th>
+                            <th>Inicio</th>
+                            <th>Negociación</th>
+                            <th>Replanteo</th>
+                            <th>Inicio → Negociación</th>
+                            <th>Negociación → Replanteo</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for fila in filas_totales %}
+
+                            <tr class="{% if forloop.last %}eco-comp-total{% endif %}">
+
+                                <td>
+                                    <strong>{{ fila.nombre }}</strong>
+                                </td>
+
+                                <td class="eco-comp-numero">
+                                    {% if fila.inicio != None %}
+                                        {{ fila.inicio|floatformat:2 }} €
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td class="eco-comp-numero">
+                                    {% if fila.negociacion != None %}
+                                        {{ fila.negociacion|floatformat:2 }} €
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td class="eco-comp-numero">
+                                    {% if fila.replanteo != None %}
+                                        {{ fila.replanteo|floatformat:2 }} €
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td class="eco-comp-variacion">
+
+                                    {% if fila.diferencia_inicio_negociacion.disponible %}
+
+                                        <strong>
+                                            {{ fila.diferencia_inicio_negociacion.importe|floatformat:2 }} €
+                                        </strong>
+
+                                        <small>
+                                            {% if fila.diferencia_inicio_negociacion.porcentaje != None %}
+                                                {{ fila.diferencia_inicio_negociacion.porcentaje|floatformat:2 }} %
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </small>
+
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </td>
+
+                                <td class="eco-comp-variacion">
+
+                                    {% if fila.diferencia_negociacion_replanteo.disponible %}
+
+                                        <strong>
+                                            {{ fila.diferencia_negociacion_replanteo.importe|floatformat:2 }} €
+                                        </strong>
+
+                                        <small>
+                                            {% if fila.diferencia_negociacion_replanteo.porcentaje != None %}
+                                                {{ fila.diferencia_negociacion_replanteo.porcentaje|floatformat:2 }} %
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </small>
+
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    {% else %}
+
+        <!-- SIN ESTUDIOS -->
+
+        <section class="eco-panel eco-vacio">
+
+            <h2>
+                Todavía no hay estudios económicos
+            </h2>
+
+            <p class="eco-descripcion">
+                Cuando se creen presupuestos para
+                alguna fase, aparecerán aquí.
+            </p>
+
+            <a
+                href="{% url 'economia:estudio' proyecto.id %}"
+                class="eco-boton eco-primario"
+            >
+                Volver al estudio económico
+            </a>
+
+        </section>
+
+    {% endif %}
+
+
+    <p class="eco-descripcion eco-comp-nota">
+        La comparativa utiliza la última versión de
+        cada fase. Un guion indica que no existe
+        información para comparar. Los porcentajes
+        no se calculan cuando el importe de origen
+        es cero.
+    </p>
+
+</main>
+
+{% endblock %}

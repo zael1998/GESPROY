@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Facturación · Gesproy{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/facturacion.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="fac-contenedor">
+    <header class="fac-cabecera">
+        <div>
+            <p class="fac-ruta">Administración / Facturación</p>
+            <h1><i class="bi bi-receipt"></i> Facturación</h1>
+            <p class="fac-muted">Selecciona un proyecto para consultar sus ingresos y gastos reales.</p>
+        </div>
+        <a class="fac-boton fac-secundario" href="{% url 'panel_administracion' %}">
+            <i class="bi bi-arrow-left"></i> Administración
+        </a>
+    </header>
+
+    <section class="fac-panel">
+        <form method="get" class="fac-buscar">
+            <label for="buscar_proyecto">Buscar por acrónimo o nombre</label>
+            <div class="fac-buscar-fila">
+                <input class="fac-input" id="buscar_proyecto" name="q"
+                       value="{{ busqueda }}" placeholder="Buscar proyecto...">
+                <button class="fac-boton fac-primario" type="submit">Buscar</button>
+                {% if busqueda %}
+                    <a class="fac-boton fac-secundario" href="{% url 'facturacion_proyectos' %}">Limpiar</a>
+                {% endif %}
+            </div>
+        </form>
+
+        <div class="fac-scroll">
+            <table class="fac-tabla">
+                <thead>
+                    <tr>
+                        <th>Proyecto</th>
+                        <th>Estado</th>
+                        <th class="fac-num">Ingresos</th>
+                        <th class="fac-num">Gastos</th>
+                        <th class="fac-num">Balance</th>
+                        <th>Acceso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for proyecto in pagina %}
+                        <tr>
+                            <td><strong>{{ proyecto.acronimo }}</strong>
+                                <small class="fac-muted">{{ proyecto.nombre }}</small>
+                            </td>
+                            <td><span class="fac-etiqueta">{{ proyecto.get_estado_display }}</span></td>
+                            <td class="fac-num">{{ proyecto.fact_ingresos|floatformat:2 }} €</td>
+                            <td class="fac-num">{{ proyecto.fact_gastos|floatformat:2 }} €</td>
+                            <td class="fac-num"><strong>{{ proyecto.fact_saldo|floatformat:2 }} €</strong></td>
+                            <td>
+                                <a class="fac-boton fac-secundario" href="{% url 'facturacion_detalle' proyecto.pk %}">
+                                    Ver movimientos
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="fac-vacio">No hay proyectos en proceso o finalizados con esos criterios.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if pagina.has_other_pages %}
+            <nav class="fac-paginacion" aria-label="Paginación de proyectos">
+                {% if pagina.has_previous %}
+                    <a href="?q={{ busqueda|urlencode }}&page={{ pagina.previous_page_number }}">Anterior</a>
+                {% endif %}
+                <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+                {% if pagina.has_next %}
+                    <a href="?q={{ busqueda|urlencode }}&page={{ pagina.next_page_number }}">Siguiente</a>
+                {% endif %}
+            </nav>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}

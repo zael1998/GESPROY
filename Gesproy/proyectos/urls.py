@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from . import archivos as vistas_archivos
 from usuarios import perfil as vistas_perfil
+from . import facturacion as vistas_facturacion
 from usuarios import gestion as vistas_usuarios
 
 urlpatterns = [
@@ -71,4 +72,14 @@ urlpatterns = [
     path("administracion/usuarios/nuevo/", vistas_usuarios.crear_usuario, name="crear_usuario"),
     path("administracion/usuarios/<int:usuario_id>/editar/", vistas_usuarios.editar_usuario, name="editar_usuario"),
     path("administracion/usuarios/<int:usuario_id>/clave/", vistas_usuarios.cambiar_clave_usuario, name="cambiar_clave_usuario"),
+    path("proyecto/<int:id>/comentario/editar/",views.editar_comentario_proyecto,name="editar_comentario_proyecto"),
+    path("proyecto/<int:proyecto_id>/archivos/carpetas/nueva/",vistas_archivos.gestionar_carpeta,name="crear_carpeta_proyecto"),
+    path("proyecto/<int:proyecto_id>/archivos/carpetas/<int:carpeta_id>/gestionar/",vistas_archivos.gestionar_carpeta,name="gestionar_carpeta_proyecto"),
+    path("proyecto/<int:proyecto_id>/archivos/<int:archivo_id>/gestionar/",vistas_archivos.gestionar_archivo,name="gestionar_archivo_proyecto"),
+    path("facturacion/", vistas_facturacion.facturacion_proyectos, name="facturacion_proyectos"),
+    path("facturacion/proyecto/<int:proyecto_id>/", vistas_facturacion.facturacion_detalle, name="facturacion_detalle"),
+    path("facturacion/proyecto/<int:proyecto_id>/ingresos/nuevo/", vistas_facturacion.nuevo_ingreso, name="facturacion_nuevo_ingreso"),
+    path("facturacion/proyecto/<int:proyecto_id>/gastos/nuevo/", vistas_facturacion.nuevo_gasto, name="facturacion_nuevo_gasto"),
+    path("facturacion/proyecto/<int:proyecto_id>/movimientos/<int:movimiento_id>/editar/", vistas_facturacion.editar_movimiento, name="facturacion_editar_movimiento"),
+    
 ]

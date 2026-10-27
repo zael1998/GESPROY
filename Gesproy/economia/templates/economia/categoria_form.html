@@ -1,0 +1,109 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ titulo }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/estudio_economico.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<main class="eco-contenedor">
+
+    <a
+        href="{% url 'economia:gestionar_categorias' %}"
+        class="eco-volver"
+    >
+        ← Volver a categorías económicas
+    </a>
+
+
+    <section class="eco-panel eco-formulario">
+
+        <h1>{{ titulo }}</h1>
+
+        <p class="eco-descripcion">
+            Configura los datos de la categoría.
+        </p>
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            {% if formulario.non_field_errors %}
+
+                <div class="eco-error">
+                    {{ formulario.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+
+            {% for campo in formulario %}
+
+                <div class="eco-campo">
+
+                    <label for="{{ campo.id_for_label }}">
+                        {{ campo.label }}
+                    </label>
+
+                    {{ campo }}
+
+                    {% if campo.help_text %}
+
+                        <small class="eco-descripcion">
+                            {{ campo.help_text }}
+                        </small>
+
+                    {% endif %}
+
+                    {% for error in campo.errors %}
+
+                        <p class="eco-error">
+                            {{ error }}
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+
+            <div class="eco-botones">
+
+                <button
+                    type="submit"
+                    class="eco-boton eco-primario"
+                >
+                    {% if es_edicion %}
+                        Guardar cambios
+                    {% else %}
+                        Crear categoría
+                    {% endif %}
+                </button>
+
+                <a
+                    href="{% url 'economia:gestionar_categorias' %}"
+                    class="eco-boton eco-secundario"
+                >
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+{% endblock %}

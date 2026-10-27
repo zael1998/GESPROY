@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Estudio económico · {{ proyecto.acronimo }}
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/estudio_economico.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<main class="eco-contenedor">
+
+    <!-- CABECERA -->
+
+    <header class="eco-cabecera">
+
+        <div>
+
+            <a
+                href="{% url 'detalle_proyecto' proyecto.id %}"
+                class="eco-volver"
+            >
+                ← Volver al proyecto
+            </a>
+
+            <p class="eco-descripcion">
+                {{ proyecto.acronimo }} · {{ proyecto.nombre }}
+            </p>
+
+            <h1>Estudio económico</h1>
+
+            <p class="eco-descripcion">
+                Estado:
+                {{ proyecto.get_estado_display }}
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- MENSAJES -->
+
+    {% for mensaje in messages %}
+
+        <div class="eco-aviso">
+            {{ mensaje }}
+        </div>
+
+    {% endfor %}
+
+
+    <!-- PRESUPUESTOS GENERALES -->
+
+    <section class="eco-resumen">
+
+        <div>
+
+            <small>
+                Presupuesto del proyecto
+            </small>
+
+            <strong>
+                {{ presupuesto_total|default_if_none:0|floatformat:2 }} €
+            </strong>
+
+        </div>
+
+        <div>
+
+            <small>
+                Asignación CESGA
+            </small>
+
+            <strong>
+                {{ presupuesto_cesga|default_if_none:0|floatformat:2 }} €
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- SELECTOR DE FASE -->
+
+    <nav class="eco-fases">
+
+        {% for opcion in opciones_fase %}
+
+            <a
+                href="?fase={{ opcion.codigo }}"
+                class="eco-fase {% if fase == opcion.codigo %}eco-activa{% endif %}"
+            >
+
+                {{ opcion.nombre }}
+
+                {% if opcion.ultima %}
+
+                    <small>
+                        v{{ opcion.ultima.version }}
+                    </small>
+
+                {% endif %}
+
+            </a>
+
+        {% endfor %}
+
+    </nav>
+
+    <!-- ======================================
+         COMPARATIVA ECONÓMICA
+    ====================================== -->
+
+    <div class="eco-comp-acceso">
+
+        <a
+            href="{% url 'economia:comparativa' proyecto.id %}"
+            class="eco-boton eco-secundario"
+        >
+            <i class="bi bi-bar-chart-line"></i>
+            Ver comparativa económica
+        </a>
+
+    </div>
+
+
+    {% if estudio %}
+
+        <!-- INFORMACIÓN DEL ESTUDIO -->
+
+        <section class="eco-panel">
+
+            <div class="eco-linea">
+
+                <div>
+
+                    <h2>
+                        {{ estudio.get_fase_display }}
+                        · Versión {{ estudio.version }}
+                    </h2>
+
+                    <p class="eco-descripcion">
+
+                        Responsable:
+                        {{ estudio.responsable }}
+
+                        · Fecha:
+                        {{ estudio.fecha|date:"d/m/Y" }}
+
+                    </p>
+
+                </div>
+
+                <span class="eco-etiqueta">
+                    {{ estudio.get_estado_display }}
+                </span>
+
+            </div>
+
+
+            {% if puede_editar_partidas %}
+
+                <div class="eco-botones">
+
+                    <a
+                        href="{% url 'economia:nueva_partida' proyecto.id estudio.id %}"
+                        class="eco-boton eco-primario"
+                    >
+                        + Añadir partida
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{% url 'economia:cerrar_estudio' proyecto.id estudio.id %}"
+                        onsubmit="return confirm('¿Seguro que quieres cerrar esta versión?');"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="eco-boton eco-secundario"
+                        >
+                            Cerrar versión
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% elif estudio.estado == "CERRADO" and puede_editar and fase_habilitada %}
+
+                <form
+                    method="post"
+                    action="{% url 'economia:crear_estudio' proyecto.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="fase"
+                        value="{{ fase }}"
+                    >
+
+                    <input
+                        type="hidden"
+                        name="copiar"
+                        value="1"
+                    >
+
+                    <button
+                        type="submit"
+                        class="eco-boton eco-primario"
+                    >
+                        Crear nueva versión
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+        </section>
+
+
+        <!-- CATEGORÍAS ECONÓMICAS -->
+
+        {% for grupo in grupos %}
+
+            <section class="eco-panel">
+
+                <div class="eco-linea">
+
+                    <h2>
+                        {{ grupo.categoria.codigo }}
+                        · {{ grupo.categoria.nombre }}
+                    </h2>
+
+                    <strong>
+                        {{ grupo.subtotal|floatformat:2 }} €
+                    </strong>
+
+                </div>
+
+
+                {% if grupo.partidas %}
+
+                    <div class="eco-tabla-contenedor">
+
+                        <table class="eco-tabla">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Concepto</th>
+
+                                    <th>Subcategoría</th>
+
+                                    <th>Entidad</th>
+
+                                    <th>Importe</th>
+
+                                    {% if puede_editar_partidas %}
+                                        <th>Acciones</th>
+                                    {% endif %}
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for partida in grupo.partidas %}
+
+                                    <tr>
+
+                                        <td>
+
+                                            <strong>
+                                                {{ partida.concepto }}
+                                            </strong>
+
+                                            {% if partida.observaciones %}
+
+                                                <p class="eco-descripcion">
+                                                    {{ partida.observaciones }}
+                                                </p>
+
+                                            {% endif %}
+
+                                        </td>
+
+                                        <td>
+                                            {{ partida.categoria.nombre }}
+                                        </td>
+
+                                        <td>
+                                            {{ partida.entidad|default:"—" }}
+                                        </td>
+
+                                        <td class="eco-importe">
+                                            {{ partida.importe|floatformat:2 }} €
+                                        </td>
+
+
+                                        {% if puede_editar_partidas %}
+
+                                            <td>
+
+                                                <div class="eco-acciones">
+
+                                                    <a
+                                                        href="{% url 'economia:editar_partida' proyecto.id estudio.id partida.id %}"
+                                                    >
+                                                        Editar
+                                                    </a>
+
+                                                    <form
+                                                        method="post"
+                                                        action="{% url 'economia:eliminar_partida' proyecto.id estudio.id partida.id %}"
+                                                        onsubmit="return confirm('¿Eliminar esta partida?');"
+                                                    >
+
+                                                        {% csrf_token %}
+
+                                                        <button type="submit">
+                                                            Eliminar
+                                                        </button>
+
+                                                    </form>
+
+                                                </div>
+
+                                            </td>
+
+                                        {% endif %}
+
+                                    </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                {% else %}
+
+                    <p class="eco-descripcion">
+                        No hay partidas registradas.
+                    </p>
+
+                {% endif %}
+
+            </section>
+
+        {% endfor %}
+
+
+        <!-- TOTALES -->
+
+        <section class="eco-panel eco-totales">
+
+            <div>
+
+                <span>
+                    Total de costes previstos
+                </span>
+
+                <strong>
+                    {{ total_costes|floatformat:2 }} €
+                </strong>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Total de ingresos previstos
+                </span>
+
+                <strong>
+                    {{ total_ingresos|floatformat:2 }} €
+                </strong>
+
+            </div>
+
+            <div>
+
+                <span>
+                    Diferencia (ingresos − costes)
+                </span>
+
+                <strong>
+                    {{ saldo|floatformat:2 }} €
+                </strong>
+
+            </div>
+
+        </section>
+
+
+    {% else %}
+
+        <!-- ESTUDIO NO CREADO -->
+
+        <section class="eco-panel eco-vacio">
+
+            <h2>
+                No existe un estudio económico
+                para esta fase
+            </h2>
+
+            <p class="eco-descripcion">
+                Crea un estudio para empezar
+                a registrar las partidas económicas.
+            </p>
+
+
+            {% if puede_editar and fase_habilitada %}
+
+                <form
+                    method="post"
+                    action="{% url 'economia:crear_estudio' proyecto.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="fase"
+                        value="{{ fase }}"
+                    >
+
+                    <label class="eco-checkbox">
+
+                        <input
+                            type="checkbox"
+                            name="copiar"
+                            value="1"
+                            checked
+                        >
+
+                        Copiar las partidas de la fase anterior,
+                        si existen
+
+                    </label>
+
+                    <button
+                        type="submit"
+                        class="eco-boton eco-primario"
+                    >
+                        Crear estudio económico
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <p class="eco-descripcion">
+                    No puedes crear este estudio
+                    en el estado actual del proyecto.
+                </p>
+
+            {% endif %}
+
+        </section>
+
+    {% endif %}
+
+</main>
+
+{% endblock %}

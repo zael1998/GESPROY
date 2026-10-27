@@ -62,4 +62,24 @@ urlpatterns = [
     path("validar/", validacion_informes.validar_horas, name="validar_horas"),
     path("validar/accion/", validacion_informes.accion_validar, name="accion_validar"),
     path("informe/", validacion_informes.informe_horas, name="informe_horas"),
+
+    # ==========================================
+# EDITAR COMENTARIO
+# ==========================================
+
+path(
+    "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/comentarios/<int:comentario_id>/editar/",
+    views.editar_comentario_tarea,
+    name="editar_comentario_tarea",
+),
+
+# ==========================================
+# ELIMINAR COMENTARIO
+# ==========================================
+
+path(
+    "proyecto/<int:proyecto_id>/tareas/<int:tarea_id>/comentarios/<int:comentario_id>/eliminar/",
+    views.eliminar_comentario_tarea,
+    name="eliminar_comentario_tarea",
+),
 ]

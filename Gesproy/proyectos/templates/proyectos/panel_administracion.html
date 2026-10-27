@@ -7,6 +7,7 @@ Administración - Gesproy
 {% endblock %}
 
 {% block extra_css %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static 'css/administracion.css' %}">
 {% endblock %}
 
@@ -169,6 +170,45 @@ Administración - Gesproy
                 Consultar y añadir líneas de investigación,
                 gestionar sus presupuestos y visualizar
                 los importes asignados y disponibles.
+            </p>
+
+        </a>
+
+        <!-- CATEGORÍAS ECONÓMICAS -->
+        <a href="{% url 'economia:gestionar_categorias' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+
+            <h3>Categorías económicas</h3>
+
+            <p>
+                Crear, consultar, editar y eliminar
+                categorías y subcategorías utilizadas
+                en los estudios económicos de los proyectos.
+            </p>
+
+        </a>
+
+        <!-- FACTURACIÓN -->
+        <a href="{% url 'facturacion_proyectos' %}"
+           class="admin-tarjeta"
+           style="text-decoration: none; color: inherit; display: block;">
+
+            <div class="admin-tarjeta-icono">
+                <i class="bi bi-receipt-cutoff"></i>
+            </div>
+
+            <h3>Facturación</h3>
+
+            <p>
+                Consultar los ingresos y gastos reales
+                de los proyectos, registrar nuevos
+                movimientos económicos y editar
+                los existentes.
             </p>
 
         </a>

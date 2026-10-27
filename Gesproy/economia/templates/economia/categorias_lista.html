@@ -1,0 +1,203 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Administración de categorías económicas
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/estudio_economico.css' %}">
+{% endblock %}
+
+
+{% block content %}
+
+<main class="eco-contenedor">
+
+    <header class="eco-cabecera">
+
+        <div>
+
+            <a
+                href="{% url 'panel_administracion' %}"
+                class="eco-volver"
+            >
+                ← Volver a administración
+            </a>
+
+            <h1>Categorías económicas</h1>
+
+            <p class="eco-descripcion">
+                Gestiona las categorías y subcategorías
+                utilizadas en los estudios económicos.
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'economia:crear_categoria' %}"
+            class="eco-boton eco-primario"
+        >
+            + Nueva categoría
+        </a>
+
+    </header>
+
+
+    <!-- MENSAJES -->
+
+    {% for mensaje in messages %}
+
+        <div class="eco-aviso">
+            {{ mensaje }}
+        </div>
+
+    {% endfor %}
+
+
+    <!-- CATEGORÍAS -->
+
+    {% for categoria in categorias %}
+
+        <section class="eco-panel">
+
+            <div class="eco-linea">
+
+                <div>
+
+                    <h2>
+                        {{ categoria.codigo }}
+                        · {{ categoria.nombre }}
+                    </h2>
+
+                    <p class="eco-descripcion">
+                        {{ categoria.get_tipo_display }}
+                    </p>
+
+                </div>
+
+                <div class="eco-botones">
+
+                    <a
+                        class="eco-boton eco-secundario"
+                        href="{% url 'economia:editar_categoria' categoria.id %}"
+                    >
+                        <i class="bi bi-pencil"></i>
+                        Editar
+                    </a>
+
+                    <form
+                        method="post"
+                        action="{% url 'economia:eliminar_categoria' categoria.id %}"
+                        onsubmit="return confirm('¿Eliminar esta categoría?');"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="eco-boton eco-peligro"
+                        >
+                            <i class="bi bi-trash"></i>
+                            Eliminar
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUBCATEGORÍAS -->
+
+            <div class="eco-admin-subcategorias">
+
+                {% for subcategoria in categoria.subcategorias.all %}
+
+                    <div class="eco-admin-subcategoria">
+
+                        <div>
+
+                            <strong>
+                                {{ subcategoria.codigo }}
+                                · {{ subcategoria.nombre }}
+                            </strong>
+
+                        </div>
+
+                        <div class="eco-botones">
+
+                            <a
+                                class="eco-boton eco-secundario"
+                                href="{% url 'economia:editar_categoria' subcategoria.id %}"
+                            >
+                                Editar
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{% url 'economia:eliminar_categoria' subcategoria.id %}"
+                                onsubmit="return confirm('¿Eliminar esta subcategoría?');"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="eco-boton eco-peligro"
+                                >
+                                    Eliminar
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                {% empty %}
+
+                    <p class="eco-descripcion">
+                        Esta categoría todavía
+                        no tiene subcategorías.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- AÑADIR SUBCATEGORÍA -->
+
+            <a
+                class="eco-admin-anadir"
+                href="{% url 'economia:crear_categoria' %}?padre={{ categoria.id }}"
+            >
+                <i class="bi bi-plus-circle"></i>
+                Añadir subcategoría
+            </a>
+
+        </section>
+
+    {% empty %}
+
+        <section class="eco-panel eco-vacio">
+
+            <h2>No hay categorías económicas</h2>
+
+            <p class="eco-descripcion">
+                Crea una categoría principal
+                para empezar a organizar el catálogo.
+            </p>
+
+        </section>
+
+    {% endfor %}
+
+</main>
+
+{% endblock %}

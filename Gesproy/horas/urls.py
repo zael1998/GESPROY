@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, validacion_informes, registros
+from . import views, validacion_informes, registros, periodos
 
 app_name = "horas"
 
@@ -82,4 +82,11 @@ path(
     views.eliminar_comentario_tarea,
     name="eliminar_comentario_tarea",
 ),
+
+path(
+    "mis-horas/periodos/",
+    periodos.registrar_periodos,
+    name="registrar_periodos"
+),
+
 ]

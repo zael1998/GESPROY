@@ -1,0 +1,301 @@
+
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+
+.pub-contenedor {
+    max-width: 1200px;
+    margin: 28px auto;
+    padding: 0 20px;
+    color: #173557;
+}
+
+.pub-contenedor h1 {
+    font-size: 23px;
+    margin: 0 0 16px;
+}
+
+.pub-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+
+/* ==========================================
+   PANELES
+   ========================================== */
+
+.pub-panel {
+    background: #fff;
+    border: 1px solid #d5dfea;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.pub-panel h2 {
+    margin: 0;
+    padding: 14px 16px;
+    background: #f5f8fb;
+    border-bottom: 1px solid #d5dfea;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+}
+
+
+/* ==========================================
+   FORMULARIO DE BÚSQUEDA
+   ========================================== */
+
+.pub-busqueda {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    gap: 14px;
+}
+
+.pub-busqueda > div {
+    grid-column: 1 / -1;
+}
+
+.pub-busqueda label,
+.pub-campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.pub-busqueda input,
+.pub-campo input,
+.pub-campo textarea,
+.pub-campo select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #cbd7e6;
+    border-radius: 4px;
+    background: #fff;
+    color: #193452;
+    font: inherit;
+}
+
+
+/* ==========================================
+   BOTONES
+   ========================================== */
+
+.pub-boton {
+    display: inline-block;
+    white-space: nowrap;
+    padding: 8px 11px;
+    text-decoration: none;
+    border: 1px solid #cbd7e6;
+    border-radius: 4px;
+    background: #fff;
+    color: #173557;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.pub-primario {
+    background: #078d9b;
+    border-color: #078d9b;
+    color: #fff;
+}
+
+.pub-peligro {
+    color: #b91c1c;
+}
+
+
+/* ==========================================
+   TABLA DE PUBLICACIONES
+   ========================================== */
+
+.pub-desborde {
+    overflow-x: auto;
+}
+
+.pub-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    min-width: 900px;
+}
+
+.pub-tabla th {
+    padding: 12px;
+    text-align: left;
+    background: #f5f8fb;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.09em;
+}
+
+.pub-tabla td {
+    padding: 12px;
+    border-top: 1px solid #e1e8f0;
+    vertical-align: top;
+}
+
+
+/* ==========================================
+   ACCIONES DE LA TABLA
+   ========================================== */
+
+.pub-acciones {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pub-acciones form {
+    margin: 0;
+}
+
+
+/* ==========================================
+   ESTADOS DE DIFUSIÓN
+   ========================================== */
+
+.pub-etiqueta {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+.pub-etiqueta::before {
+    content: "● ";
+}
+
+.pub-confidencial {
+    color: #b91c1c;
+}
+
+.pub-restringido {
+    color: #b45309;
+}
+
+.pub-publico {
+    color: #15803d;
+}
+
+.pub-denegado {
+    color: #64748b;
+}
+
+
+/* ==========================================
+   NOTAS Y MENSAJES
+   ========================================== */
+
+.pub-nota {
+    padding: 12px 16px;
+    font-size: 12px;
+}
+
+.pub-nota p {
+    margin: 7px 0;
+}
+
+.pub-mensaje {
+    padding: 12px;
+    background: #eaf7f2;
+    border: 1px solid #b8dfd0;
+}
+
+
+/* ==========================================
+   PÁGINA DE CREACIÓN Y EDICIÓN
+   ========================================== */
+
+.pub-formulario-pagina {
+    max-width: 680px;
+}
+
+.pub-formulario {
+    padding: 22px;
+}
+
+.pub-aclaracion {
+    color: #64748b;
+    font-size: 13px;
+    margin: 0 0 20px;
+}
+
+.pub-campo {
+    margin-bottom: 16px;
+}
+
+.pub-campo small {
+    color: #64748b;
+}
+
+.pub-error {
+    color: #b91c1c;
+    font-size: 12px;
+}
+
+.pub-campo select[multiple] {
+    height: 140px;
+}
+
+
+/* ==========================================
+   DISEÑO RESPONSIVE
+   ========================================== */
+
+@media (max-width: 700px) {
+
+    .pub-busqueda {
+        grid-template-columns: 1fr;
+    }
+
+    .pub-cabecera {
+        align-items: flex-start;
+    }
+
+}
+
+
+/* ==========================================
+   NIVELES DE DIFUSIÓN
+   ========================================== */
+
+.pub-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pub-etiqueta::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: currentColor;
+}
+
+.pub-confidencial {
+    color: #dc2626;
+}
+
+.pub-restringido {
+    color: #b45309;
+}
+
+.pub-publico {
+    color: #15803d;
+}
+

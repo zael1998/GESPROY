@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ titulo_pagina }} - Gesproy{% endblock %}
+{% block extra_css %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/publicaciones.css' %}">{% endblock %}
+{% block content %}
+<div class="pub-contenedor pub-formulario-pagina"><h1>{{ titulo_pagina }}</h1><section class="pub-panel pub-formulario">
+<p class="pub-aclaracion">Una publicación puede asociarse a varios proyectos y aparecer en la ficha de todos ellos.</p>
+<form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+{% if formulario.non_field_errors %}<div class="pub-error">{{ formulario.non_field_errors }}</div>{% endif %}
+{% for campo in formulario %}<div class="pub-campo"><label for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %} *{% endif %}</label>{{ campo }}{% if campo.help_text %}<small>{{ campo.help_text }}</small>{% endif %}{% for error in campo.errors %}<span class="pub-error">{{ error }}</span>{% endfor %}</div>{% endfor %}
+<div class="pub-acciones"><button class="pub-boton pub-primario" type="submit">Guardar publicación</button><a class="pub-boton" href="{% url 'publicaciones:lista' %}">Cancelar</a></div></form>
+</section></div>
+{% endblock %}

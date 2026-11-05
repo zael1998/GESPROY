@@ -1,0 +1,555 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Registrar horas por periodos - Gesproy
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet"
+      href="{% static 'css/horas_periodos.css' %}">
+
+<style>
+    .hp-imputacion[hidden] {
+        display: none !important;
+    }
+
+    .hp-fechas {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 16px;
+    }
+
+    .hp-fechas input {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font: inherit;
+        box-sizing: border-box;
+    }
+
+    .hp-periodo-comun {
+        padding: 25px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: white;
+    }
+
+    .hp-total {
+        padding: 16px 20px;
+        border-radius: 10px;
+        background: #f0fdfa;
+        border: 1px solid #99f6e4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .hp-total strong {
+        font-size: 22px;
+        color: #0f766e;
+    }
+
+    .hp-aviso-error {
+        padding: 15px;
+        border-radius: 8px;
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    @media (max-width: 700px) {
+        .hp-fechas {
+            grid-template-columns: 1fr;
+        }
+
+        .hp-total {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="hp-contenedor">
+
+    <!-- CABECERA -->
+
+    <div class="hp-cabecera">
+
+        <h1>
+            <i class="bi bi-calendar-range"></i>
+            Registrar horas por periodos
+        </h1>
+
+        <p>
+            Selecciona un periodo de trabajo y añade
+            las imputaciones de los proyectos y tareas
+            correspondientes.
+        </p>
+
+    </div>
+
+    <!-- INFORMACIÓN -->
+
+    <div class="hp-aviso">
+
+        <i class="bi bi-info-circle"></i>
+
+        Las horas introducidas corresponden al periodo
+        completo, no a cada uno de sus días.
+
+        <br>
+
+        Si necesitas registrar horas de dos meses
+        diferentes, realiza dos operaciones separadas.
+
+    </div>
+
+    <!-- MENSAJES -->
+
+    {% if messages %}
+
+        {% for mensaje in messages %}
+
+            <div class="{% if 'error' in mensaje.tags %}hp-aviso-error{% else %}hp-aviso{% endif %}">
+
+                {{ mensaje }}
+
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    <!-- FORMULARIO PRINCIPAL -->
+
+    <form method="post"
+          class="hp-formulario"
+          id="hp-formulario">
+
+        {% csrf_token %}
+
+        <!-- FECHAS COMUNES -->
+
+        <section class="hp-periodo-comun">
+
+            <h2>
+                <i class="bi bi-calendar-event"></i>
+                Periodo de trabajo
+            </h2>
+
+            <p>
+                Estas fechas se aplicarán a todas
+                las imputaciones que añadas.
+            </p>
+
+            {% if periodo_form.non_field_errors %}
+
+                <div class="hp-aviso-error">
+                    {{ periodo_form.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+            <div class="hp-fechas">
+
+                <div class="hp-campo">
+
+                    <label for="{{ periodo_form.fecha.id_for_label }}">
+                        Fecha de inicio
+                    </label>
+
+                    {{ periodo_form.fecha }}
+
+                    {% if periodo_form.fecha.errors %}
+                        <div class="hp-error">
+                            {{ periodo_form.fecha.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+                <div class="hp-campo">
+
+                    <label for="{{ periodo_form.fecha_fin.id_for_label }}">
+                        Fecha de finalización
+                    </label>
+
+                    {{ periodo_form.fecha_fin }}
+
+                    {% if periodo_form.fecha_fin.errors %}
+                        <div class="hp-error">
+                            {{ periodo_form.fecha_fin.errors }}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <p style="margin-top:12px; color:#64748b;">
+                Si solo quieres registrar un día,
+                deja vacía la fecha de finalización.
+            </p>
+
+        </section>
+
+
+        <!-- FORMSET DE DJANGO -->
+
+        {{ formularios.management_form }}
+
+        {% if formularios.non_form_errors %}
+
+            <div class="hp-aviso-error">
+                {{ formularios.non_form_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <!-- IMPUTACIONES -->
+
+        <div id="hp-lista-imputaciones">
+
+            {% for formulario in formularios %}
+
+                <section
+                    class="hp-imputacion"
+                    data-indice="{{ forloop.counter0 }}"
+                    {% if not forloop.first and not formulario.errors and not formulario.has_changed %}
+                        hidden
+                    {% endif %}
+                >
+
+                    <h3>
+                        <i class="bi bi-clock-history"></i>
+                        Imputación {{ forloop.counter }}
+                    </h3>
+
+                    {% if formulario.non_field_errors %}
+
+                        <div class="hp-error">
+                            {{ formulario.non_field_errors }}
+                        </div>
+
+                    {% endif %}
+
+                    <div class="hp-campos">
+
+                        <!-- PROYECTO -->
+
+                        <div class="hp-campo">
+
+                            <label for="{{ formulario.proyecto.id_for_label }}">
+                                Proyecto
+                            </label>
+
+                            {{ formulario.proyecto }}
+
+                            {% if formulario.proyecto.errors %}
+                                <div class="hp-error">
+                                    {{ formulario.proyecto.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- TAREA -->
+
+                        <div class="hp-campo">
+
+                            <label for="{{ formulario.tarea.id_for_label }}">
+                                Tarea
+                            </label>
+
+                            {{ formulario.tarea }}
+
+                            {% if formulario.tarea.errors %}
+                                <div class="hp-error">
+                                    {{ formulario.tarea.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- HORAS -->
+
+                        <div class="hp-campo">
+
+                            <label for="{{ formulario.horas.id_for_label }}">
+                                Horas totales
+                            </label>
+
+                            {{ formulario.horas }}
+
+                            {% if formulario.horas.errors %}
+                                <div class="hp-error">
+                                    {{ formulario.horas.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- DESCRIPCIÓN -->
+
+                        <div class="hp-campo hp-campo--completo">
+
+                            <label for="{{ formulario.descripcion.id_for_label }}">
+                                Descripción (opcional)
+                            </label>
+
+                            {{ formulario.descripcion }}
+
+                            {% if formulario.descripcion.errors %}
+                                <div class="hp-error">
+                                    {{ formulario.descripcion.errors }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- RESUMEN -->
+
+        <div class="hp-total">
+
+            <span>
+                <i class="bi bi-calculator"></i>
+                Total de horas del periodo
+            </span>
+
+            <strong id="hp-total-horas">
+                0,00 h
+            </strong>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div class="hp-acciones">
+
+            <button
+                type="button"
+                id="hp-agregar"
+                class="hp-boton hp-boton--secundario"
+            >
+                <i class="bi bi-plus-circle"></i>
+                Añadir otra imputación
+            </button>
+
+            <button
+                type="submit"
+                class="hp-boton hp-boton--principal"
+            >
+                <i class="bi bi-check-circle"></i>
+                Guardar imputaciones
+            </button>
+
+            <a href="{% url 'horas:mis_horas' %}"
+               class="hp-boton hp-boton--volver">
+
+                <i class="bi bi-arrow-left"></i>
+                Volver al calendario
+
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const imputaciones = Array.from(
+        document.querySelectorAll(".hp-imputacion")
+    );
+
+    const botonAgregar = document.getElementById(
+        "hp-agregar"
+    );
+
+    const totalHoras = document.getElementById(
+        "hp-total-horas"
+    );
+
+    const formulario = document.getElementById(
+        "hp-formulario"
+    );
+
+
+    // ======================================
+    // MOSTRAR NUEVAS IMPUTACIONES
+    // ======================================
+
+    function actualizarBoton() {
+
+        const quedanOcultas = imputaciones.some(
+            fila => fila.hidden
+        );
+
+        botonAgregar.hidden = !quedanOcultas;
+
+    }
+
+    botonAgregar.addEventListener("click", function () {
+
+        const siguiente = imputaciones.find(
+            fila => fila.hidden
+        );
+
+        if (siguiente) {
+
+            siguiente.hidden = false;
+
+            siguiente.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }
+
+        actualizarBoton();
+
+    });
+
+
+    // ======================================
+    // CALCULAR TOTAL DE HORAS
+    // ======================================
+
+    function calcularTotal() {
+
+        let total = 0;
+
+        imputaciones.forEach(function (fila) {
+
+            const campoHoras = fila.querySelector(
+                'input[name$="-horas"]'
+            );
+
+            if (!campoHoras) {
+                return;
+            }
+
+            const valor = Number(
+                campoHoras.value.replace(",", ".")
+            );
+
+            if (!Number.isNaN(valor)) {
+                total += valor;
+            }
+
+        });
+
+        totalHoras.textContent = (
+            total.toLocaleString("es-ES", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + " h"
+        );
+
+    }
+
+
+    // ======================================
+    // ESCUCHAR CAMBIOS EN LAS HORAS
+    // ======================================
+
+    imputaciones.forEach(function (fila) {
+
+        const campoHoras = fila.querySelector(
+            'input[name$="-horas"]'
+        );
+
+        if (campoHoras) {
+
+            campoHoras.addEventListener(
+                "input",
+                calcularTotal
+            );
+
+        }
+
+    });
+
+
+    // ======================================
+    // VALIDACIONES EN EL NAVEGADOR
+    // ======================================
+
+    formulario.addEventListener("submit", function (evento) {
+
+        const fechaInicio = document.getElementById(
+            "id_fecha"
+        );
+
+        const fechaFin = document.getElementById(
+            "id_fecha_fin"
+        );
+
+        if (!fechaInicio.value) {
+
+            evento.preventDefault();
+
+            alert("Selecciona una fecha de inicio.");
+
+            return;
+
+        }
+
+        if (
+            fechaFin.value
+            && fechaFin.value < fechaInicio.value
+        ) {
+
+            evento.preventDefault();
+
+            alert(
+                "La fecha final no puede ser "
+                + "anterior a la inicial."
+            );
+
+            return;
+
+        }
+
+        // Las validaciones definitivas se realizan
+        // en Django antes de guardar los registros.
+
+    });
+
+
+    actualizarBoton();
+    calcularTotal();
+
+});
+</script>
+
+{% endblock %}

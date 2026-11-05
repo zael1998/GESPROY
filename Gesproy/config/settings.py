@@ -7,7 +7,6 @@ Gestión de proyectos de investigación.
 """
 
 import os
-
 from pathlib import Path
 
 
@@ -42,22 +41,21 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
 
-    # APLICACIONES DE DJANGO
+    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    
 
-    # APLICACIONES DE GESPROY
+    # Gesproy
     "usuarios",
     "proyectos",
     "horas",
     "api_movil",
     "economia",
-
+    "publicaciones"
 ]
 
 
@@ -66,29 +64,22 @@ INSTALLED_APPS = [
 # ==========================================
 
 MIDDLEWARE = [
-
     "django.middleware.security.SecurityMiddleware",
-
     "django.contrib.sessions.middleware.SessionMiddleware",
-
     "django.middleware.common.CommonMiddleware",
-
     "django.middleware.csrf.CsrfViewMiddleware",
-
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-
     "django.contrib.messages.middleware.MessageMiddleware",
-
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
-    # PROTEGER AUTOMÁTICAMENTE LAS VISTAS
+    # Toda vista privada requiere iniciar sesión.
+    # La vista de login debe usar @login_not_required.
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
-
 ]
 
 
 # ==========================================
-# CONFIGURACIÓN DE URLS
+# URLS
 # ==========================================
 
 ROOT_URLCONF = "config.urls"
@@ -110,13 +101,9 @@ TEMPLATES = [
 
         "OPTIONS": {
             "context_processors": [
-
                 "django.template.context_processors.request",
-
                 "django.contrib.auth.context_processors.auth",
-
                 "django.contrib.messages.context_processors.messages",
-
             ],
         },
     },
@@ -136,11 +123,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-
         "ENGINE": "django.db.backends.sqlite3",
-
         "NAME": BASE_DIR / "db.sqlite3",
-
     }
 }
 
@@ -150,27 +134,22 @@ DATABASES = {
 # ==========================================
 
 AUTH_PASSWORD_VALIDATORS = [
-
     {
         "NAME":
         "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-
     {
         "NAME":
         "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
-
     {
         "NAME":
         "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
-
     {
         "NAME":
         "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
-
 ]
 
 
@@ -202,11 +181,10 @@ STATICFILES_DIRS = [
 # CORREO ELECTRÓNICO
 # ==========================================
 
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+EMAIL_BACKEND = os.environ.get(
+    "DJANGO_EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend"
+)
 
 
 # ==========================================
@@ -217,30 +195,59 @@ AUTH_USER_MODEL = "usuarios.Usuario"
 
 
 # ==========================================
-# AUTENTICACIÓN GESPROY
+# AUTENTICACIÓN
 # ==========================================
 
-# DIRECCIÓN DE INICIO DE SESIÓN
 LOGIN_URL = "login"
 
-# DESPUÉS DE INICIAR SESIÓN
 LOGIN_REDIRECT_URL = "mis_proyectos"
 
-# DESPUÉS DE CERRAR SESIÓN
 LOGOUT_REDIRECT_URL = "login"
 
+
 # ==========================================
-# DESARROLLO API MÓVIL
+# CSRF - DESARROLLO WEB Y API MÓVIL
 # ==========================================
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
     "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://10.38.29.177:8000",
 ]
 
-# GitHub Codespaces, cuando Django también
-# se ejecuta dentro del mismo Codespace.
+# Sesiones Django:
+# La cookie se mantiene entre peticiones al mismo host.
+SESSION_COOKIE_HTTPONLY = True
+
+# La cookie CSRF puede ser leída por el cliente React
+# si utilizamos el sistema actual de CSRF.
+CSRF_COOKIE_HTTPONLY = False
+
+# Para desarrollo local con HTTP.
+# En producción HTTPS estos valores deben cambiar.
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
+# Evitar compartir cookies entre dominios diferentes.
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
+
+# ==========================================
+# GITHUB CODESPACES
+# ==========================================
+
 if os.environ.get("CODESPACE_NAME"):
-    CSRF_TRUSTED_ORIGINS.append(
-        f"https://{os.environ['CODESPACE_NAME']}-5173.app.github.dev"
-    )
+    codespace_name = os.environ["CODESPACE_NAME"]
+
+    CSRF_TRUSTED_ORIGINS.extend([
+        f"https://{codespace_name}-5173.app.github.dev",
+        f"https://{codespace_name}-8000.app.github.dev",
+    ])
+
+    ALLOWED_HOSTS.extend([
+        f"{codespace_name}-5173.app.github.dev",
+        f"{codespace_name}-8000.app.github.dev",
+    ])

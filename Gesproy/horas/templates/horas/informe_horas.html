@@ -42,7 +42,7 @@
                     <option value="">Todos los accesibles</option>
                     {% for investigador in investigadores %}
                     <option value="{{ investigador.pk }}" {% if investigador_id == investigador.pk|stringformat:'s' %}selected{% endif %}>
-                        {{ investigador.usuario.get_full_name|default:investigador.usuario.username }}
+                        {{ investigador.usuario.get_full_name|default:investigador.usuario.username }}{% if not investigador.usuario.is_active %} (baja / inactivo){% endif %}
                     </option>
                     {% endfor %}
                 </select>
@@ -80,6 +80,19 @@
                     <option value="registros" {% if detalle == 'registros' %}selected{% endif %}>Un registro por línea</option>
                     <option value="resumen" {% if detalle == 'resumen' %}selected{% endif %}>Solo subtotales</option>
                 </select>
+            </label>
+        </div>
+        <div class="gh-grid-filters">
+            <label>Nombre de quien firma (opcional)
+                <input type="text" name="firmante_nombre" maxlength="120"
+                       value="{{ firmante_nombre }}" placeholder="Ej. Andrés Pérez">
+            </label>
+            <label>Cargo de quien firma (opcional)
+                <input type="text" name="firmante_cargo" maxlength="120"
+                       value="{{ firmante_cargo }}" placeholder="Ej. Coordinador de departamento">
+            </label>
+            <label>Fecha de firma (opcional)
+                <input type="date" name="firmante_fecha" value="{{ firmante_fecha_raw }}">
             </label>
         </div>
         <div class="gh-actions">
@@ -135,7 +148,7 @@
                                     <strong>{{ registro.tarea.proyecto.acronimo }}</strong> · {{ registro.tarea.nombre }}
                                     <span class="gh-small">{{ registro.investigador.usuario.get_full_name|default:registro.investigador.usuario.username }}</span>
                                 </td>
-                                <td class="gh-nowrap">{{ registro.fecha|date:'d/m/Y' }}</td>
+                                <td class="gh-nowrap">{{ registro.fecha|date:'d/m/Y' }}{% if registro.fecha_fin %} – {{ registro.fecha_fin|date:'d/m/Y' }}{% endif %}</td>
                                 <td>{{ registro.descripcion|default:'—' }}</td>
                                 <td class="gh-nowrap">
                                     {% if registro.validado %}
@@ -186,7 +199,11 @@
         </table>
     </div>
     <div class="gh-signatures">
-        <p>Firma del validador: ________________________________________</p>
+        <p><strong>Firma:</strong> ________________________________________</p>
+        {% if firmante_nombre %}<p><strong>Nombre:</strong> {{ firmante_nombre }}</p>{% endif %}
+        {% if firmante_cargo %}<p><strong>Cargo:</strong> {{ firmante_cargo }}</p>{% endif %}
+        {% if firmante_fecha %}<p><strong>Fecha:</strong> {{ firmante_fecha|date:"d/m/Y" }}</p>{% endif %}
+        <p class="gh-small">Documento preparado para su firma. No incluye una firma electrónica.</p>
     </div>
 </div>
 {% endblock %}

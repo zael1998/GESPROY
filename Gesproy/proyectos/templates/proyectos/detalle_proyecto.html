@@ -22,9 +22,6 @@
 
 <div class="ficha-contenedor">
 
-    <!-- ======================================
-         CABECERA
-    ====================================== -->
     <div class="ficha-cabecera">
 
         <div class="ficha-identidad">
@@ -61,7 +58,6 @@
 
         </div>
 
-        <!-- ACCIONES DISPONIBLES -->
         {% if puede_editar %}
 
         <div class="ficha-acciones">
@@ -156,9 +152,6 @@
 
     </div>
 
-    <!-- ======================================
-         LÍNEA DE ESTADOS
-    ====================================== -->
     <section class="ficha-etapas">
 
         <div class="ficha-etapas-linea">
@@ -201,14 +194,10 @@
 
     </section>
 
-    <!-- ======================================
-         PESTAÑAS
-    ====================================== -->
     <nav class="ficha-pestanas"
 
          aria-label="Apartados del proyecto">
 
-        <!-- DATOS -->
         <a href="?pestana=datos"
 
            class="ficha-pestana {% if pestana == 'datos' %}activa{% endif %}"
@@ -219,7 +208,6 @@
 
         </a>
 
-        <!-- INVESTIGADORES -->
         <a href="?pestana=investigadores"
 
            class="ficha-pestana {% if pestana == 'investigadores' %}activa{% endif %}"
@@ -237,12 +225,15 @@
         </a>
 
                 {% if puede_ver_archivos %}
+
         <a href="{% url 'archivos_proyecto' proyecto.pk %}" class="ficha-pestana">
+
             <i class="bi bi-folder2-open"></i> Archivos
+
         </a>
+
         {% endif %}
 
-        <!-- SOCIOS -->
         <a href="?pestana=socios"
 
            class="ficha-pestana {% if pestana == 'socios' %}activa{% endif %}"
@@ -259,27 +250,32 @@
 
         </a>
 
-        <!-- ESTUDIO ECONÓMICO -->
         <a href="{% url 'economia:estudio' proyecto.id %}"
+
            class="ficha-pestana">
+
             <i class="bi bi-cash-stack"></i>
+
             Estudio económico
+
         </a>
 
-        <!-- FACTURACIÓN: ADMINISTRADORES Y RESPONSABLE -->
         {% if puede_ver_facturas %}
+
         <a href="{% url 'facturacion_detalle' proyecto.pk %}"
+
            class="ficha-pestana">
+
             <i class="bi bi-receipt"></i>
+
             Facturas
+
         </a>
+
         {% endif %}
 
-
-        <!-- TAREAS Y HORAS: SOLO EN PROCESO O FINALIZADO -->
     {% if proyecto.estado == 'PROCESO' or proyecto.estado == 'FINALIZADO' %}
 
-        <!-- TAREAS -->
         <a href="?pestana=tareas"
 
            class="ficha-pestana {% if pestana == 'tareas' %}activa{% endif %}"
@@ -292,7 +288,6 @@
 
         </a>
 
-        <!-- HORAS -->
         <a href="?pestana=horas"
 
            class="ficha-pestana {% if pestana == 'horas' %}activa{% endif %}"
@@ -307,7 +302,6 @@
 
     {% endif %}
 
-    <!-- DENEGACIONES -->
         <a href="?pestana=denegaciones"
 
            class="ficha-pestana {% if pestana == 'denegaciones' %}activa{% endif %}"
@@ -326,14 +320,10 @@
 
     </nav>
 
-    <!-- ======================================
-         PESTAÑA: DATOS
-    ====================================== -->
     {% if pestana == 'datos' %}
 
     <div class="ficha-datos-grid">
 
-        <!-- IDENTIFICACIÓN -->
         <section class="ficha-tarjeta">
 
             <h2>Identificación</h2>
@@ -388,7 +378,7 @@
 
                         <a href="{{ proyecto.enlace_proyecto }}"
 
-                           target="_blank"
+                           target="\_blank"
 
                            rel="noopener noreferrer">
 
@@ -410,7 +400,6 @@
 
         </section>
 
-        <!-- CLASIFICACIÓN -->
         <section class="ficha-tarjeta">
 
             <h2>Clasificación</h2>
@@ -521,7 +510,6 @@
 
         </section>
 
-        <!-- ECONÓMICO -->
         <section class="ficha-tarjeta">
 
             <h2>Económico</h2>
@@ -652,7 +640,6 @@
 
         </section>
 
-        <!-- CALENDARIO DEL PROYECTO -->
         <section class="ficha-tarjeta">
 
             <h2>Calendario</h2>
@@ -721,9 +708,8 @@
 
     </div>
 
-   <!-- COMENTARIO DEL PROYECTO -->
-
 <section class="ficha-tarjeta ficha-comentario"
+
          style="padding-bottom: 28px;">
 
     <h2>Comentario del proyecto</h2>
@@ -739,65 +725,113 @@
         <details style="margin-top: 14px; margin-bottom: 8px; margin-left: 12px;">
 
             <summary
+
                 style="
+
                     display: inline-flex;
+
                     align-items: center;
+
                     gap: 6px;
+
                     width: fit-content;
+
                     padding: 6px 11px;
+
                     font-size: 13px;
+
                     font-weight: 500;
+
                     color: #2563eb;
+
                     background-color: #eff6ff;
+
                     border: 1px solid #dbeafe;
+
                     border-radius: 6px;
+
                     cursor: pointer;
+
                     list-style: none;
+
                 ">
 
                 <i class="bi bi-pencil-square"></i>
+
                 Editar comentario
 
             </summary>
 
             <form
+
                 method="post"
+
                 action="{% url 'editar_comentario_proyecto' proyecto.id %}"
+
                 style="margin-top: 16px;"
+
             >
 
                 {% csrf_token %}
 
                 <textarea
+
                     id="comentario-proyecto"
+
                     name="comentario"
+
                     rows="3"
+
                     maxlength="5000"
+
                     style="
+
                         display: block;
+
                         width: 100%;
+
                         max-width: 650px;
+
                         box-sizing: border-box;
+
                         padding: 10px 12px;
+
                         border: 1px solid #cbd5e1;
+
                         border-radius: 7px;
+
                         font: inherit;
+
                         font-size: 14px;
+
                         resize: vertical;
+
                     "
+
                 >{{ proyecto.comentario|default_if_none:"" }}</textarea>
 
                 <button
+
                     type="submit"
+
                     class="ficha-boton ficha-boton-azul"
+
                     style="
+
                         margin-top: 12px;
+
                         padding: 7px 14px;
+
                         font-size: 13px;
+
                     "
+
                 >
+
                     <i class="bi bi-check-lg"></i>
+
                     Guardar cambios
+
                 </button>
 
             </form>
@@ -808,9 +842,6 @@
 
 </section>
 
-    <!-- ======================================
-         PESTAÑA: INVESTIGADORES
-    ====================================== -->
     {% elif pestana == 'investigadores' %}
 
     <section class="ficha-tarjeta">
@@ -820,26 +851,43 @@
             <h2>Investigadores del proyecto</h2>
 
             <div class="ficha-acciones-tareas">
+
                 <span class="ficha-seccion-total">
+
                     {{ total_investigadores }} investigadores
+
                 </span>
+
                 {% if puede_gestionar_investigadores %}
+
                     <a href="{% url 'anadir_investigador_proyecto' proyecto.id %}"
+
                        class="ficha-boton ficha-boton-azul">
+
                         <i class="bi bi-person-plus"></i> Añadir investigador
+
                     </a>
+
                 {% endif %}
+
             </div>
 
         </div>
 
         {% if messages %}
+
             {% for mensaje in messages %}
+
                 <p role="status"
+
                    style="margin:12px 16px; font-size:13px; color:{% if 'error' in mensaje.tags %}#b42318{% else %}#087c96{% endif %};">
+
                     {{ mensaje }}
+
                 </p>
+
             {% endfor %}
+
         {% endif %}
 
         <div class="ficha-tabla-contenedor">
@@ -859,7 +907,9 @@
                         <th>Validador</th>
 
                         {% if puede_gestionar_investigadores %}
+
                             <th>Acciones</th>
+
                         {% endif %}
 
                     </tr>
@@ -913,30 +963,55 @@
                         </td>
 
                         {% if puede_gestionar_investigadores %}
+
                             <td>
+
                                 {% if investigador.dedicacion_id %}
+
                                     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+
                                         <a href="{% url 'editar_investigador_proyecto' proyecto.id investigador.dedicacion_id %}"
+
                                            class="ficha-boton">
+
                                             <i class="bi bi-pencil-square"></i> Editar
+
                                         </a>
+
                                         {% if not investigador.responsable %}
+
                                             <form method="post"
+
                                                   action="{% url 'eliminar_investigador_proyecto' proyecto.id investigador.dedicacion_id %}"
+
                                                   onsubmit="return confirm('¿Quitar este investigador del proyecto?');">
+
                                                 {% csrf_token %}
+
                                                 <button type="submit" class="ficha-boton">
+
                                                     <i class="bi bi-trash"></i> Quitar
+
                                                 </button>
+
                                             </form>
+
                                         {% endif %}
+
                                     </div>
+
                                 {% else %}
+
                                     <span style="font-size:12px;color:#64748b;">
+
                                         Investigador principal sin dedicación definida
+
                                     </span>
+
                                 {% endif %}
+
                             </td>
+
                         {% endif %}
 
                     </tr>
@@ -963,9 +1038,156 @@
 
     </section>
 
-    <!-- ======================================
-         PESTAÑA: SOCIOS
-    ====================================== -->
+<section class="ficha-tarjeta historial-dedicaciones" style="margin-top:20px;">
+
+    <div class="ficha-seccion-cabecera">
+
+        <h2><i class="bi bi-clock-history"></i> Histórico de dedicaciones teóricas</h2>
+
+        <span class="ficha-seccion-total">Últimos 100 cambios</span>
+
+    </div>
+
+    <p style="padding:10px 18px;color:#64748b;font-size:13px;">
+
+        Registra las altas, modificaciones y bajas realizadas desde Gesproy.
+
+        No reconstruye cambios anteriores a la activación del histórico.
+
+    </p>
+
+    <div class="ficha-tabla-contenedor">
+
+    <table class="ficha-tabla">
+
+        <thead>
+
+            <tr><th>Modificado</th><th>Investigador</th><th>Acción</th>
+
+                <th>Antes</th><th>Después</th><th>Por</th></tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for cambio in historial_dedicaciones %}
+
+            <tr>
+
+                <td>{{ cambio.registrado_en|date:"d/m/Y H:i" }}</td>
+
+                <td>{{ cambio.investigador }}</td>
+
+                <td>{{ cambio.get_accion_display }}</td>
+
+                <td>
+
+                    {% if cambio.porcentaje_anterior != None %}
+
+                    {{ cambio.porcentaje_anterior }} %
+
+                    ({{ cambio.inicio_anterior|date:"d/m/Y" }} –
+
+                    {{ cambio.fin_anterior|date:"d/m/Y"|default:"abierto" }})
+
+                    {% else %}—{% endif %}
+
+                </td>
+
+                <td>
+
+                    {% if cambio.porcentaje_nuevo != None %}
+
+                    {{ cambio.porcentaje_nuevo }} %
+
+                    ({{ cambio.inicio_nuevo|date:"d/m/Y" }} –
+
+                    {{ cambio.fin_nuevo|date:"d/m/Y"|default:"abierto" }})
+
+                    {% else %}—{% endif %}
+
+                </td>
+
+                <td>{{ cambio.cambiado_por|default:"Usuario eliminado" }}</td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr><td colspan="6">Todavía no hay cambios auditados.</td></tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    </div>
+
+</section>
+
+<section class="ficha-tarjeta" style="margin-top:20px;">
+    <div class="ficha-seccion-cabecera">
+        <h2><i class="bi bi-bar-chart-line"></i> Dedicaciones reales y teóricas</h2>
+    </div>
+    <div style="padding:16px 18px;">
+        <form method="get" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <input type="hidden" name="pestana" value="investigadores">
+            <div>
+                <label for="mes-dedicaciones" style="display:block;margin-bottom:6px;">Mes</label>
+                <input id="mes-dedicaciones" type="month" name="mes_dedicaciones"
+                       value="{{ mes_dedicaciones }}" class="ficha-input" required>
+            </div>
+            <button type="submit" class="ficha-boton ficha-boton-azul">Consultar</button>
+        </form>
+        <p style="margin-top:12px;color:#64748b;font-size:13px;line-height:1.5;">
+            Capacidad laboral teórica común: <strong>{{ capacidad_dedicaciones|floatformat:2 }} h</strong>.
+            No incluye vacaciones, bajas, ausencias ni jornadas individuales.
+            Las horas previstas se estiman con la asignación actual y los días laborables
+            coincidentes con el mes. No reconstruyen los cambios de porcentaje anteriores.
+            Las horas se atribuyen al mes del registro; no se reparten entre días.
+        </p>
+    </div>
+    <div class="ficha-tabla-contenedor">
+        <table class="ficha-tabla">
+            <thead>
+                <tr>
+                    <th>Investigador</th><th>Horas registradas</th>
+                    <th>Teórica actual</th><th>Previstas</th><th>Real orientativa</th><th>Diferencia</th><th>Cumplimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fila in resumen_dedicaciones %}
+                <tr>
+                    <td><strong>{{ fila.investigador }}</strong></td>
+                    <td>{{ fila.horas|floatformat:2 }} h</td>
+                    <td>
+                        {% if fila.teorica != None %}
+                            {{ fila.teorica|floatformat:2 }} %
+                        {% else %}—{% endif %}
+                        <small style="display:block;color:#64748b;">{{ fila.nota_teorica }}</small>
+                    </td>
+                    <td>{% if fila.horas_previstas != None %}{{ fila.horas_previstas|floatformat:2 }} h{% else %}—{% endif %}</td>
+                    <td>
+                        {% if fila.real != None %}
+                            {{ fila.real|floatformat:2 }} %
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>
+                        {% if fila.diferencia != None %}
+                            {% if fila.diferencia > 0 %}+{% endif %}{{ fila.diferencia|floatformat:2 }} puntos
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>{% if fila.cumplimiento != None %}{{ fila.cumplimiento|floatformat:2 }} %{% else %}—{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="ficha-vacio">No hay investigadores para este mes.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
     {% elif pestana == 'socios' %}
 
     <section class="ficha-tarjeta">
@@ -1066,9 +1288,6 @@
 
     </section>
 
-    <!-- ======================================
-         PESTAÑA NUEVA: TAREAS
-    ====================================== -->
     {% elif pestana == 'tareas' %}
 
     <section class="ficha-tarjeta">
@@ -1079,7 +1298,6 @@
 
             <div class="ficha-acciones-tareas">
 
-                <!-- ABRIR GESTIÓN COMPLETA -->
                 <a href="{% url 'horas:tareas_proyecto' proyecto.id %}"
 
                    class="ficha-boton ficha-boton-azul">
@@ -1098,7 +1316,6 @@
 
                 </a>
 
-                <!-- AÑADIR TAREA -->
                 {% if puede_gestionar_tareas %}
 
                 <a href="{% url 'horas:crear_tarea' proyecto.id %}"
@@ -1117,7 +1334,6 @@
 
         </div>
 
-        <!-- TABLA DE TAREAS -->
         <div class="ficha-tabla-contenedor">
 
             <table class="ficha-tabla">
@@ -1290,9 +1506,6 @@
 
     </section>
 
-    <!-- ======================================
-         PESTAÑA: HORAS
-    ====================================== -->
     {% elif pestana == 'horas' %}
 
     <section class="ficha-tarjeta">
@@ -1329,7 +1542,6 @@
 
         </div>
 
-        <!-- FILTROS DE FECHAS -->
         <form method="get" class="ficha-horas-filtros">
 
             <input type="hidden"
@@ -1392,7 +1604,6 @@
 
         </form>
 
-        <!-- TOTAL GENERAL -->
         <div class="ficha-horas-total">
 
             <div>
@@ -1411,7 +1622,6 @@
 
         </div>
 
-        <!-- TAREAS E INVESTIGADORES -->
         {% if grupos_horas %}
 
             <div class="ficha-horas-grupos">
@@ -1420,7 +1630,6 @@
 
                     <div class="ficha-horas-grupo">
 
-                        <!-- CABECERA DE LA TAREA -->
                         <div class="ficha-horas-tarea">
 
                             <div>
@@ -1451,7 +1660,6 @@
 
                         </div>
 
-                        <!-- INVESTIGADORES -->
                         {% for persona in grupo.investigadores %}
 
                             <div class="ficha-horas-investigador">
@@ -1472,7 +1680,6 @@
 
                             </div>
 
-                            <!-- REGISTROS INDIVIDUALES -->
                             <div class="ficha-tabla-contenedor">
 
                                 <table class="ficha-tabla">
@@ -1557,9 +1764,6 @@
 
     </section>
 
-    <!-- ======================================
-         PESTAÑA: DENEGACIONES
-    ====================================== -->
     {% elif pestana == 'denegaciones' %}
 
     <section class="ficha-tarjeta">

@@ -30,6 +30,7 @@ from .models import (
     TipoParticipacion,
     Area,
     Dedicacion,
+    HistorialDedicacion,
     ParticipacionSocio,
     LineaInvestigacion,
     Asignacion,
@@ -581,6 +582,91 @@ def detalle_proyecto(request, id):
             "validador": "—"
         })
 
+    historial_dedicaciones = (
+        HistorialDedicacion.objects.filter(proyecto=proyecto)
+        .select_related("investigador__usuario", "cambiado_por")
+        .order_by("-registrado_en", "-pk")[:100]
+        if pestana == "investigadores" else []
+    )
+
+    # --------------------------------------
+    # COMPARACIÓN MENSUAL DE DEDICACIONES
+    # --------------------------------------
+    mes_dedicaciones = timezone.localdate().strftime("%Y-%m")
+    resumen_dedicaciones = []
+    capacidad_dedicaciones = None
+
+    if pestana == "investigadores":
+        from calendar import monthrange
+        from datetime import datetime
+        from .dedicaciones_reales import dedicacion_real_mensual
+        from horas.control_mensual import capacidad_mensual
+
+        parametro_mes = request.GET.get("mes_dedicaciones", "")
+        try:
+            fecha_mes = datetime.strptime(parametro_mes, "%Y-%m").date()
+            if not 2000 <= fecha_mes.year <= 2099:
+                raise ValueError("Mes fuera de rango")
+        except (ValueError, TypeError):
+            fecha_mes = timezone.localdate().replace(day=1)
+
+        mes_dedicaciones = fecha_mes.strftime("%Y-%m")
+        inicio_mes = fecha_mes.replace(day=1)
+        fin_mes = fecha_mes.replace(day=monthrange(fecha_mes.year, fecha_mes.month)[1])
+        capacidad_dedicaciones = capacidad_mensual(fecha_mes.year, fecha_mes.month)
+
+        # Incluye a investigadores que tuvieron horas en ese mes, aunque ya no
+        # figuren asociados al proyecto, además de los asociados actuales.
+        ids_con_horas = RegistroHoras.objects.filter(
+            tarea__proyecto=proyecto,
+            fecha__year=fecha_mes.year,
+            fecha__month=fecha_mes.month,
+        ).values_list("investigador_id", flat=True).distinct()
+        personas = {
+            persona.pk: persona
+            for persona in Investigador.objects.filter(
+                pk__in=set(ids_con_horas) | {fila["id"] for fila in investigadores}
+            ).select_related("usuario")
+        }
+        dedicaciones_por_persona = {
+            d.investigador_id: d for d in dedicaciones
+        }
+
+        for persona in sorted(personas.values(), key=lambda p: nombre_investigador(p).lower()):
+            calculo = dedicacion_real_mensual(
+                investigador_id=persona.pk,
+                proyecto_id=proyecto.pk,
+                anio=fecha_mes.year,
+                mes=fecha_mes.month,
+                capacidad=capacidad_dedicaciones,
+            )
+            asignacion = dedicaciones_por_persona.get(persona.pk)
+            teorica = None
+            mensaje_teorica = "Sin dedicación definida"
+            diferencia = None
+
+            if asignacion is not None:
+                # La dedicación vigente actualmente no equivale necesariamente
+                # a la que tenía en un mes histórico. Solo calculamos una
+                # comparación orientativa si abarca el mes seleccionado entero.
+                if (asignacion.fecha_inicio <= inicio_mes and
+                        (asignacion.fecha_fin is None or asignacion.fecha_fin >= fin_mes)):
+                    teorica = asignacion.porcentaje
+                    mensaje_teorica = "Asignación actual (orientativa para meses pasados)"
+                    if calculo["porcentaje_real_orientativo"] is not None:
+                        diferencia = calculo["porcentaje_real_orientativo"] - teorica
+                else:
+                    mensaje_teorica = "Sin asignación para el mes completo"
+
+            resumen_dedicaciones.append({
+                "investigador": nombre_investigador(persona),
+                "horas": calculo["horas_proyecto"],
+                "teorica": teorica,
+                "real": calculo["porcentaje_real_orientativo"],
+                "diferencia": diferencia,
+                "nota_teorica": mensaje_teorica,
+            })
+
     # --------------------------------------
     # SOCIOS DEL PROYECTO
     # --------------------------------------
@@ -794,6 +880,10 @@ def detalle_proyecto(request, id):
             "pestana": pestana,
             "pasos_estado": pasos_estado,
             "investigadores": investigadores,
+            "historial_dedicaciones": historial_dedicaciones,
+            "mes_dedicaciones": mes_dedicaciones,
+            "capacidad_dedicaciones": capacidad_dedicaciones,
+            "resumen_dedicaciones": resumen_dedicaciones,
             "socios": socios,
             "denegaciones": denegaciones,
             "nombres_lineas": nombres_lineas,
@@ -1057,6 +1147,28 @@ def comprobar_permiso_investigadores(request, proyecto):
         )
 
 
+
+
+def _registrar_historial_dedicacion(*, anterior, actual, accion, usuario):
+    """Registrar una fotografía de la operación dentro de su transacción."""
+    referencia = actual if actual is not None else anterior
+    HistorialDedicacion.objects.create(
+        dedicacion_original_id=referencia.pk,
+        proyecto_id=referencia.proyecto_id,
+        investigador_id=referencia.investigador_id,
+        accion=accion,
+        cambiado_por=usuario,
+        porcentaje_anterior=anterior.porcentaje if anterior else None,
+        porcentaje_nuevo=actual.porcentaje if actual else None,
+        inicio_anterior=anterior.fecha_inicio if anterior else None,
+        fin_anterior=anterior.fecha_fin if anterior else None,
+        inicio_nuevo=actual.fecha_inicio if actual else None,
+        fin_nuevo=actual.fecha_fin if actual else None,
+        validador_anterior_id=anterior.validador_id if anterior else None,
+        validador_nuevo_id=actual.validador_id if actual else None,
+    )
+
+
 @login_required
 def anadir_investigador_proyecto(request, id):
 
@@ -1073,10 +1185,14 @@ def anadir_investigador_proyecto(request, id):
     )
     
     if request.method == "POST" and formulario.is_valid():
-        dedicacion = formulario.save(commit=False)
-        dedicacion.proyecto = proyecto
-        # Se guarda la asignación del validador elegida en el formulario.
-        dedicacion.save()
+        with transaction.atomic():
+            dedicacion = formulario.save(commit=False)
+            dedicacion.proyecto = proyecto
+            dedicacion.save()
+            _registrar_historial_dedicacion(
+                anterior=None, actual=dedicacion,
+                accion="ALTA", usuario=request.user,
+            )
         messages.success(request, "Investigador añadido al proyecto.")
         return _volver_a_investigadores(proyecto.pk)
 
@@ -1101,9 +1217,20 @@ def editar_investigador_proyecto(request, id, dedicacion_id):
         proyecto=proyecto,
     )
     if request.method == "POST" and formulario.is_valid():
-        # Se actualiza el porcentaje, periodo y validador asignado.
-        formulario.save()
-        messages.success(request, "Dedicación actualizada.")
+        # Leer el estado anterior antes de guardar el formulario.
+        # La auditoría se crea en la MISMA transacción que el cambio.
+        with transaction.atomic():
+            anterior = Dedicacion.objects.select_for_update().get(pk=dedicacion.pk)
+            # Snapshot en memoria: model_to_dict devolvería otros tipos para FKs.
+            from copy import copy
+            anterior = copy(anterior)
+            actual = formulario.save(commit=False)
+            actual.save()
+            _registrar_historial_dedicacion(
+                anterior=anterior, actual=actual,
+                accion="MODIFICACION", usuario=request.user,
+            )
+        messages.success(request, "Dedicación actualizada y cambio registrado en el histórico.")
         return _volver_a_investigadores(proyecto.pk)
 
     return render(request, "proyectos/formulario_dedicacion.html", {
@@ -1142,7 +1269,13 @@ def eliminar_investigador_proyecto(request, id, dedicacion_id):
         )
         return _volver_a_investigadores(proyecto.pk)
 
-    dedicacion.delete()
+    with transaction.atomic():
+        dedicacion = Dedicacion.objects.select_for_update().get(pk=dedicacion.pk)
+        _registrar_historial_dedicacion(
+            anterior=dedicacion, actual=None,
+            accion="BAJA", usuario=request.user,
+        )
+        dedicacion.delete()
     messages.success(
         request,
         "Investigador desvinculado. Sus registros de horas anteriores se conservan."

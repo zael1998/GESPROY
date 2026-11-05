@@ -1,0 +1,204 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Publicaciones - Gesproy{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/publicaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="pub-contenedor">
+
+    <!-- CABECERA -->
+    <div class="pub-cabecera">
+        <h1>Publicaciones</h1>
+
+        {% if puede_crear %}
+            <a class="pub-boton pub-primario"
+               href="{% url 'publicaciones:crear' %}">
+                Nueva publicación
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- MENSAJES -->
+    {% if messages %}
+        {% for mensaje in messages %}
+            <p class="pub-mensaje">{{ mensaje }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <!-- BUSCADOR -->
+    <section class="pub-panel">
+        <h2>Criterios de búsqueda</h2>
+
+        <form method="get" class="pub-busqueda">
+            <label>
+                Título
+                <input type="search"
+                       name="titulo"
+                       value="{{ titulo }}">
+            </label>
+
+            <label>
+                Autores
+                <input type="search"
+                       name="autores"
+                       value="{{ autores }}">
+            </label>
+
+            <label>
+                Año
+                <input type="number"
+                       name="anio"
+                       min="1900"
+                       max="2100"
+                       value="{{ anio }}">
+            </label>
+
+            <div>
+                <button type="submit"
+                        class="pub-boton pub-primario">
+                    Buscar
+                </button>
+
+                <a class="pub-boton"
+                   href="{% url 'publicaciones:lista' %}">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </section>
+
+    <!-- TABLA DE PUBLICACIONES -->
+    <section class="pub-panel pub-desborde">
+        <table class="pub-tabla">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Autores</th>
+                    <th>Referencia</th>
+                    <th>Año</th>
+                    <th>Proyectos</th>
+                    <th>Difusión</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for fila in filas %}
+                    {% with p=fila.obj %}
+                        <tr>
+                            <td>
+                                <strong>{{ p.titulo }}</strong>
+                            </td>
+
+                            <td>
+                                {{ p.autores|linebreaksbr }}
+                            </td>
+
+                            <td>
+                                {{ p.referencia|default:"—" }}
+                            </td>
+
+                            <td>
+                                {{ p.anio|default:"—" }}
+                            </td>
+
+                            <td>
+                                {% for proyecto in p.proyectos.all %}
+                                    {{ proyecto.acronimo }}{% if not forloop.last %}, {% endif %}
+                                {% empty %}
+                                    —
+                                {% endfor %}
+                            </td>
+
+                            <!-- DIFUSIÓN CON COLOR Y PUNTO -->
+                            <td>
+                                <span class="pub-etiqueta pub-{{ p.difusion|lower }}">
+                                    {{ p.get_difusion_display }}
+                                </span>
+                            </td>
+
+                            <!-- ACCIONES -->
+                            <td>
+                                <div class="pub-acciones">
+                                    {% if fila.descargable %}
+                                        <a class="pub-boton"
+                                           href="{% url 'publicaciones:descargar' p.pk %}">
+                                            Descargar
+                                        </a>
+                                    {% else %}
+                                        <span class="pub-denegado">
+                                            Sin acceso al archivo
+                                        </span>
+                                    {% endif %}
+
+                                    {% if fila.editable %}
+                                        <a class="pub-boton"
+                                           href="{% url 'publicaciones:editar' p.pk %}">
+                                            Editar
+                                        </a>
+
+                                        <form method="post"
+                                              action="{% url 'publicaciones:eliminar' p.pk %}"
+                                              onsubmit="return confirm('¿Eliminar esta publicación y su archivo?');">
+                                            {% csrf_token %}
+
+                                            <button type="submit"
+                                                    class="pub-boton pub-peligro">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endwith %}
+
+                {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            No se encontraron publicaciones.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- LEYENDA DE LOS NIVELES DE DIFUSIÓN -->
+    <section class="pub-panel">
+        <div class="pub-nota">
+
+            <p>
+                <span class="pub-etiqueta pub-confidencial">
+                    Confidencial
+                </span>
+                — Descargable por administradores y participantes
+                en alguno de sus proyectos.
+            </p>
+
+            <p>
+                <span class="pub-etiqueta pub-restringido">
+                    Restringido
+                </span>
+                — Descargable por todos los usuarios autenticados.
+            </p>
+
+            <p>
+                <span class="pub-etiqueta pub-publico">
+                    Público
+                </span>
+                — Apto para difusión exterior, pero actualmente
+                requiere iniciar sesión y no se publica en Internet.
+            </p>
+
+        </div>
+    </section>
+
+</div>
+{% endblock %}

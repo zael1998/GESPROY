@@ -1,5 +1,3 @@
-
-
 import calendar
 
 import json
@@ -11,6 +9,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from django import forms
+
 from django.conf import settings
 
 from django.contrib import messages
@@ -33,24 +32,34 @@ from proyectos.models import Proyecto, Dedicacion, Festivo
 
 from usuarios.models import Investigador
 
+from .control_mensual import capacidad_mensual, control_activo
+
 from .models import (
-    Tarea, RegistroHoras, CierreMensualHoras, HistorialValidacionHoras,
+
+    Tarea,
+
+    RegistroHoras,
+
+    CierreMensualHoras,
+
+    HistorialValidacionHoras,
+
     MAX_HORAS_DIA,
+
 )
 
-# Límite físico de horas por día: 24, sumando todos los proyectos.
-# La jornada orientativa puede configurarse en settings.py:
-# GESPROY_JORNADA_ORIENTATIVA_HORAS = "8.00"
+# ==========================================
+# CONFIGURACIÓN DE HORAS
+# ==========================================
 JORNADA_ORIENTATIVA_HORAS = Decimal(
+
     str(getattr(settings, "GESPROY_JORNADA_ORIENTATIVA_HORAS", "8.00"))
+
 )
 
 # ==========================================
-
 # FORMULARIO DE IMPUTACIÓN MÚLTIPLE
-
 # ==========================================
-
 class ImputarHorasForm(forms.Form):
 
     proyecto = forms.ModelChoiceField(
@@ -156,7 +165,8 @@ class ImputarHorasForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.investigador = investigador
-        self.excesos_jornada = []  # Avisos informativos; no bloquean el registro.
+
+        self.excesos_jornada = []
 
         self.mes = mes
 
@@ -169,10 +179,6 @@ class ImputarHorasForm(forms.Form):
         else:
 
             proyecto_id = self.initial.get("proyecto")
-
-        # Solo permitir tareas de proyectos
-
-        # en los que participa el investigador.
 
         try:
 
@@ -370,10 +376,15 @@ class ImputarHorasForm(forms.Form):
 
             )
 
-        # La pertenencia al proyecto y sus fechas también se verifican
-        # en el servidor, independientemente del selector HTML.
         if proyecto.estado != "PROCESO":
-            self.add_error("proyecto", "Solo puedes imputar en proyectos en proceso.")
+
+            self.add_error(
+
+                "proyecto",
+
+                "Solo puedes imputar en proyectos en proceso."
+
+            )
 
         if tarea.finalizada:
 
@@ -388,15 +399,27 @@ class ImputarHorasForm(forms.Form):
         for fecha in fechas:
 
             if proyecto.fecha_inicio and fecha < proyecto.fecha_inicio:
+
                 self.add_error(
-                    "fechas", "Hay días anteriores al inicio del proyecto."
+
+                    "fechas",
+
+                    "Hay días anteriores al inicio del proyecto."
+
                 )
+
                 break
 
             if proyecto.fecha_fin and fecha > proyecto.fecha_fin:
+
                 self.add_error(
-                    "fechas", "Hay días posteriores a la fecha de fin del proyecto."
+
+                    "fechas",
+
+                    "Hay días posteriores a la fecha de fin del proyecto."
+
                 )
+
                 break
 
             if fecha < tarea.fecha_inicio:
@@ -423,17 +446,17 @@ class ImputarHorasForm(forms.Form):
 
                 break
 
-        # Comprobar el total de horas que el usuario
-
-        # ya tiene registradas cada día.
-
+# Solo las imputaciones puntuales cuentan
+# como horas de un día determinado.
         registros_previos = (
 
             RegistroHoras.objects.filter(
 
                 investigador=self.investigador,
 
-                fecha__in=fechas
+                fecha__in=fechas,
+
+                fecha_fin__isnull=True
 
             )
 
@@ -452,6 +475,7 @@ class ImputarHorasForm(forms.Form):
         }
 
         self.excesos_jornada = []
+
         for fecha in fechas:
 
             horas_previas = totales.get(
@@ -465,6 +489,7 @@ class ImputarHorasForm(forms.Form):
             total_dia = horas_previas + horas
 
             if total_dia > JORNADA_ORIENTATIVA_HORAS:
+
                 self.excesos_jornada.append((fecha, total_dia))
 
             if total_dia > MAX_HORAS_DIA:
@@ -484,11 +509,8 @@ class ImputarHorasForm(forms.Form):
         return datos
 
 # ==========================================
-
 # FECHAS Y PROYECTOS DISPONIBLES
-
 # ==========================================
-
 def obtener_mes(request):
 
     valor = (
@@ -505,13 +527,7 @@ def obtener_mes(request):
 
         try:
 
-            mes = datetime.strptime(
-
-                valor,
-
-                "%Y-%m"
-
-            ).date()
+            mes = datetime.strptime(valor, "%Y-%m").date()
 
             if 2000 <= mes.year <= 2099:
 
@@ -539,11 +555,7 @@ def proyectos_del_investigador(investigador):
 
     return (
 
-        Proyecto.objects.filter(
-
-            estado="PROCESO"
-
-        )
+        Proyecto.objects.filter(estado="PROCESO")
 
         .filter(
 
@@ -560,11 +572,8 @@ def proyectos_del_investigador(investigador):
     )
 
 # ==========================================
-
 # PÁGINA PRINCIPAL: MIS HORAS
-
 # ==========================================
-
 @login_required
 
 def mis_horas(request):
@@ -577,22 +586,11 @@ def mis_horas(request):
 
     mes = obtener_mes(request)
 
-    proyectos = proyectos_del_investigador(
+    proyectos = proyectos_del_investigador(investigador)
 
-        investigador
-
-    )
-
-    # Para entrar desde un proyecto concreto
-
-    # y encontrarlo preseleccionado.
-
-    # ==========================================
-
-    # PRESELECCIONAR PROYECTO Y TAREA
-
-    # ==========================================
-
+# ==========================================
+# PRESELECCIONAR PROYECTO Y TAREA
+# ==========================================
     inicial = {}
 
     if request.method == "GET":
@@ -601,23 +599,19 @@ def mis_horas(request):
 
         tarea_id = request.GET.get("tarea")
 
-        # Comprobar que el proyecto pertenece
+        proyecto_seleccionado = (
 
-        # al investigador y está en proceso.
+            proyectos.filter(pk=proyecto_id).first()
 
-        proyecto_seleccionado = proyectos.filter(
+            if proyecto_id and proyecto_id.isdigit()
 
-            pk=proyecto_id
+            else None
 
-        ).first() if proyecto_id and proyecto_id.isdigit() else None
+        )
 
         if proyecto_seleccionado is not None:
 
             inicial["proyecto"] = proyecto_seleccionado.pk
-
-            # Comprobar que la tarea existe,
-
-            # pertenece al proyecto y está abierta.
 
             if tarea_id and tarea_id.isdigit():
 
@@ -649,12 +643,9 @@ def mis_horas(request):
 
     )
 
-    # --------------------------------------
-
-    # GUARDAR HORAS
-
-    # --------------------------------------
-
+# ==========================================
+# GUARDAR HORAS DIARIAS
+# ==========================================
     if request.method == "POST":
 
         if investigador is None:
@@ -679,6 +670,8 @@ def mis_horas(request):
 
                     fecha=fecha,
 
+                    fecha_fin=None,
+
                     horas=datos["horas"],
 
                     descripcion=datos["descripcion"]
@@ -690,47 +683,96 @@ def mis_horas(request):
             ]
 
             try:
+
                 with transaction.atomic():
-                    # Serializa las imputaciones concurrentes del mismo investigador
-                    # en PostgreSQL; en SQLite sigue siendo una transacción atómica.
-                    Investigador.objects.select_for_update().get(pk=investigador.pk)
-                    # bulk_create también revisa el límite diario y los cierres
-                    # contra el estado MÁS RECIENTE de la base de datos.
-                    RegistroHoras.objects.bulk_create(registros)
-            except ValidationError as error:
-                messages.error(
-                    request,
-                    "No se han guardado las horas: " + "; ".join(error.messages),
-                )
-            else:
-                cantidad = len(registros)
-                messages.success(
-                    request, f"Se han registrado correctamente {cantidad} día(s) de trabajo."
-                )
-                if formulario.excesos_jornada:
-                    detalles = ", ".join(
-                        f"{fecha:%d/%m/%Y}: {total:g} h"
-                        for fecha, total in formulario.excesos_jornada[:4]
+
+                    Investigador.objects.select_for_update().get(
+
+                        pk=investigador.pk
+
                     )
-                    restantes = len(formulario.excesos_jornada) - 4
+
+                    RegistroHoras.objects.bulk_create(registros)
+
+            except ValidationError as error:
+
+                messages.error(
+
+                    request,
+
+                    "No se han guardado las horas: "
+
+                    + "; ".join(error.messages)
+
+                )
+
+            else:
+
+                cantidad = len(registros)
+
+                messages.success(
+
+                    request,
+
+                    f"Se han registrado correctamente "
+
+                    f"{cantidad} día(s) de trabajo."
+
+                )
+
+                if formulario.excesos_jornada:
+
+                    detalles = ", ".join(
+
+                        f"{fecha:%d/%m/%Y}: {total:g} h"
+
+                        for fecha, total
+
+                        in formulario.excesos_jornada[:4]
+
+                    )
+
+                    restantes = len(
+
+                        formulario.excesos_jornada
+
+                    ) - 4
+
                     if restantes > 0:
-                        detalles += f" (y {restantes} día(s) más)"
+
+                        detalles += (
+
+                            f" (y {restantes} día(s) más)"
+
+                        )
+
                     messages.warning(
+
                         request,
-                        f"Aviso: has superado la jornada orientativa de "
-                        f"{JORNADA_ORIENTATIVA_HORAS:g} horas en {detalles}. "
-                        "Las horas se han guardado correctamente.",
+
+                        f"Aviso: has superado la jornada "
+
+                        f"orientativa de "
+
+                        f"{JORNADA_ORIENTATIVA_HORAS:g} "
+
+                        f"horas en {detalles}. "
+
+                        "Las horas se han guardado correctamente."
+
                     )
 
                 url = reverse("horas:mis_horas")
-                return redirect(f"{url}?mes={mes:%Y-%m}")
 
-    # --------------------------------------
+                return redirect(
 
-    # REGISTROS DEL MES
+                    f"{url}?mes={mes:%Y-%m}"
 
-    # --------------------------------------
+                )
 
+# ==========================================
+# REGISTROS DEL MES
+# ==========================================
     if investigador is not None:
 
         registros = list(
@@ -745,16 +787,20 @@ def mis_horas(request):
 
             )
 
-            .select_related(
+            .select_related("tarea__proyecto")
 
-                "tarea__proyecto"
+            .annotate(
 
-            ).annotate(
                 tiene_historial=Exists(
+
                     HistorialValidacionHoras.objects.filter(
+
                         registro_id=OuterRef("pk")
+
                     )
+
                 )
+
             )
 
             .order_by("-fecha", "-pk")
@@ -765,30 +811,53 @@ def mis_horas(request):
 
         registros = []
 
-    # El propio historial distingue los registros editables de los bloqueados.
-    # El control real se repite en cada petición de edición/eliminación.
+# ==========================================
+# COMPROBAR PERMISOS DE EDICIÓN
+# ==========================================
     proyectos_cerrados = set()
+
     if investigador is not None:
+
         proyectos_cerrados = set(
+
             CierreMensualHoras.objects.filter(
+
                 investigador=investigador,
+
                 anio=mes.year,
-                mes=mes.month,
+
+                mes=mes.month
+
             ).values_list("proyecto_id", flat=True)
+
         )
 
     for registro in registros:
+
         registro.puede_modificar = (
+
             not registro.validado
+
             and registro.tarea.proyecto.estado == "PROCESO"
+
             and registro.tarea.proyecto_id not in proyectos_cerrados
-        )
-        # Las horas que ya han pasado por validación conservan auditoría:
-        # pueden corregirse tras reapertura, pero no borrarse.
+
+)
+
         registro.puede_eliminar = (
-            registro.puede_modificar and not registro.tiene_historial
+
+            registro.puede_modificar
+
+            and not registro.tiene_historial
+
         )
 
+# ==========================================
+# RESUMEN MENSUAL
+# ==========================================
+# Incluye las horas de registros individuales
+# y las horas globales de periodos completos
+# que pertenecen a este mes.
     horas_mes = sum(
 
         (registro.horas for registro in registros),
@@ -797,14 +866,27 @@ def mis_horas(request):
 
     )
 
+# No conocemos qué días concretos se trabajaron
+# dentro de un registro global por periodo.
+# Por eso solo contamos los días individuales.
     dias_trabajados = len({
 
         registro.fecha
 
         for registro in registros
 
+        if registro.fecha_fin is None
+
     })
 
+# ==========================================
+    # Capacidad mensual provisional: no descuenta vacaciones individuales.
+    capacidad_mes = capacidad_mensual(mes.year, mes.month)
+
+    horas_restantes = capacidad_mes - horas_mes
+
+# HORAS MOSTRADAS EN CADA DÍA DEL CALENDARIO
+# ==========================================
     horas_por_dia = defaultdict(
 
         lambda: Decimal("0.00")
@@ -813,14 +895,15 @@ def mis_horas(request):
 
     for registro in registros:
 
-        horas_por_dia[registro.fecha] += registro.horas
+# No asignamos todas las horas de un
+# periodo a su fecha de inicio.
+        if registro.fecha_fin is None:
 
-    # --------------------------------------
+            horas_por_dia[registro.fecha] += registro.horas
 
-    # CALENDARIO LABORAL
-
-    # --------------------------------------
-
+# ==========================================
+# CALENDARIO LABORAL
+# ==========================================
     festivos = {
 
         festivo.fecha: festivo.nombre
@@ -837,11 +920,7 @@ def mis_horas(request):
 
     hoy = timezone.localdate()
 
-    calendario = calendar.Calendar(
-
-        firstweekday=0
-
-    )
+    calendario = calendar.Calendar(firstweekday=0)
 
     semanas = []
 
@@ -921,12 +1000,9 @@ def mis_horas(request):
 
         semanas.append(dias)
 
-    # --------------------------------------
-
-    # MESES ANTERIOR Y SIGUIENTE
-
-    # --------------------------------------
-
+# ==========================================
+# MESES ANTERIOR Y SIGUIENTE
+# ==========================================
     mes_anterior = (
 
         mes - timedelta(days=1)
@@ -957,12 +1033,9 @@ def mis_horas(request):
 
         )
 
-    # --------------------------------------
-
-    # TAREAS PARA EL SELECT DINÁMICO
-
-    # --------------------------------------
-
+# ==========================================
+# TAREAS DISPONIBLES
+# ==========================================
     tareas_disponibles = Tarea.objects.filter(
 
         proyecto__in=proyectos,
@@ -993,6 +1066,9 @@ def mis_horas(request):
 
     ]
 
+# ==========================================
+# MOSTRAR HTML
+# ==========================================
     return render(
 
         request,
@@ -1008,6 +1084,12 @@ def mis_horas(request):
             "registros": registros,
 
             "horas_mes": horas_mes,
+
+            "capacidad_mes": capacidad_mes,
+
+            "horas_restantes": horas_restantes,
+
+            "control_mensual_activo": control_activo(),
 
             "dias_trabajados": dias_trabajados,
 

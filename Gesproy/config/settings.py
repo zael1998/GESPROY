@@ -1,4 +1,3 @@
-
 """
 Django settings for config project.
 
@@ -23,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
-    "django-insecure-gesproy-solo-desarrollo-local-cambiar-en-produccion"
+    "django-insecure-gesproy-solo-desarrollo-local-cambiar-en-produccion",
 )
 
 DEBUG = True
@@ -32,6 +31,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "10.38.29.177",
+    "10.0.2.2",
 ]
 
 
@@ -40,7 +40,6 @@ ALLOWED_HOSTS = [
 # ==========================================
 
 INSTALLED_APPS = [
-
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -48,14 +47,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
+    # Django REST Framework
+    "rest_framework",
     # Gesproy
     "usuarios",
     "proyectos",
     "horas",
     "api_movil",
     "economia",
-    "publicaciones"
+    "publicaciones",
 ]
 
 
@@ -71,11 +71,22 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-
-    # Toda vista privada requiere iniciar sesión.
-    # La vista de login debe usar @login_not_required.
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
 ]
+
+
+# ==========================================
+# DJANGO REST FRAMEWORK
+# ==========================================
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
 
 
 # ==========================================
@@ -92,13 +103,8 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-
-        "DIRS": [
-            BASE_DIR / "templates"
-        ],
-
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
-
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
@@ -135,20 +141,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME":
-        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME":
-        "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME":
-        "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME":
-        "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -182,8 +184,7 @@ STATICFILES_DIRS = [
 # ==========================================
 
 EMAIL_BACKEND = os.environ.get(
-    "DJANGO_EMAIL_BACKEND",
-    "django.core.mail.backends.console.EmailBackend"
+    "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
 
 
@@ -206,32 +207,40 @@ LOGOUT_REDIRECT_URL = "login"
 
 
 # ==========================================
-# CSRF - DESARROLLO WEB Y API MÓVIL
+# CSRF - WEB, REACT Y ANDROID
 # ==========================================
 
 CSRF_TRUSTED_ORIGINS = [
+    # Django local
     "http://127.0.0.1:8000",
     "http://localhost:8000",
+    # React local
     "http://127.0.0.1:5173",
     "http://localhost:5173",
+    # Servidor CESGA
     "http://10.38.29.177:8000",
+    # Emulador Android
+    "http://10.0.2.2:5173",
 ]
 
-# Sesiones Django:
-# La cookie se mantiene entre peticiones al mismo host.
+
+# ==========================================
+# CONFIGURACIÓN DE COOKIES
+# ==========================================
+
 SESSION_COOKIE_HTTPONLY = True
 
-# La cookie CSRF puede ser leída por el cliente React
-# si utilizamos el sistema actual de CSRF.
 CSRF_COOKIE_HTTPONLY = False
 
-# Para desarrollo local con HTTP.
-# En producción HTTPS estos valores deben cambiar.
+# Configuración para desarrollo local.
+# En producción se debe utilizar HTTPS.
+
 SESSION_COOKIE_SECURE = False
+
 CSRF_COOKIE_SECURE = False
 
-# Evitar compartir cookies entre dominios diferentes.
 SESSION_COOKIE_SAMESITE = "Lax"
+
 CSRF_COOKIE_SAMESITE = "Lax"
 
 
@@ -242,12 +251,24 @@ CSRF_COOKIE_SAMESITE = "Lax"
 if os.environ.get("CODESPACE_NAME"):
     codespace_name = os.environ["CODESPACE_NAME"]
 
-    CSRF_TRUSTED_ORIGINS.extend([
-        f"https://{codespace_name}-5173.app.github.dev",
-        f"https://{codespace_name}-8000.app.github.dev",
-    ])
+    CSRF_TRUSTED_ORIGINS.extend(
+        [
+            f"https://{codespace_name}-5173.app.github.dev",
+            f"https://{codespace_name}-8000.app.github.dev",
+        ]
+    )
 
-    ALLOWED_HOSTS.extend([
-        f"{codespace_name}-5173.app.github.dev",
-        f"{codespace_name}-8000.app.github.dev",
-    ])
+    ALLOWED_HOSTS.extend(
+        [
+            f"{codespace_name}-5173.app.github.dev",
+            f"{codespace_name}-8000.app.github.dev",
+        ]
+    )
+
+    # ==========================================
+# CONTROL DE HORAS MENSUALES
+# ==========================================
+
+GESPROY_HORAS_JORNADA = "8.00"
+
+GESPROY_CONTROL_MENSUAL_ACTIVO = False

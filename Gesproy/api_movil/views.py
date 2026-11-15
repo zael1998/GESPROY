@@ -1,6 +1,8 @@
+
 import json
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_not_required
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -118,6 +120,7 @@ def datos_proyecto(proyecto, investigador):
 # CSRF
 # ==========================================
 
+@login_not_required
 @require_GET
 @never_cache
 @ensure_csrf_cookie
@@ -125,6 +128,8 @@ def obtener_csrf(request):
     """
     Prepara la protección CSRF para las
     peticiones POST enviadas desde React.
+
+    Debe funcionar sin iniciar sesión.
     """
 
     return JsonResponse({
@@ -136,16 +141,20 @@ def obtener_csrf(request):
 # LOGIN
 # ==========================================
 
+@login_not_required
 @require_POST
 @csrf_protect
 def iniciar_sesion(request):
     """
     Recibe usuario y contraseña en JSON y
     utiliza la autenticación existente de Django.
+
+    Debe funcionar sin iniciar sesión.
     """
 
     try:
         datos = json.loads(request.body.decode("utf-8"))
+
     except (ValueError, UnicodeDecodeError):
         return JsonResponse(
             {"error": "El JSON enviado no es válido."},
@@ -199,9 +208,16 @@ def iniciar_sesion(request):
 # LOGOUT
 # ==========================================
 
+@login_not_required
 @require_POST
 @csrf_protect
 def cerrar_sesion(request):
+    """
+    Cierra la sesión.
+
+    También permite responder correctamente
+    cuando la sesión ya ha caducado.
+    """
 
     logout(request)
 
@@ -214,9 +230,16 @@ def cerrar_sesion(request):
 # USUARIO AUTENTICADO
 # ==========================================
 
+@login_not_required
 @require_GET
 @never_cache
 def usuario_actual(request):
+    """
+    Permite a React comprobar si existe
+    una sesión iniciada.
+
+    Si no existe, devuelve JSON con estado 401.
+    """
 
     error = comprobar_autenticacion(request)
 
@@ -232,9 +255,16 @@ def usuario_actual(request):
 # MIS PROYECTOS
 # ==========================================
 
+@login_not_required
 @require_GET
 @never_cache
 def mis_proyectos(request):
+    """
+    Solo devuelve proyectos si el usuario
+    está autenticado.
+
+    Si no lo está, devuelve un error JSON 401.
+    """
 
     error = comprobar_autenticacion(request)
 
@@ -273,9 +303,14 @@ def mis_proyectos(request):
 # DETALLE DEL PROYECTO
 # ==========================================
 
+@login_not_required
 @require_GET
 @never_cache
 def detalle_proyecto(request, id):
+    """
+    Devuelve un proyecto si pertenece
+    al investigador autenticado.
+    """
 
     error = comprobar_autenticacion(request)
 

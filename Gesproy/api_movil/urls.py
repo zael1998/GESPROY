@@ -71,10 +71,20 @@ urlpatterns = [
         name="api_mis_horas",
     ),
 
+    # Horas individuales.
+
     path(
         "horas/registrar/",
         horas_views.registrar_horas,
         name="api_registrar_horas",
+    ),
+
+    # Horas por periodos.
+
+    path(
+        "horas/periodos/",
+        horas_views.registrar_horas_periodo,
+        name="api_registrar_horas_periodo",
     ),
 
     # ======================================

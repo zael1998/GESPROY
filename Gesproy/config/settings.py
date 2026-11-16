@@ -40,6 +40,7 @@ ALLOWED_HOSTS = [
 # ==========================================
 
 INSTALLED_APPS = [
+
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -47,8 +48,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # Django REST Framework
     "rest_framework",
+
     # Gesproy
     "usuarios",
     "proyectos",
@@ -71,6 +74,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
+    # Protege las vistas privadas de Gesproy.
+    # Las vistas de la API que gestionan su propia autenticación
+    # deben utilizar @login_not_required.
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
 ]
 
@@ -80,9 +87,11 @@ MIDDLEWARE = [
 # ==========================================
 
 REST_FRAMEWORK = {
+
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
     ],
+
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
@@ -103,8 +112,13 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+
+        "DIRS": [
+            BASE_DIR / "templates",
+        ],
+
         "APP_DIRS": True,
+
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
@@ -141,16 +155,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME":
+        "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -184,7 +202,8 @@ STATICFILES_DIRS = [
 # ==========================================
 
 EMAIL_BACKEND = os.environ.get(
-    "DJANGO_EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+    "DJANGO_EMAIL_BACKEND",
+    "django.core.mail.backends.console.EmailBackend",
 )
 
 
@@ -211,29 +230,34 @@ LOGOUT_REDIRECT_URL = "login"
 # ==========================================
 
 CSRF_TRUSTED_ORIGINS = [
+
     # Django local
     "http://127.0.0.1:8000",
     "http://localhost:8000",
-    # React local
+
+    # React con Vite
     "http://127.0.0.1:5173",
     "http://localhost:5173",
-    # Servidor CESGA
+
+    # Máquina virtual CESGA
     "http://10.38.29.177:8000",
-    # Emulador Android
+
+    # Emulador Android Studio
     "http://10.0.2.2:5173",
+    "http://10.0.2.2:8000",
 ]
 
 
 # ==========================================
-# CONFIGURACIÓN DE COOKIES
+# COOKIES Y SESIONES
 # ==========================================
 
 SESSION_COOKIE_HTTPONLY = True
 
 CSRF_COOKIE_HTTPONLY = False
 
-# Configuración para desarrollo local.
-# En producción se debe utilizar HTTPS.
+# Configuración para desarrollo mediante HTTP.
+# En producción deben utilizarse HTTPS y cookies seguras.
 
 SESSION_COOKIE_SECURE = False
 
@@ -249,23 +273,21 @@ CSRF_COOKIE_SAMESITE = "Lax"
 # ==========================================
 
 if os.environ.get("CODESPACE_NAME"):
+
     codespace_name = os.environ["CODESPACE_NAME"]
 
-    CSRF_TRUSTED_ORIGINS.extend(
-        [
-            f"https://{codespace_name}-5173.app.github.dev",
-            f"https://{codespace_name}-8000.app.github.dev",
-        ]
-    )
+    CSRF_TRUSTED_ORIGINS.extend([
+        f"https://{codespace_name}-5173.app.github.dev",
+        f"https://{codespace_name}-8000.app.github.dev",
+    ])
 
-    ALLOWED_HOSTS.extend(
-        [
-            f"{codespace_name}-5173.app.github.dev",
-            f"{codespace_name}-8000.app.github.dev",
-        ]
-    )
+    ALLOWED_HOSTS.extend([
+        f"{codespace_name}-5173.app.github.dev",
+        f"{codespace_name}-8000.app.github.dev",
+    ])
 
-    # ==========================================
+
+# ==========================================
 # CONTROL DE HORAS MENSUALES
 # ==========================================
 

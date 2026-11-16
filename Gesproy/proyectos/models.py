@@ -436,6 +436,11 @@ class Dedicacion(models.Model):
 
     )
 
+    es_firmante = models.BooleanField(
+        default=False,
+        verbose_name="Es firmante"
+    )
+
     class Meta:
 
         verbose_name = "Dedicación"

@@ -9,6 +9,11 @@ from django.contrib.auth.decorators import login_required
 
 from django.core.exceptions import PermissionDenied
 
+from horas.control_mensual import (
+    capacidad_mensual,
+    control_activo,
+)
+
 from django.db import transaction
 
 from django.db.models import Count, Sum

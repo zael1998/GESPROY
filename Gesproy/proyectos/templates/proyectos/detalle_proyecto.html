@@ -906,6 +906,8 @@
 
                         <th>Validador</th>
 
+                        <th>Firmante</th>
+
                         {% if puede_gestionar_investigadores %}
 
                             <th>Acciones</th>
@@ -960,6 +962,14 @@
 
                             {{ investigador.validador }}
 
+                        </td>
+
+                        <td>
+                            {% if investigador.es_firmante %}
+                                <span class="ficha-si">Sí</span>
+                            {% else %}
+                                No
+                            {% endif %}
                         </td>
 
                         {% if puede_gestionar_investigadores %}
@@ -1020,7 +1030,7 @@
 
                     <tr>
 
-                        <td colspan="{% if puede_gestionar_investigadores %}5{% else %}4{% endif %}" class="ficha-vacio">
+                        <td colspan="{% if puede_gestionar_investigadores %}6{% else %}5{% endif %}" class="ficha-vacio">
 
                             No hay investigadores asociados.
 

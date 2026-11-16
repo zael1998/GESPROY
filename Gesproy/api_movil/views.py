@@ -1,4 +1,3 @@
-
 import json
 
 from django.contrib.auth import authenticate, login, logout
@@ -20,10 +19,6 @@ from proyectos.models import Proyecto, Dedicacion
 # ==========================================
 
 def comprobar_autenticacion(request):
-    """
-    Devuelve una respuesta 401 si el usuario
-    no tiene una sesión autenticada.
-    """
 
     if not request.user.is_authenticated:
         return JsonResponse(
@@ -35,10 +30,6 @@ def comprobar_autenticacion(request):
 
 
 def datos_usuario(usuario):
-    """
-    Convierte el usuario autenticado a un
-    diccionario que puede enviarse como JSON.
-    """
 
     return {
         "id": usuario.pk,
@@ -46,21 +37,23 @@ def datos_usuario(usuario):
         "first_name": usuario.first_name,
         "last_name": usuario.last_name,
         "rol": usuario.rol,
+        "es_administrador": (
+            usuario.is_staff or usuario.is_superuser
+        ),
     }
 
 
 def proyectos_del_investigador(usuario):
-    """
-    Obtiene los proyectos asociados al investigador.
-
-    Aplica el mismo criterio de asociación que
-    la vista mis_proyectos de Gesproy Web.
-    """
 
     investigador = Investigador.objects.filter(
         usuario=usuario
     ).first()
 
+    # Los administradores pueden consultar todos los proyectos.
+    if usuario.is_staff or usuario.is_superuser:
+        return Proyecto.objects.all(), investigador
+
+    # Los investigadores solo pueden consultar sus proyectos.
     if investigador is None:
         return Proyecto.objects.none(), None
 
@@ -77,19 +70,18 @@ def proyectos_del_investigador(usuario):
 
 
 def datos_proyecto(proyecto, investigador):
-    """
-    Convierte un proyecto de Django a JSON.
-    """
 
     principal = proyecto.investigador_principal
 
     if principal is not None:
+
         usuario_principal = principal.usuario
 
         nombre_principal = (
             usuario_principal.get_full_name().strip()
             or usuario_principal.username
         )
+
     else:
         nombre_principal = None
 
@@ -98,17 +90,21 @@ def datos_proyecto(proyecto, investigador):
         "nombre": proyecto.nombre,
         "acronimo": proyecto.acronimo,
         "estado": proyecto.estado,
+
         "fecha_inicio": (
             proyecto.fecha_inicio.isoformat()
             if proyecto.fecha_inicio
             else None
         ),
+
         "fecha_fin": (
             proyecto.fecha_fin.isoformat()
             if proyecto.fecha_fin
             else None
         ),
+
         "investigador_principal": nombre_principal,
+
         "es_responsable": (
             investigador is not None
             and proyecto.investigador_principal_id == investigador.pk
@@ -143,6 +139,7 @@ def obtener_csrf(request):
 
 @login_not_required
 @require_POST
+@never_cache
 @csrf_protect
 def iniciar_sesion(request):
     """
@@ -153,15 +150,20 @@ def iniciar_sesion(request):
     """
 
     try:
-        datos = json.loads(request.body.decode("utf-8"))
+
+        datos = json.loads(
+            request.body.decode("utf-8")
+        )
 
     except (ValueError, UnicodeDecodeError):
+
         return JsonResponse(
             {"error": "El JSON enviado no es válido."},
             status=400,
         )
 
     if not isinstance(datos, dict):
+
         return JsonResponse(
             {"error": "Los datos enviados no son válidos."},
             status=400,
@@ -171,6 +173,7 @@ def iniciar_sesion(request):
     password = datos.get("password", "")
 
     if not isinstance(username, str) or not isinstance(password, str):
+
         return JsonResponse(
             {"error": "Usuario o contraseña no válidos."},
             status=400,
@@ -179,6 +182,7 @@ def iniciar_sesion(request):
     username = username.strip()
 
     if not username or not password:
+
         return JsonResponse(
             {"error": "Introduce usuario y contraseña."},
             status=400,
@@ -191,6 +195,7 @@ def iniciar_sesion(request):
     )
 
     if usuario is None:
+
         return JsonResponse(
             {"error": "Usuario o contraseña incorrectos."},
             status=401,
@@ -210,14 +215,17 @@ def iniciar_sesion(request):
 
 @login_not_required
 @require_POST
+@never_cache
 @csrf_protect
 def cerrar_sesion(request):
     """
-    Cierra la sesión.
-
-    También permite responder correctamente
-    cuando la sesión ya ha caducado.
+    Cierra la sesión del usuario autenticado.
     """
+
+    error = comprobar_autenticacion(request)
+
+    if error is not None:
+        return error
 
     logout(request)
 
@@ -237,8 +245,6 @@ def usuario_actual(request):
     """
     Permite a React comprobar si existe
     una sesión iniciada.
-
-    Si no existe, devuelve JSON con estado 401.
     """
 
     error = comprobar_autenticacion(request)
@@ -260,16 +266,19 @@ def usuario_actual(request):
 @never_cache
 def mis_proyectos(request):
     """
-    Solo devuelve proyectos si el usuario
-    está autenticado.
-
-    Si no lo está, devuelve un error JSON 401.
+    Devuelve los proyectos visibles para
+    el usuario autenticado.
     """
 
     error = comprobar_autenticacion(request)
 
     if error is not None:
         return error
+
+    es_administrador = (
+        request.user.is_staff
+        or request.user.is_superuser
+    )
 
     proyectos, investigador = proyectos_del_investigador(
         request.user
@@ -279,7 +288,13 @@ def mis_proyectos(request):
         request.GET.get("solo_responsable") == "1"
     )
 
-    if solo_responsable and investigador is not None:
+    # El filtro de responsable solo se aplica a investigadores.
+    if (
+        solo_responsable
+        and not es_administrador
+        and investigador is not None
+    ):
+
         proyectos = proyectos.filter(
             investigador_principal=investigador
         )
@@ -296,6 +311,7 @@ def mis_proyectos(request):
     return JsonResponse({
         "proyectos": resultado,
         "total": len(resultado),
+        "es_administrador": es_administrador,
     })
 
 
@@ -308,8 +324,8 @@ def mis_proyectos(request):
 @never_cache
 def detalle_proyecto(request, id):
     """
-    Devuelve un proyecto si pertenece
-    al investigador autenticado.
+    Devuelve el detalle de un proyecto
+    visible para el usuario autenticado.
     """
 
     error = comprobar_autenticacion(request)

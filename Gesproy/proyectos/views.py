@@ -555,6 +555,7 @@ def detalle_proyecto(request, id):
             "dedicacion_id": dedicacion.pk,
             "nombre": nombre_investigador(investigador),
             "porcentaje": dedicacion.porcentaje,
+            "es_firmante": dedicacion.es_firmante,
             "responsable": (
                 proyecto.investigador_principal_id
                 == investigador.pk
@@ -578,6 +579,7 @@ def detalle_proyecto(request, id):
                 proyecto.investigador_principal
             ),
             "porcentaje": None,
+            "es_firmante": False,
             "responsable": True,
             "validador": "—"
         })
@@ -998,7 +1000,7 @@ class DedicacionProyectoForm(forms.ModelForm):
 
     class Meta:
         model = Dedicacion
-        fields = ["investigador", "porcentaje", "fecha_inicio", "fecha_fin", "validador"]
+        fields = ["investigador", "porcentaje", "fecha_inicio", "fecha_fin", "validador", "es_firmante"]
         widgets = {
             "investigador": forms.Select(attrs={"class": "ficha-input"}),
             "porcentaje": forms.NumberInput(attrs={
@@ -1062,6 +1064,7 @@ class DedicacionProyectoForm(forms.ModelForm):
         self.fields["fecha_inicio"].label = "Fecha de inicio"
         self.fields["fecha_fin"].label = "Fecha de fin (opcional)"
         self.fields["validador"].label = "Validador (opcional)"
+        self.fields["es_firmante"].label = "Firmante de la propuesta"
 
     def clean_investigador(self):
         investigador = self.cleaned_data["investigador"]

@@ -1,0 +1,19 @@
+ Gesproy/api_movil/editar_horas_views.py            | 352 [32m++++[m[31m---------------[m
+ Gesproy/api_movil/horas_views.py                   | 385 [32m++++++[m[31m---------------[m
+ Gesproy/api_movil/serializers.py                   |  75 [32m++++[m
+ Gesproy/api_movil/urls.py                          |  98 [32m+[m[31m-----[m
+ Gesproy/api_movil/views.py                         | 281 [32m++++[m[31m-----------[m
+ Gesproy/asistente_ia/__init__.py                   |   0
+ Gesproy/asistente_ia/admin.py                      |   3 [32m+[m
+ Gesproy/asistente_ia/apps.py                       |   5 [32m+[m
+ Gesproy/asistente_ia/migrations/__init__.py        |   0
+ Gesproy/asistente_ia/models.py                     |   3 [32m+[m
+ Gesproy/asistente_ia/services.py                   |  58 [32m++++[m
+ .../asistente_ia/templates/asistente_ia/chat.html  | 205 [32m+++++++++++[m
+ Gesproy/asistente_ia/tests.py                      |   3 [32m+[m
+ Gesproy/asistente_ia/urls.py                       |   9 [32m+[m
+ Gesproy/asistente_ia/views.py                      |  67 [32m++++[m
+ Gesproy/config/settings.py                         | 194 [32m++[m[31m---------[m
+ Gesproy/config/urls.py                             |   3 [32m+[m
+ .../templates/proyectos/detalle_proyecto.html      |   8 [32m+[m[31m-[m
+ 18 files changed, 698 insertions(+), 1051 deletions(-)

@@ -81,5 +81,11 @@ urlpatterns = [
     path("facturacion/proyecto/<int:proyecto_id>/ingresos/nuevo/", vistas_facturacion.nuevo_ingreso, name="facturacion_nuevo_ingreso"),
     path("facturacion/proyecto/<int:proyecto_id>/gastos/nuevo/", vistas_facturacion.nuevo_gasto, name="facturacion_nuevo_gasto"),
     path("facturacion/proyecto/<int:proyecto_id>/movimientos/<int:movimiento_id>/editar/", vistas_facturacion.editar_movimiento, name="facturacion_editar_movimiento"),
-    
+    path("administracion/tipos-proyecto/<int:tipo_id>/eliminar/",views.eliminar_tipo_proyecto,name="eliminar_tipo_proyecto"),
+    path("administracion/organismos/<int:organismo_id>/eliminar/",views.eliminar_organismo,name="eliminar_organismo"),
+    path("administracion/tipos-participacion/<int:tipo_id>/eliminar/",views.eliminar_tipo_participacion,name="eliminar_tipo_participacion"),
+    path("administracion/areas/<int:area_id>/eliminar/",views.eliminar_area,name="eliminar_area"),
+    path("administracion/lineas-investigacion/<int:linea_id>/eliminar/",views.eliminar_linea_investigacion,name="eliminar_linea_investigacion"),
+    path("administracion/socios/<int:socio_id>/eliminar/",views.eliminar_socio,name="eliminar_socio"),
+      
 ]

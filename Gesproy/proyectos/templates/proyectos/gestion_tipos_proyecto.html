@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -30,7 +29,6 @@ Administración de tipos de proyecto - Gesproy
             </p>
         </div>
 
-        <!-- AÑADIR -->
         <button type="button"
                 class="tipos-boton-anadir"
                 id="abrir-modal-tipo">
@@ -44,8 +42,10 @@ Administración de tipos de proyecto - Gesproy
 
     <!-- CONTADOR -->
     <div class="tipos-contador">
+
         <i class="bi bi-collection"></i>
         Total: {{ tipos|length }}
+
     </div>
 
     <!-- LISTADO -->
@@ -56,6 +56,7 @@ Administración de tipos de proyecto - Gesproy
             <thead>
                 <tr>
                     <th>Tipo de proyecto</th>
+                    <th class="tipos-acciones">Acciones</th>
                 </tr>
             </thead>
 
@@ -63,20 +64,47 @@ Administración de tipos de proyecto - Gesproy
 
                 {% for tipo in tipos %}
 
-                    <tr>
-                        <td>
-                            <i class="bi bi-folder2 tipos-icono"></i>
-                            {{ tipo.nombre }}
-                        </td>
-                    </tr>
+                <tr>
+
+                    <td>
+
+                        <i class="bi bi-folder2 tipos-icono"></i>
+
+                        {{ tipo.nombre }}
+
+                    </td>
+
+                    <!-- ELIMINAR TIPO -->
+                    <td class="tipos-acciones">
+
+                        <form method="post"
+                              action="{% url 'eliminar_tipo_proyecto' tipo.id %}"
+                              onsubmit="return confirm('¿Seguro que deseas eliminar este tipo de proyecto?');">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="tipos-boton-eliminar"
+                                    title="Eliminar tipo de proyecto"
+                                    aria-label="Eliminar {{ tipo.nombre }}">
+
+                                <i class="bi bi-x-lg"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
 
                 {% empty %}
 
-                    <tr>
-                        <td class="tipos-vacio">
-                            No hay tipos de proyecto registrados.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="2" class="tipos-vacio">
+                        No hay tipos de proyecto registrados.
+                    </td>
+                </tr>
 
                 {% endfor %}
 
@@ -133,15 +161,19 @@ Administración de tipos de proyecto - Gesproy
         {{ formulario.nombre }}
 
         {% if formulario.nombre.errors %}
+
             <div class="tipos-error">
                 {{ formulario.nombre.errors }}
             </div>
+
         {% endif %}
 
         {% if formulario.non_field_errors %}
+
             <div class="tipos-error">
                 {{ formulario.non_field_errors }}
             </div>
+
         {% endif %}
 
         <div class="tipos-modal-acciones">
@@ -169,13 +201,21 @@ Administración de tipos de proyecto - Gesproy
 </dialog>
 
 
-<!-- COMPORTAMIENTO DE LA VENTANA -->
+<!-- JAVASCRIPT DEL MODAL -->
+
 <script>
-    const modalTipo = document.getElementById("modal-tipo");
 
-    const botonAbrir = document.getElementById("abrir-modal-tipo");
+    const modalTipo = document.getElementById(
+        "modal-tipo"
+    );
 
-    const botonCerrar = document.getElementById("cerrar-modal-tipo");
+    const botonAbrir = document.getElementById(
+        "abrir-modal-tipo"
+    );
+
+    const botonCerrar = document.getElementById(
+        "cerrar-modal-tipo"
+    );
 
     botonAbrir.addEventListener("click", function() {
         modalTipo.showModal();
@@ -188,6 +228,7 @@ Administración de tipos de proyecto - Gesproy
     {% if formulario.errors %}
         modalTipo.showModal();
     {% endif %}
+
 </script>
 
 {% endblock %}

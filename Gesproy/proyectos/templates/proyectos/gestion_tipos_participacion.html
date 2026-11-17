@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -30,7 +29,6 @@ Administración de tipos de participación - Gesproy
             </p>
         </div>
 
-        <!-- BOTÓN AÑADIR -->
         <button type="button"
                 class="tipos-boton-anadir"
                 id="abrir-modal-participacion">
@@ -59,6 +57,7 @@ Administración de tipos de participación - Gesproy
             <thead>
                 <tr>
                     <th>Tipo de participación</th>
+                    <th class="tipos-acciones">Acciones</th>
                 </tr>
             </thead>
 
@@ -67,17 +66,43 @@ Administración de tipos de participación - Gesproy
                 {% for tipo in tipos %}
 
                 <tr>
+
                     <td>
+
                         <i class="bi bi-diagram-3 tipos-icono"></i>
 
                         {{ tipo.nombre }}
+
                     </td>
+
+                    <!-- ELIMINAR TIPO DE PARTICIPACIÓN -->
+                    <td class="tipos-acciones">
+
+                        <form method="post"
+                              action="{% url 'eliminar_tipo_participacion' tipo.id %}"
+                              onsubmit="return confirm('¿Seguro que deseas eliminar este tipo de participación?');">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="tipos-boton-eliminar"
+                                    title="Eliminar tipo de participación"
+                                    aria-label="Eliminar {{ tipo.nombre }}">
+
+                                <i class="bi bi-x-lg"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
                 </tr>
 
                 {% empty %}
 
                 <tr>
-                    <td class="tipos-vacio">
+                    <td colspan="2" class="tipos-vacio">
                         No hay tipos de participación registrados.
                     </td>
                 </tr>
@@ -136,24 +161,22 @@ Administración de tipos de participación - Gesproy
 
         {{ formulario.nombre }}
 
-        <!-- ERRORES -->
         {% if formulario.nombre.errors %}
 
-        <div class="tipos-error">
-            {{ formulario.nombre.errors }}
-        </div>
+            <div class="tipos-error">
+                {{ formulario.nombre.errors }}
+            </div>
 
         {% endif %}
 
         {% if formulario.non_field_errors %}
 
-        <div class="tipos-error">
-            {{ formulario.non_field_errors }}
-        </div>
+            <div class="tipos-error">
+                {{ formulario.non_field_errors }}
+            </div>
 
         {% endif %}
 
-        <!-- BOTONES -->
         <div class="tipos-modal-acciones">
 
             <button type="button"
@@ -179,9 +202,7 @@ Administración de tipos de participación - Gesproy
 </dialog>
 
 
-<!-- ==========================================
-     JAVASCRIPT DEL MODAL
-========================================== -->
+<!-- JAVASCRIPT DEL MODAL -->
 
 <script>
 
@@ -197,21 +218,14 @@ Administración de tipos de participación - Gesproy
         "cerrar-modal-participacion"
     );
 
-    // ABRIR VENTANA
     botonAbrir.addEventListener("click", function() {
-
         modalParticipacion.showModal();
-
     });
 
-    // CERRAR VENTANA
     botonCerrar.addEventListener("click", function() {
-
         modalParticipacion.close();
-
     });
 
-    // REABRIR SI HAY ERRORES DE VALIDACIÓN
     {% if formulario.errors %}
         modalParticipacion.showModal();
     {% endif %}

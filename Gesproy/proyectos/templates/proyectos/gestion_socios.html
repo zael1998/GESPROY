@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -7,7 +6,8 @@ Administración de socios - Gesproy
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/socios.css' %}">
+<link rel="stylesheet"
+      href="{% static 'css/socios.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -56,6 +56,7 @@ Administración de socios - Gesproy
                     <th>Responsable</th>
                     <th>Correo electrónico</th>
                     <th>Teléfono</th>
+                    <th class="socios-acciones">Acciones</th>
                 </tr>
             </thead>
 
@@ -74,15 +75,20 @@ Administración de socios - Gesproy
                         </td>
 
                         <td>
+
                             {% if contacto %}
+
                                 {{ contacto.apellido }},
                                 {{ contacto.nombre }}
+
                             {% else %}
                                 —
                             {% endif %}
+
                         </td>
 
                         <td>
+
                             {% if contacto and contacto.email %}
 
                                 <a href="mailto:{{ contacto.email }}"
@@ -95,14 +101,41 @@ Administración de socios - Gesproy
                             {% else %}
                                 —
                             {% endif %}
+
                         </td>
 
                         <td>
+
                             {% if contacto %}
+
                                 {{ contacto.telefono|default:"—" }}
+
                             {% else %}
                                 —
                             {% endif %}
+
+                        </td>
+
+                        <!-- ELIMINAR SOCIO -->
+                        <td class="socios-acciones">
+
+                            <form method="post"
+                                  action="{% url 'eliminar_socio' socio.id %}"
+                                  onsubmit="return confirm('¿Seguro que deseas eliminar este socio?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="socios-boton-eliminar"
+                                        title="Eliminar socio"
+                                        aria-label="Eliminar {{ socio.nombre_empresa }}">
+
+                                    <i class="bi bi-x-lg"></i>
+
+                                </button>
+
+                            </form>
+
                         </td>
 
                     </tr>
@@ -112,9 +145,12 @@ Administración de socios - Gesproy
                 {% empty %}
 
                     <tr>
-                        <td colspan="4" class="socios-vacio">
+                        <td colspan="5" class="socios-vacio">
+
                             <i class="bi bi-inbox"></i>
+
                             No hay socios registrados.
+
                         </td>
                     </tr>
 

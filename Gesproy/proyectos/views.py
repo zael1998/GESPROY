@@ -732,10 +732,7 @@ def detalle_proyecto(request, id):
         "linea_investigacion"
     )
 
-    nombres_lineas = [
-        asignacion.linea_investigacion.nombre
-        for asignacion in asignaciones
-    ]
+    resumen_financiacion = calcular_cobertura_financiacion(proyecto, asignaciones)
 
     # --------------------------------------
     # HISTORIAL DE DENEGACIONES
@@ -888,7 +885,7 @@ def detalle_proyecto(request, id):
             "resumen_dedicaciones": resumen_dedicaciones,
             "socios": socios,
             "denegaciones": denegaciones,
-            "nombres_lineas": nombres_lineas,
+            **resumen_financiacion,
             "puede_editar": puede_editar,
             "puede_editar_comentario": puede_editar_comentario,
             "total_investigadores": len(investigadores),
@@ -2727,6 +2724,37 @@ def comprobar_presupuesto_linea(
 # FINANCIACIÓN DE UN PROYECTO
 # ==========================================
 
+def calcular_cobertura_financiacion(proyecto, asignaciones):
+    asignaciones = list(asignaciones)
+    referencia = proyecto.importe_concedido_cesga
+    total = Decimal("0.00")
+    for asignacion in asignaciones:
+        asignacion.importe_calculado = (
+            asignacion.linea_investigacion.presupuesto
+            * asignacion.porcentaje / Decimal("100")
+        ).quantize(Decimal("0.01"))
+        asignacion.porcentaje_cobertura = (
+            (asignacion.importe_calculado / referencia * Decimal("100")).quantize(Decimal("0.01"))
+            if referencia is not None and referencia > 0 else None
+        )
+        total += asignacion.importe_calculado
+    porcentaje_total = None
+    pendiente = None
+    exceso = None
+    if referencia is not None and referencia > 0:
+        porcentaje_total = (total / referencia * Decimal("100")).quantize(Decimal("0.01"))
+        pendiente = max(Decimal("0.00"), referencia - total)
+        exceso = max(Decimal("0.00"), total - referencia)
+    return {
+        "asignaciones": asignaciones,
+        "total_financiacion": total,
+        "importe_referencia": referencia,
+        "porcentaje_total_cobertura": porcentaje_total,
+        "importe_pendiente": pendiente,
+        "importe_exceso": exceso,
+    }
+
+
 @staff_member_required
 def financiacion_proyecto(request, proyecto_id):
 
@@ -2938,27 +2966,14 @@ def financiacion_proyecto(request, proyecto_id):
         )
     )
 
-    total_financiacion = Decimal("0.00")
-
-    for asignacion in asignaciones:
-
-        presupuesto = asignacion.linea_investigacion.presupuesto
-
-        asignacion.importe_calculado = (
-            presupuesto
-            * asignacion.porcentaje
-            / Decimal("100")
-        ).quantize(Decimal("0.01"))
-
-        total_financiacion += asignacion.importe_calculado
+    resumen_financiacion = calcular_cobertura_financiacion(proyecto, asignaciones)
 
     return render(
         request,
         "proyectos/financiacion_proyecto.html",
         {
             "proyecto": proyecto,
-            "asignaciones": asignaciones,
-            "total_financiacion": total_financiacion,
+            **resumen_financiacion,
             "formulario": formulario,
         }
     )
@@ -3755,3 +3770,141 @@ def importar_calendario_laboral(request):
     return redirect(
         f"{reverse('calendario_laboral')}?anio={anio}"
     )
+    
+@staff_member_required
+@require_POST
+def eliminar_organismo(request, organismo_id):
+    
+    organismo = get_object_or_404(Organismo, pk=organismo_id)
+        
+    if Proyecto.objects.filter(organismo=organismo).exists():
+        messages.error(
+            request,
+            "No se puede eliminar el organismo porque tiene proyectos asociados."
+        )
+        return redirect("gestion_organismos")
+        
+    organismo.delete()
+    messages.success(
+        request,
+        "Organismo eliminado correctamente."
+    )
+    return redirect("gestion_organismos")
+
+
+@staff_member_required
+@require_POST
+def eliminar_tipo_proyecto(request, tipo_id):
+    
+    tipo = get_object_or_404(TipoProyecto, pk=tipo_id)
+    if Proyecto.objects.filter(tipo_proyecto=tipo).exists():
+        messages.error(
+            request,
+            "No se puede eliminar el tipo de proyecto porque tiene proyectos asociados."
+        )
+        return redirect("gestion_tipos_proyecto")
+    tipo.delete()
+    messages.success(
+        request,
+        "Tipo de proyecto eliminado correctamente."
+    )
+    return redirect("gestion_tipos_proyecto")
+
+@staff_member_required
+@require_POST
+def eliminar_linea_investigacion(request, linea_id):
+    
+    linea = get_object_or_404(LineaInvestigacion, pk=linea_id)
+    
+    if Asignacion.objects.filter(linea_investigacion=linea).exists():
+        messages.error(
+            request,
+            "No se puede eliminar la línea de investigación porque tiene asignaciones asociadas."
+        )
+        return redirect("gestion_lineas_investigacion")
+    
+    linea.delete()
+    messages.success(
+        request,
+        "Línea de investigación eliminada correctamente."
+    )
+    return redirect("gestion_lineas_investigacion")
+
+@staff_member_required
+@require_POST
+def eliminar_area(request, area_id):
+
+    area = get_object_or_404(
+        Area, pk=area_id
+    )
+
+    if Proyecto.objects.filter(areas=area).exists():
+        messages.error(
+            request,
+            "No se puede eliminar el área porque tiene proyectos asociados."
+        )
+        return redirect("gestion_areas")
+
+    area.delete()
+
+    messages.success(
+        request,
+        "Área eliminada correctamente."
+    )
+
+    return redirect("gestion_areas")
+
+@staff_member_required
+@require_POST
+def eliminar_socio(request, socio_id):
+
+    socio = get_object_or_404(
+        Socio, pk=socio_id
+    )
+
+    if ParticipacionSocio.objects.filter(socio=socio).exists():
+        messages.error(
+            request,
+            "No se puede eliminar el socio porque participa en proyectos."
+        )
+        return redirect("gestion_socios")
+
+    if ContactoSocio.objects.filter(socio=socio).exists():
+        messages.error(
+            request,
+            "No se puede eliminar el socio porque tiene contactos asociados."
+        )
+        return redirect("gestion_socios")
+
+    socio.delete()
+
+    messages.success(
+        request,
+        "Socio eliminado correctamente."
+    )
+
+    return redirect("gestion_socios")
+
+@staff_member_required
+@require_POST
+def eliminar_tipo_participacion(request, tipo_id):
+
+    tipo = get_object_or_404(
+        TipoParticipacion, pk=tipo_id
+    )
+
+    if Proyecto.objects.filter(tipo_participacion=tipo).exists():
+        messages.error(
+            request,
+            "No se puede eliminar el tipo de participación porque tiene proyectos asociados."
+        )
+        return redirect("gestion_tipos_participacion")
+
+    tipo.delete()
+
+    messages.success(
+        request,
+        "Tipo de participación eliminado correctamente."
+    )
+
+    return redirect("gestion_tipos_participacion")

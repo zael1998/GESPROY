@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -30,7 +29,6 @@ Administración de áreas - Gesproy
             </p>
         </div>
 
-        <!-- BOTÓN AÑADIR -->
         <button type="button"
                 class="tipos-boton-anadir"
                 id="abrir-modal-area">
@@ -59,6 +57,7 @@ Administración de áreas - Gesproy
             <thead>
                 <tr>
                     <th>Área</th>
+                    <th class="tipos-acciones">Acciones</th>
                 </tr>
             </thead>
 
@@ -67,17 +66,41 @@ Administración de áreas - Gesproy
                 {% for area in areas %}
 
                 <tr>
+
                     <td>
                         <i class="bi bi-grid tipos-icono"></i>
 
                         {{ area.nombre }}
                     </td>
+
+                    <!-- ELIMINAR ÁREA -->
+                    <td class="tipos-acciones">
+
+                        <form method="post"
+                              action="{% url 'eliminar_area' area.id %}"
+                              onsubmit="return confirm('¿Seguro que deseas eliminar esta área?');">
+
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="tipos-boton-eliminar"
+                                    title="Eliminar área"
+                                    aria-label="Eliminar {{ area.nombre }}">
+
+                                <i class="bi bi-x-lg"></i>
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
                 </tr>
 
                 {% empty %}
 
                 <tr>
-                    <td class="tipos-vacio">
+                    <td colspan="2" class="tipos-vacio">
                         No hay áreas registradas.
                     </td>
                 </tr>
@@ -139,17 +162,17 @@ Administración de áreas - Gesproy
         <!-- ERRORES DE VALIDACIÓN -->
         {% if formulario.nombre.errors %}
 
-        <div class="tipos-error">
-            {{ formulario.nombre.errors }}
-        </div>
+            <div class="tipos-error">
+                {{ formulario.nombre.errors }}
+            </div>
 
         {% endif %}
 
         {% if formulario.non_field_errors %}
 
-        <div class="tipos-error">
-            {{ formulario.non_field_errors }}
-        </div>
+            <div class="tipos-error">
+                {{ formulario.non_field_errors }}
+            </div>
 
         {% endif %}
 
@@ -195,21 +218,14 @@ Administración de áreas - Gesproy
         "cerrar-modal-area"
     );
 
-    // ABRIR VENTANA
     botonAbrir.addEventListener("click", function() {
-
         modalArea.showModal();
-
     });
 
-    // CERRAR VENTANA
     botonCerrar.addEventListener("click", function() {
-
         modalArea.close();
-
     });
 
-    // REABRIR SI HAY ERRORES
     {% if formulario.errors %}
         modalArea.showModal();
     {% endif %}

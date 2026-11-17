@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
@@ -61,7 +60,7 @@ Líneas de investigación - Gesproy
                     <th>Asignado</th>
                     <th>Disponible</th>
                     <th>Porcentaje asignado</th>
-                    <th>Opciones</th>
+                    <th class="tipos-acciones">Opciones</th>
                 </tr>
             </thead>
 
@@ -97,17 +96,39 @@ Líneas de investigación - Gesproy
                     </td>
 
                     <!-- OPCIONES -->
-                    <td>
+                    <td class="tipos-acciones">
 
-                        <!-- GESTIONAR ASIGNACIONES -->
-                        <a href="{% url 'gestionar_asignaciones_linea' linea.id %}"
-                           class="boton-icono financiacion"
-                           title="Gestionar asignaciones de esta línea"
-                           aria-label="Gestionar asignaciones de {{ linea.nombre }}">
+                        <div class="tipos-grupo-acciones">
 
-                            <i class="bi bi-cash-stack"></i>
+                            <!-- GESTIONAR ASIGNACIONES -->
+                            <a href="{% url 'gestionar_asignaciones_linea' linea.id %}"
+                               class="boton-icono financiacion"
+                               title="Gestionar asignaciones de esta línea"
+                               aria-label="Gestionar asignaciones de {{ linea.nombre }}">
 
-                        </a>
+                                <i class="bi bi-cash-stack"></i>
+
+                            </a>
+
+                            <!-- ELIMINAR LÍNEA DE INVESTIGACIÓN -->
+                            <form method="post"
+                                  action="{% url 'eliminar_linea_investigacion' linea.id %}"
+                                  onsubmit="return confirm('¿Seguro que deseas eliminar esta línea de investigación?');">
+
+                                {% csrf_token %}
+
+                                <button type="submit"
+                                        class="tipos-boton-eliminar"
+                                        title="Eliminar línea de investigación"
+                                        aria-label="Eliminar {{ linea.nombre }}">
+
+                                    <i class="bi bi-x-lg"></i>
+
+                                </button>
+
+                            </form>
+
+                        </div>
 
                     </td>
 
@@ -176,7 +197,14 @@ Líneas de investigación - Gesproy
         </label>
 
         {{ formulario.nombre }}
-        {{ formulario.nombre.errors }}
+
+        {% if formulario.nombre.errors %}
+
+            <div class="tipos-error">
+                {{ formulario.nombre.errors }}
+            </div>
+
+        {% endif %}
 
         <!-- PRESUPUESTO -->
         <label for="{{ formulario.presupuesto.id_for_label }}"
@@ -187,7 +215,14 @@ Líneas de investigación - Gesproy
         </label>
 
         {{ formulario.presupuesto }}
-        {{ formulario.presupuesto.errors }}
+
+        {% if formulario.presupuesto.errors %}
+
+            <div class="tipos-error">
+                {{ formulario.presupuesto.errors }}
+            </div>
+
+        {% endif %}
 
         {% if formulario.non_field_errors %}
 
@@ -231,29 +266,24 @@ Líneas de investigación - Gesproy
 
     const modalLinea = document.getElementById("modal-linea");
 
-    const botonAbrirLinea = document.getElementById("abrir-modal-linea");
+    const botonAbrirLinea = document.getElementById(
+        "abrir-modal-linea"
+    );
 
-    const botonCerrarLinea = document.getElementById("cerrar-modal-linea");
+    const botonCerrarLinea = document.getElementById(
+        "cerrar-modal-linea"
+    );
 
-    // ABRIR MODAL
     botonAbrirLinea.addEventListener("click", function() {
-
         modalLinea.showModal();
-
     });
 
-    // CERRAR MODAL
     botonCerrarLinea.addEventListener("click", function() {
-
         modalLinea.close();
-
     });
 
-    // ABRIR AUTOMÁTICAMENTE SI HAY ERRORES
     {% if formulario.errors %}
-
         modalLinea.showModal();
-
     {% endif %}
 
 </script>

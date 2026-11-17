@@ -448,9 +448,17 @@
 
                     <strong>
 
-                        {% for nombre in nombres_lineas %}
+                        {% for asignacion in asignaciones %}
 
-                            {{ nombre }}{% if not forloop.last %}, {% endif %}
+                            <span style="display: block;">
+                                {{ asignacion.linea_investigacion.nombre }}:
+                                {{ asignacion.importe_calculado|floatformat:2 }} €
+                                {% if asignacion.porcentaje_cobertura != None %}
+                                    ({{ asignacion.porcentaje_cobertura|floatformat:2 }} % del concedido CESGA)
+                                {% else %}
+                                    (cobertura no disponible)
+                                {% endif %}
+                            </span>
 
                         {% empty %}
 
@@ -460,6 +468,20 @@
 
                     </strong>
 
+                </div>
+
+                <div class="ficha-dato">
+                    <span>Financiación mediante líneas</span>
+                    <strong>{{ total_financiacion|floatformat:2 }} €</strong>
+                    {% if porcentaje_total_cobertura != None %}
+                        <span>Cobertura total: {{ porcentaje_total_cobertura|floatformat:2 }} %</span>
+                        <span>Pendiente: {{ importe_pendiente|floatformat:2 }} €</span>
+                        {% if importe_exceso > 0 %}
+                            <span>Exceso sobre el concedido: {{ importe_exceso|floatformat:2 }} €</span>
+                        {% endif %}
+                    {% else %}
+                        <span>Sin importe concedido CESGA positivo para calcular la cobertura.</span>
+                    {% endif %}
                 </div>
 
                 <div class="ficha-dato">

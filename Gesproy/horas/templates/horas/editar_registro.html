@@ -1,60 +1,247 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}Editar horas · Gesproy{% endblock %}
+
 {% block extra_css %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'css/horas_registros.css' %}">
 {% endblock %}
+
 {% block content %}
+
 <div class="mr-contenedor">
+
     <nav class="mr-ruta" aria-label="Ruta de navegación">
-        <a href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">Mis horas</a>
+        <a href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">
+            Mis horas
+        </a>
+
         <i class="bi bi-chevron-right" aria-hidden="true"></i>
         <span>Editar registro</span>
     </nav>
 
+    <!-- CABECERA -->
+
     <div class="mr-encabezado">
-        <span class="mr-icono"><i class="bi bi-pencil-square" aria-hidden="true"></i></span>
+
+        <span class="mr-icono">
+            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+        </span>
+
         <div>
             <h1>Editar horas registradas</h1>
-            <p>Corrige las horas o la descripción de una imputación pendiente.</p>
+            <p>Corrige las fechas, las horas o la descripción de una imputación pendiente.</p>
         </div>
+
     </div>
 
     <section class="mr-card">
+
         <header class="mr-card-cabecera">
             <i class="bi bi-info-circle" aria-hidden="true"></i>
             Datos del registro
         </header>
+
+        <!-- DATOS DEL REGISTRO -->
+
         <div class="mr-datos">
-            <div><span>Fecha</span><strong>{{ registro.fecha|date:'d/m/Y' }}</strong></div>
-            <div><span>Proyecto</span><strong>{{ registro.tarea.proyecto.acronimo }}</strong></div>
-            <div><span>Tarea</span><strong>{{ registro.tarea.nombre }}</strong></div>
+
+            <div>
+                <span>Fecha</span>
+
+                <strong>
+                    {{ registro.fecha|date:'d/m/Y' }}
+
+                    {% if registro.fecha_fin %}
+                        — {{ registro.fecha_fin|date:'d/m/Y' }}
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div>
+                <span>Proyecto</span>
+                <strong>{{ registro.tarea.proyecto.acronimo }}</strong>
+            </div>
+
+            <div>
+                <span>Tarea</span>
+                <strong>{{ registro.tarea.nombre }}</strong>
+            </div>
+
         </div>
+
+        <!-- FORMULARIO DE EDICIÓN -->
+
         <form method="post" class="mr-formulario" novalidate>
+
             {% csrf_token %}
+
+            <!-- ERRORES GENERALES -->
+
             {% if formulario.non_field_errors %}
-                <div class="mr-error" role="alert">{{ formulario.non_field_errors }}</div>
+
+                <div class="mr-error" role="alert">
+                    {{ formulario.non_field_errors }}
+                </div>
+
             {% endif %}
+
+            <!-- FECHA INICIAL -->
+
             <div class="mr-campo">
-                <label for="{{ formulario.horas.id_for_label }}">Horas trabajadas</label>
+
+                <label for="{{ formulario.fecha.id_for_label }}">
+
+                    {% if es_periodo %}
+                        Fecha de inicio
+                    {% else %}
+                        Fecha de trabajo
+                    {% endif %}
+
+                </label>
+
+                {{ formulario.fecha }}
+
+                {% if formulario.fecha.errors %}
+
+                    <div class="mr-error" role="alert">
+                        {{ formulario.fecha.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <!-- FECHA FINAL DEL PERIODO -->
+
+            {% if es_periodo %}
+
+                <div class="mr-campo">
+
+                    <label for="{{ formulario.fecha_fin.id_for_label }}">
+                        Fecha de finalización
+                    </label>
+
+                    {{ formulario.fecha_fin }}
+
+                    {% if formulario.fecha_fin.errors %}
+
+                        <div class="mr-error" role="alert">
+                            {{ formulario.fecha_fin.errors }}
+                        </div>
+
+                    {% endif %}
+
+                    <small>
+                        Las fechas deben pertenecer al mismo mes.
+                    </small>
+
+                </div>
+
+            {% endif %}
+
+            <!-- HORAS TRABAJADAS -->
+
+            <div class="mr-campo">
+
+                <label for="{{ formulario.horas.id_for_label }}">
+                    Horas trabajadas
+                </label>
+
                 {{ formulario.horas }}
-                {% if formulario.horas.errors %}<div class="mr-error">{{ formulario.horas.errors }}</div>{% endif %}
-                <small>Se suman las horas de todos tus proyectos. Máximo 24 horas por día.</small>
+
+                {% if formulario.horas.errors %}
+
+                    <div class="mr-error" role="alert">
+                        {{ formulario.horas.errors }}
+                    </div>
+
+                {% endif %}
+
+                {% if es_periodo %}
+
+                    <small>
+                        Introduce el total de horas trabajadas durante el periodo.
+                    </small>
+
+                {% else %}
+
+                    <small>
+                        Se suman las horas de todos tus proyectos.
+                        Máximo 24 horas por día.
+                    </small>
+
+                {% endif %}
+
             </div>
+
+            <!-- DESCRIPCIÓN -->
+
             <div class="mr-campo">
-                <label for="{{ formulario.descripcion.id_for_label }}">Descripción del trabajo</label>
+
+                <label for="{{ formulario.descripcion.id_for_label }}">
+                    Descripción del trabajo
+                </label>
+
                 {{ formulario.descripcion }}
-                {% if formulario.descripcion.errors %}<div class="mr-error">{{ formulario.descripcion.errors }}</div>{% endif %}
+
+                {% if formulario.descripcion.errors %}
+
+                    <div class="mr-error" role="alert">
+                        {{ formulario.descripcion.errors }}
+                    </div>
+
+                {% endif %}
+
             </div>
-            <div class="mr-aviso"><i class="bi bi-lightbulb" aria-hidden="true"></i>
-                La jornada de {{ jornada_orientativa|floatformat:2 }} h es orientativa; puedes superarla hasta el máximo de 24 h/día.
+
+            <!-- AVISO INFORMATIVO -->
+
+            <div class="mr-aviso">
+
+                <i class="bi bi-lightbulb" aria-hidden="true"></i>
+
+                {% if es_periodo %}
+
+                    Las horas indicadas corresponden al total del periodo,
+                    no a las horas trabajadas en un único día.
+
+                {% else %}
+
+                    La jornada de {{ jornada_orientativa|floatformat:2 }} h
+                    es orientativa; puedes superarla hasta el máximo
+                    de 24 horas por día.
+
+                {% endif %}
+
             </div>
+
+            <!-- BOTONES -->
+
             <div class="mr-acciones">
-                <a class="mr-boton mr-boton--secundario" href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">Cancelar</a>
-                <button type="submit" class="mr-boton mr-boton--principal"><i class="bi bi-check2" aria-hidden="true"></i> Guardar cambios</button>
+
+                <a class="mr-boton mr-boton--secundario"
+                   href="{% url 'horas:mis_horas' %}?mes={{ registro.fecha|date:'Y-m' }}">
+
+                    Cancelar
+
+                </a>
+
+                <button type="submit"
+                        class="mr-boton mr-boton--principal">
+
+                    <i class="bi bi-check2" aria-hidden="true"></i>
+                    Guardar cambios
+
+                </button>
+
             </div>
+
         </form>
+
     </section>
+
 </div>
+
 {% endblock %}

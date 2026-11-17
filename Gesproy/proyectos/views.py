@@ -11,7 +11,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from decimal import Decimal
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from datetime import date
 from horas.models import Tarea, RegistroHoras
 from django.db import transaction
@@ -1017,6 +1017,7 @@ class DedicacionProyectoForm(forms.ModelForm):
     def __init__(self, *args, proyecto, **kwargs):
         super().__init__(*args, **kwargs)
         self.proyecto = proyecto
+        self.instance.proyecto = proyecto
         self.fields["fecha_inicio"].input_formats = ["%Y-%m-%d"]
         self.fields["fecha_fin"].input_formats = ["%Y-%m-%d"]
 
@@ -1185,16 +1186,20 @@ def anadir_investigador_proyecto(request, id):
     )
     
     if request.method == "POST" and formulario.is_valid():
-        with transaction.atomic():
-            dedicacion = formulario.save(commit=False)
-            dedicacion.proyecto = proyecto
-            dedicacion.save()
-            _registrar_historial_dedicacion(
-                anterior=None, actual=dedicacion,
-                accion="ALTA", usuario=request.user,
-            )
-        messages.success(request, "Investigador añadido al proyecto.")
-        return _volver_a_investigadores(proyecto.pk)
+        try:
+            with transaction.atomic():
+                dedicacion = formulario.save(commit=False)
+                dedicacion.proyecto = proyecto
+                dedicacion.save()
+                _registrar_historial_dedicacion(
+                    anterior=None, actual=dedicacion,
+                    accion="ALTA", usuario=request.user,
+                )
+        except ValidationError as error:
+            formulario.add_error(None, error)
+        else:
+            messages.success(request, "Investigador añadido al proyecto.")
+            return _volver_a_investigadores(proyecto.pk)
 
     return render(request, "proyectos/formulario_dedicacion.html", {
         "proyecto": proyecto,
@@ -1219,19 +1224,23 @@ def editar_investigador_proyecto(request, id, dedicacion_id):
     if request.method == "POST" and formulario.is_valid():
         # Leer el estado anterior antes de guardar el formulario.
         # La auditoría se crea en la MISMA transacción que el cambio.
-        with transaction.atomic():
-            anterior = Dedicacion.objects.select_for_update().get(pk=dedicacion.pk)
-            # Snapshot en memoria: model_to_dict devolvería otros tipos para FKs.
-            from copy import copy
-            anterior = copy(anterior)
-            actual = formulario.save(commit=False)
-            actual.save()
-            _registrar_historial_dedicacion(
-                anterior=anterior, actual=actual,
-                accion="MODIFICACION", usuario=request.user,
-            )
-        messages.success(request, "Dedicación actualizada y cambio registrado en el histórico.")
-        return _volver_a_investigadores(proyecto.pk)
+        try:
+            with transaction.atomic():
+                Investigador.objects.select_for_update().get(pk=dedicacion.investigador_id)
+                anterior = Dedicacion.objects.select_for_update().get(pk=dedicacion.pk)
+                from copy import copy
+                anterior = copy(anterior)
+                actual = formulario.save(commit=False)
+                actual.save()
+                _registrar_historial_dedicacion(
+                    anterior=anterior, actual=actual,
+                    accion="MODIFICACION", usuario=request.user,
+                )
+        except ValidationError as error:
+            formulario.add_error(None, error)
+        else:
+            messages.success(request, "Dedicación actualizada y cambio registrado en el histórico.")
+            return _volver_a_investigadores(proyecto.pk)
 
     return render(request, "proyectos/formulario_dedicacion.html", {
         "proyecto": proyecto,

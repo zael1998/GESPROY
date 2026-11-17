@@ -1,4 +1,8 @@
-from django.db import models
+from django.db import models, transaction
+from django.core.exceptions import ValidationError
+from datetime import date, timedelta
+from decimal import Decimal
+from collections import defaultdict
 
 from django.utils import timezone
 
@@ -450,6 +454,64 @@ class Dedicacion(models.Model):
     def __str__(self):
 
         return f"{self.investigador} - {self.proyecto.nombre}"
+
+    def clean(self):
+        super().clean()
+        if not self.investigador_id or not self.fecha_inicio or self.porcentaje is None:
+            return
+        porcentaje = self.porcentaje
+        if not Decimal("0") < porcentaje <= Decimal("100"):
+            raise ValidationError({"porcentaje": "La dedicación debe ser mayor que 0 y no superar el 100 %."})
+        if self.fecha_fin and self.fecha_fin < self.fecha_inicio:
+            raise ValidationError({"fecha_fin": "La fecha final no puede ser anterior a la inicial."})
+        proyecto = self.proyecto if self.proyecto_id else None
+        if proyecto and proyecto.estado == "DENEGADO":
+            return
+        inicio = self.fecha_inicio
+        fin = self.fecha_fin or (proyecto.fecha_fin if proyecto else None) or date.max
+        if fin < inicio:
+            raise ValidationError({"fecha_inicio": "La dedicación no puede comenzar después del fin del proyecto."})
+
+        # Acumular porcentajes únicamente en fechas simultáneas.
+        cambios = defaultdict(lambda: Decimal("0"))
+        cambios[inicio] += porcentaje
+        otras = (
+            Dedicacion.objects.filter(investigador_id=self.investigador_id, fecha_inicio__lte=fin)
+            .exclude(pk=self.pk)
+            .exclude(proyecto__estado="DENEGADO")
+            .select_related("proyecto")
+        )
+        for otra in otras:
+            desde = max(inicio, otra.fecha_inicio)
+            hasta = min(fin, otra.fecha_fin or otra.proyecto.fecha_fin or date.max)
+            if desde > hasta:
+                continue
+            cambios[desde] += otra.porcentaje
+            if hasta < fin:
+                cambios[hasta + timedelta(days=1)] -= otra.porcentaje
+
+        total = Decimal("0")
+        for dia in sorted(cambios):
+            total += cambios[dia]
+            if total > Decimal("100"):
+                disponible = max(Decimal("0"), Decimal("100") - (total - porcentaje))
+                raise ValidationError({
+                    "porcentaje": (
+                        f"El {dia:%d/%m/%Y} la dedicación total sería del {total:.2f} %. "
+                        f"Disponible en esa fecha: {disponible:.2f} %. "
+                        "La suma de dedicaciones simultáneas no puede superar el 100 %."
+                    )
+                })
+
+    def save(self, *args, **kwargs):
+        with transaction.atomic():
+            if self.investigador_id:
+                self._meta.get_field("investigador").remote_field.model.objects.select_for_update().get(
+                    pk=self.investigador_id
+                )
+            self.clean()
+            return super().save(*args, **kwargs)
+
 
 class Carpeta(models.Model):
 
